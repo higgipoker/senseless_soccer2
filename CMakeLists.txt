@@ -29,8 +29,6 @@ add_definitions(-std=c++11)
 # --------------------------------------------------
 add_executable(senseless_soccer
   src/main.cpp
-  src/engine/engine.cpp
-  src/engine/entity.cpp
   src/player/player.cpp
   src/player/playerfactory.cpp
 )

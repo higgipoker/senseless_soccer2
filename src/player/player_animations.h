@@ -22,7 +22,7 @@
 #include <vector>
 namespace senseless_soccer {
 
-static unsigned int anim_speed = 300000;
+static unsigned int anim_speed = 10;
 static gamelib2::Widget *sprite = nullptr;
 
 static std::vector<unsigned int> stand_east() {

@@ -20,6 +20,10 @@
 #include "player.hpp"
 
 namespace senseless_soccer {
+
+// -----------------------------------------------------------------------------
+// Player
+// -----------------------------------------------------------------------------
 Player::Player(const std::string &in_name)
   : Entity(in_name) {
 }

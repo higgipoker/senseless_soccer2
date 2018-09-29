@@ -8,25 +8,23 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window.hpp>
 
+#include <gamelib2/engine/engine.hpp>
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/graphics/autotexture.hpp>
 #include <gamelib2/graphics/sprite.hpp>
 #include <gamelib2/graphics/spriteanimation.hpp>
 #include <gamelib2/graphics/tiledscrollingbackground.hpp>
+#include <gamelib2/input/keyboard.hpp>
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/viewer/viewer.hpp>
 
-#include "engine/engine.hpp"
 #include "player/player.hpp"
 #include "player/playerfactory.hpp"
-#include <gamelib2/engine/engine.hpp>
-#include <gamelib2/input/keyboard.hpp>
 
 using namespace gamelib2;
 using namespace senseless_soccer;
 
-static sf::RenderWindow window;
 static Viewer viewer;
 static gamelib2::Engine engine;
 static std::promise<void> exitSignal;
