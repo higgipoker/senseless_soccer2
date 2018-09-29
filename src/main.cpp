@@ -11,13 +11,13 @@
 #include <gamelib2/engine/engine.hpp>
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/graphics/autotexture.hpp>
-#include <gamelib2/graphics/sprite.hpp>
-#include <gamelib2/graphics/spriteanimation.hpp>
-#include <gamelib2/graphics/tiledscrollingbackground.hpp>
 #include <gamelib2/input/keyboard.hpp>
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/viewer/viewer.hpp>
+#include <gamelib2/widgets/sprite.hpp>
+#include <gamelib2/widgets/spriteanimation.hpp>
+#include <gamelib2/widgets/tiledscrollingbackground.hpp>
 
 #include "player/player.hpp"
 #include "player/playerfactory.hpp"
@@ -58,7 +58,7 @@ int main() {
     // inputs come into the screen, but handled by the engine
     viewer.connectKeyboard(kb);
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 1; ++i) {
         std::ostringstream name;
         name << "player" << i;
         std::shared_ptr<Entity> player = PlayerFactory::makePlayer(name.str());

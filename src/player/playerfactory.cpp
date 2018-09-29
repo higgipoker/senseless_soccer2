@@ -18,16 +18,18 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "playerfactory.hpp"
+#include "player.hpp"
 #include "player_animations.h"
-#include <gamelib2/graphics/sprite.hpp>
 #include <gamelib2/utils/files.hpp>
+#include <gamelib2/widgets/sprite.hpp>
 
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
-std::shared_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
+std::shared_ptr<gamelib2::Entity>
+PlayerFactory::makePlayer(const std::string &name) {
     // for gfx
     std::string working_dir = gamelib2::Files::getWorkingDirectory();
 
@@ -37,9 +39,10 @@ std::shared_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
                                          6, 24);
     sprite->clickable = true;
     fill_animations(sprite.get());
-    auto player = std::make_shared<Player>(name);
+    std::shared_ptr<gamelib2::Entity> player = std::make_shared<Player>(name);
     player->connectWidget(sprite);
     sprite->connectEntity(player);
+    player->activate();
     return player;
 }
 

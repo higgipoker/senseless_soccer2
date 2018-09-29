@@ -18,6 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "player.hpp"
+#include "states/run.hpp"
+#include "states/stand.hpp"
+#include <cassert>
+#include <gamelib2/math/vector.hpp>
 
 namespace senseless_soccer {
 
@@ -26,5 +30,67 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 Player::Player(const std::string &in_name)
   : Entity(in_name) {
+}
+
+// -----------------------------------------------------------------------------
+// activate
+// -----------------------------------------------------------------------------
+void Player::activate() {
+    assert(widget.get());
+
+    // init state machine
+    std::unique_ptr<gamelib2::State> state(new Stand(this));
+    init(state);
+}
+
+// -----------------------------------------------------------------------------
+// update
+// -----------------------------------------------------------------------------
+void Player::update(float dt) {
+    Entity::update(dt);
+
+    do_physics(dt);
+
+    if (widget.get()) {
+        widget->setPosition(position.x, position.y);
+    }
+    widget->animate();
+
+    current_state->update(dt);
+    if (current_state->finished()) {
+        current_state->changeToNextState();
+    }
+}
+
+// -----------------------------------------------------------------------------
+// on_change_state
+// -----------------------------------------------------------------------------
+void Player::on_change_state() {
+}
+
+// -----------------------------------------------------------------------------
+// do_physics
+// -----------------------------------------------------------------------------
+void Player::do_physics(float dt) {
+    // has the sprite been manually moved
+    gamelib2::Vector3 widget_position(widget->position().x,
+                                      widget->position().y);
+    if (!widget_position.equals(position)) {
+        position.x = widget->position().x;
+        position.y = widget->position().y;
+    }
+
+    // normalises to units
+    velocity.normalise();
+
+    // normalizes for diagonals
+    if (velocity.magnitude() > speed) {
+        velocity *= speed;
+    }
+
+    // basic euler motion
+    velocity += acceleration * dt;
+    position += velocity * dt * speed;
+    acceleration.reset();
 }
 } // namespace senseless_soccer

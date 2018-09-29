@@ -21,15 +21,34 @@
 
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/input/keyboardlistener.hpp>
+#include <gamelib2/statemachine/state_machine.hpp>
 #include <gamelib2/types.hpp>
 #include <memory>
 
 namespace senseless_soccer {
 
-class Player : public gamelib2::Entity {
-  public:
+class Player : public gamelib2::Entity, gamelib2::StateMachine {
+public:
     // construct with an entity name
     Player(const std::string &in_name);
+
+    // main update
+    void update(float dt);
+
+    // only activate players after sprite is connected!
+    void activate();
+
+protected:
+    // hook for states to react to state changed
+    void on_change_state() override;
+
+    // helper to do the movement physics
+    void do_physics(float dt);
+
+public:
+    // for state machine pattern
+    friend class Stand;
+    friend class Run;
 };
 
 } // namespace senseless_soccer
