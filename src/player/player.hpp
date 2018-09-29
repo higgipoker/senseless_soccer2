@@ -28,6 +28,7 @@ namespace senseless_soccer {
 
 class Player : public gamelib2::Entity {
   public:
+    // construct with an entity name
     Player(const std::string &in_name);
 };
 
