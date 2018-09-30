@@ -18,16 +18,26 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include <gamelib2/game/entity.hpp>
-#include <memory>
+#include <gamelib2/widgets/widget.hpp>
+#include <vector>
 namespace senseless_soccer {
-class PlayerFactory {
-public:
-    // constructs a complete player and delivers shared pointer
-    static void makePlayer(const std::string &name,
-                           std::shared_ptr<gamelib2::Entity> &entity,
-                           std::shared_ptr<gamelib2::Widget> &sprite);
+namespace ball_animations{
+static unsigned int anim_speed = 3;
+static std::vector<unsigned int> roll() {
+    std::vector<unsigned int> v;
+    v.push_back(0);
+    v.push_back(1);
+    v.push_back(2);
+    v.push_back(3);
+    v.push_back(4);
+    v.push_back(5);
+    v.push_back(6);
+    return v;
+}
 
-private:
-};
-} // namespace senseless_soccer
+static void fill_animations(gamelib2::Widget *spr) {
+    spr->addAnimation("roll", anim_speed, true, roll());
+}
+
+}// namespace
+}// namespace

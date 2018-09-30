@@ -19,6 +19,7 @@
  ****************************************************************************/
 #pragma once
 
+#include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/input/keyboardlistener.hpp>
 #include <gamelib2/statemachine/state_machine.hpp>
@@ -30,13 +31,16 @@ namespace senseless_soccer {
 class Player : public gamelib2::Entity, gamelib2::StateMachine {
 public:
     // construct with an entity name
-    Player(const std::string &in_name);
+    Player(std::string in_name);
 
     // main update
-    void update(float dt);
+    void update(float dt) override;
 
-    // only activate players after sprite is connected!
-    void activate();
+    // only activate after sprite is connected!
+    void activate() override;
+
+    // helper to init the animatio map
+    static void Init();
 
 protected:
     // hook for states to react to state changed
@@ -44,6 +48,19 @@ protected:
 
     // helper to do the movement physics
     void do_physics(float dt);
+
+    // track facing direction
+    gamelib2::Compass facing;
+
+    // save last direction
+    gamelib2::Compass facing_old;
+
+    // changed direction since last frame?
+    bool changed_direction = true;
+
+    // map animations based on running direction
+    static std::map<gamelib2::Direction, std::string> stand_animation_map;
+    static std::map<gamelib2::Direction, std::string> run_animation_map;
 
 public:
     // for state machine pattern

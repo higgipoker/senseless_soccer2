@@ -1,6 +1,7 @@
 #include "run.hpp"
 #include "../player.hpp"
 #include "stand.hpp"
+#include <gamelib2/compass/compass.hpp>
 
 namespace senseless_soccer {
 
@@ -15,13 +16,18 @@ Run::Run(Player *context)
 // start
 // -----------------------------------------------------------------------------
 void Run::start() {
-    sprite->startAnimation("run_south");
+    auto w = player->widget.lock();
+    w->startAnimation(player->run_animation_map[player->facing.direction]);
 }
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Run::update(const float _dt) {
+    if (player->changed_direction) {
+        auto w = player->widget.lock();
+        w->startAnimation(player->run_animation_map[player->facing.direction]);
+    }
 }
 
 // -----------------------------------------------------------------------------

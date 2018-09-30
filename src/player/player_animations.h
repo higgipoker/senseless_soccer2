@@ -21,9 +21,8 @@
 #include <gamelib2/widgets/widget.hpp>
 #include <vector>
 namespace senseless_soccer {
-
+namespace player_animations {
 static unsigned int anim_speed = 10;
-static gamelib2::Widget *sprite = nullptr;
 
 static std::vector<unsigned int> stand_east() {
     std::vector<unsigned int> v;
@@ -130,8 +129,6 @@ static std::vector<unsigned int> run_northeast() {
 }
 
 static void fill_animations(gamelib2::Widget *spr) {
-    sprite = spr;
-
     spr->addAnimation("stand_east", anim_speed, true, stand_east());
     spr->addAnimation("stand_southeast", anim_speed, true, stand_southeast());
     spr->addAnimation("stand_south", anim_speed, true, stand_south());
@@ -150,5 +147,5 @@ static void fill_animations(gamelib2::Widget *spr) {
     spr->addAnimation("run_north", anim_speed, true, run_north());
     spr->addAnimation("run_northeast", anim_speed, true, run_northeast());
 }
-
+} // namespace player_animations
 } // namespace senseless_soccer

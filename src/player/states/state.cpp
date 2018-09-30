@@ -8,7 +8,7 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 State::State(Player *context) {
     player = context;
-    sprite = player->widget;
+    sprite = player->widget.lock();
 }
 
 // -----------------------------------------------------------------------------

@@ -15,7 +15,8 @@ Stand::Stand(Player *context)
 // start
 // -----------------------------------------------------------------------------
 void Stand::start() {
-    sprite->startAnimation("stand_south");
+    auto w = player->widget.lock();
+    w->startAnimation("stand_south");
 }
 
 // -----------------------------------------------------------------------------

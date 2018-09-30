@@ -17,9 +17,9 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "playerfactory.hpp"
-#include "player.hpp"
-#include "player_animations.h"
+#include "ball_factory.hpp"
+#include "ball.hpp"
+#include "ball_animations.hpp"
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
 
@@ -28,20 +28,20 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
-void PlayerFactory::makePlayer(const std::string &name,
-                               std::shared_ptr<gamelib2::Entity> &entity,
-                               std::shared_ptr<gamelib2::Widget> &sprite) {
+void BallFactory::makeBall(const std::string &name,
+                           std::shared_ptr<gamelib2::Entity> &entity,
+                           std::shared_ptr<gamelib2::Widget> &sprite) {
     // for gfx
     std::string working_dir = gamelib2::Files::getWorkingDirectory();
 
     // make the entity
-    entity = std::make_shared<Player>(name);
+    entity = std::make_shared<Ball>(name);
 
     // make a sprite for the player
     sprite = std::make_shared<gamelib2::Sprite>(
-      working_dir + "/gfx/player/player.png", 6, 24);
+      working_dir + "/gfx/ball_new.png", 4, 2);
     sprite->clickable = true;
-    player_animations::fill_animations(sprite.get());
+    ball_animations::fill_animations(sprite.get());
 
     std::weak_ptr<gamelib2::Widget> s = sprite;
     std::weak_ptr<gamelib2::Entity> e = entity;
@@ -49,6 +49,7 @@ void PlayerFactory::makePlayer(const std::string &name,
     entity->connectWidget(s);
     sprite->connectEntity(e);
     entity->activate();
+    sprite->startAnimation("roll");
 }
 
 } // namespace senseless_soccer

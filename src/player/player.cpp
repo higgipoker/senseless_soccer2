@@ -22,22 +22,23 @@
 #include "states/stand.hpp"
 #include <cassert>
 #include <gamelib2/math/vector.hpp>
-
+using namespace gamelib2;
 namespace senseless_soccer {
+
+std::map<gamelib2::Direction, std::string> Player::stand_animation_map;
+std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
-Player::Player(const std::string &in_name)
-  : Entity(in_name) {
+Player::Player(std::string in_name)
+  : Entity(std::move(in_name)) {
 }
 
 // -----------------------------------------------------------------------------
 // activate
 // -----------------------------------------------------------------------------
 void Player::activate() {
-    assert(widget.get());
-
     // init state machine
     std::unique_ptr<gamelib2::State> state(new Stand(this));
     init(state);
@@ -49,13 +50,24 @@ void Player::activate() {
 void Player::update(float dt) {
     Entity::update(dt);
 
+    // movement
     do_physics(dt);
 
-    if (widget.get()) {
-        widget->setPosition(position.x, position.y);
+    // direction tracking
+    facing.fromVector(velocity);
+    if (facing != facing_old) {
+        changed_direction = true;
+    } else {
+        changed_direction = false;
     }
-    widget->animate();
+    facing_old = facing;
 
+    // update widget (sprite)
+    auto w = widget.lock();
+    w->setPosition(position.x, position.y);
+    w->animate();
+
+    // state machine
     current_state->update(dt);
     if (current_state->finished()) {
         current_state->changeToNextState();
@@ -73,17 +85,15 @@ void Player::on_change_state() {
 // -----------------------------------------------------------------------------
 void Player::do_physics(float dt) {
     // has the sprite been manually moved
-    gamelib2::Vector3 widget_position(widget->position().x,
-                                      widget->position().y);
+    auto w = widget.lock();
+    gamelib2::Vector3 widget_position(w->position().x, w->position().y);
     if (!widget_position.equals(position)) {
-        position.x = widget->position().x;
-        position.y = widget->position().y;
+        position.x = w->position().x;
+        position.y = w->position().y;
     }
 
-    // normalises to units
-    velocity.normalise();
-
     // normalizes for diagonals
+    velocity = velocity.normalise();
     if (velocity.magnitude() > speed) {
         velocity *= speed;
     }
@@ -92,5 +102,43 @@ void Player::do_physics(float dt) {
     velocity += acceleration * dt;
     position += velocity * dt * speed;
     acceleration.reset();
+}
+
+// -----------------------------------------------------------------------------
+// init_animation_map
+// -----------------------------------------------------------------------------
+void Player::Init() {
+
+    // should only be done once
+    assert(stand_animation_map.empty());
+    assert(run_animation_map.empty());
+
+    // standing animations
+    stand_animation_map.insert(
+      std::make_pair(Direction::SOUTH_EAST, "stand_southeast"));
+    stand_animation_map.insert(std::make_pair(Direction::SOUTH, "stand_south"));
+    stand_animation_map.insert(
+      std::make_pair(Direction::SOUTH_WEST, "stand_southwest"));
+    stand_animation_map.insert(std::make_pair(Direction::WEST, "stand_west"));
+    stand_animation_map.insert(
+      std::make_pair(Direction::NORTH_WEST, "stand_northwest"));
+    stand_animation_map.insert(std::make_pair(Direction::NORTH, "stand_north"));
+    stand_animation_map.insert(
+      std::make_pair(Direction::NORTH_EAST, "stand_northeast"));
+    stand_animation_map.insert(std::make_pair(Direction::EAST, "stand_east"));
+
+    // running animations
+    run_animation_map.insert(
+      std::make_pair(Direction::SOUTH_EAST, "run_southeast"));
+    run_animation_map.insert(std::make_pair(Direction::SOUTH, "run_south"));
+    run_animation_map.insert(
+      std::make_pair(Direction::SOUTH_WEST, "run_southwest"));
+    run_animation_map.insert(std::make_pair(Direction::WEST, "run_west"));
+    run_animation_map.insert(
+      std::make_pair(Direction::NORTH_WEST, "run_northwest"));
+    run_animation_map.insert(std::make_pair(Direction::NORTH, "run_north"));
+    run_animation_map.insert(
+      std::make_pair(Direction::NORTH_EAST, "run_northeast"));
+    run_animation_map.insert(std::make_pair(Direction::EAST, "run_east"));
 }
 } // namespace senseless_soccer

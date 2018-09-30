@@ -1,3 +1,4 @@
+
 #include <future>
 #include <iostream>
 #include <memory>
@@ -19,32 +20,28 @@
 #include <gamelib2/widgets/spriteanimation.hpp>
 #include <gamelib2/widgets/tiledscrollingbackground.hpp>
 
+#include "ball/ball_factory.hpp"
 #include "player/player.hpp"
 #include "player/playerfactory.hpp"
 
 using namespace gamelib2;
 using namespace senseless_soccer;
 
-static Viewer viewer;
-static gamelib2::Engine engine;
-static std::promise<void> exitSignal;
-static std::future<void> futureObj;
-static std::thread *viewer_thread;
-
 void start_viewer(Viewer &viewer) {
-    viewer.startup();
-    futureObj = exitSignal.get_future();
-    viewer_thread =
-      new std::thread(&Viewer::run, &viewer, std::move(futureObj));
 }
 
 void stop_viewer() {
-    exitSignal.set_value();
-    viewer_thread->join();
-    delete viewer_thread;
 }
 
 int main() {
+    static Viewer viewer;
+    static gamelib2::Engine engine;
+    static std::promise<void> exitSignal;
+    static std::future<void> futureObj;
+    static std::thread *viewer_thread;
+
+    // inits static stuff
+    Player::Init();
 
     // keyboard to handle inputs
     auto kb = std::make_shared<Keyboard>();
@@ -53,35 +50,54 @@ int main() {
     auto tile_entity = std::make_shared<Entity>("background");
     WidgetPtr tiledbg = std::make_shared<TiledScrollingBackground>(
       Files::getWorkingDirectory() + "/gfx/grass_dry.png");
-    tiledbg->connectEntity(tile_entity);
 
-    // inputs come into the screen, but handled by the engine
-    viewer.connectKeyboard(kb);
+    std::weak_ptr<gamelib2::Entity> t = tile_entity;
+    tiledbg->connectEntity(t);
 
-    for (int i = 0; i < 1; ++i) {
-        std::ostringstream name;
-        name << "player" << i;
-        std::shared_ptr<Entity> player = PlayerFactory::makePlayer(name.str());
-        engine.addEntity(player);
-        tiledbg->addChild(player->widget);
-        if (i == 0) {
-            player->connectKeyboard(kb);
-        }
-    }
+    // player
+    std::shared_ptr<gamelib2::Entity> player;
+    std::shared_ptr<gamelib2::Widget> sprite;
+    PlayerFactory::makePlayer("player1", player, sprite);
+
+    // ball
+    std::shared_ptr<gamelib2::Entity> ball;
+    std::shared_ptr<gamelib2::Widget> ball_sprite;
+    BallFactory::makeBall("ball", ball, ball_sprite);
+
+    std::weak_ptr<gamelib2::Keyboard> keyboard = kb;
+    viewer.connectKeyboard(keyboard);
+    player->connectKeyboard(keyboard);
 
     // add the widgets to the viewer
     viewer.addWidget(tiledbg);
+    viewer.addWidget(sprite);
+    viewer.addWidget(ball_sprite);
+
+    // add entities to engine
+    engine.addEntity(player);
+    engine.addEntity(ball);
 
     // there is a circular relationship between engine <-> viewer
     engine.connectViewer(&viewer);
     viewer.connectEngine(&engine);
 
     // start the game!
-    start_viewer(viewer);
+    viewer.startup();
+    futureObj = exitSignal.get_future();
+    viewer_thread =
+      new std::thread(&Viewer::run, &viewer, std::move(futureObj));
+    viewer_thread->detach();
     while (viewer.running) {
         engine.frame(0.01f);
     }
-    stop_viewer();
+    viewer.close();
+    exitSignal.set_value();
+    usleep(100);
+    delete viewer_thread;
+
+    std::cout << tiledbg.use_count() << std::endl;
+    std::cout << player.use_count() << std::endl;
+    std::cout << ball.use_count() << std::endl;
 
     return 0;
 }

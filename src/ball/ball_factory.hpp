@@ -17,38 +17,13 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "playerfactory.hpp"
-#include "player.hpp"
-#include "player_animations.h"
-#include <gamelib2/utils/files.hpp>
-#include <gamelib2/widgets/sprite.hpp>
-
+#pragma once
+#include <gamelib2/game/entity.hpp>
+#include <memory>
 namespace senseless_soccer {
-
-// -----------------------------------------------------------------------------
-// makePlayer
-// -----------------------------------------------------------------------------
-void PlayerFactory::makePlayer(const std::string &name,
-                               std::shared_ptr<gamelib2::Entity> &entity,
-                               std::shared_ptr<gamelib2::Widget> &sprite) {
-    // for gfx
-    std::string working_dir = gamelib2::Files::getWorkingDirectory();
-
-    // make the entity
-    entity = std::make_shared<Player>(name);
-
-    // make a sprite for the player
-    sprite = std::make_shared<gamelib2::Sprite>(
-      working_dir + "/gfx/player/player.png", 6, 24);
-    sprite->clickable = true;
-    player_animations::fill_animations(sprite.get());
-
-    std::weak_ptr<gamelib2::Widget> s = sprite;
-    std::weak_ptr<gamelib2::Entity> e = entity;
-
-    entity->connectWidget(s);
-    sprite->connectEntity(e);
-    entity->activate();
-}
-
+class BallFactory {
+public:
+    // constructs a ball and delivers shared pointer
+    static void makeBall(const std::string &name, std::shared_ptr<gamelib2::Entity> &entity, std::shared_ptr<gamelib2::Widget> &sprite);
+};
 } // namespace senseless_soccer

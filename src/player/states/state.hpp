@@ -31,7 +31,7 @@ protected:
     Player *player;
 
     // quick access to the widget
-    gamelib2::WidgetPtr sprite;
+    gamelib2::WidgetPtrWeak sprite;
 };
 
 } // namespace senseless_soccer
