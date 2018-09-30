@@ -32,7 +32,7 @@ void Run::update(const float _dt) {
 
     // dribble?
     if (gamelib2::Collision::collides(player->feet, player->ball->circle)) {
-        player->ball->kick(player->velocity.normalise() * player->speed * 100);
+        player->ball->kick(player->velocity.normalise() * player->speed * 120);
     }
 }
 
