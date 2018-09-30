@@ -84,13 +84,6 @@ void Player::on_change_state() {
 // do_physics
 // -----------------------------------------------------------------------------
 void Player::do_physics(float dt) {
-    // has the sprite been manually moved
-    auto w = widget.lock();
-    gamelib2::Vector3 widget_position(w->position().x, w->position().y);
-    if (!widget_position.equals(position)) {
-        position.x = w->position().x;
-        position.y = w->position().y;
-    }
 
     // normalizes for diagonals
     velocity = velocity.normalise();
@@ -102,6 +95,17 @@ void Player::do_physics(float dt) {
     velocity += acceleration * dt;
     position += velocity * dt * speed;
     acceleration.reset();
+}
+
+// -----------------------------------------------------------------------------
+// onMoved
+// -----------------------------------------------------------------------------
+void Player::onMoved(const gamelib2::Vector3 &new_position, float dx,
+                     float dy) {
+    Entity::onMoved(new_position);
+    auto w = widget.lock();
+    w->setPosition(position.x, position.y);
+    w->animate();
 }
 
 // -----------------------------------------------------------------------------

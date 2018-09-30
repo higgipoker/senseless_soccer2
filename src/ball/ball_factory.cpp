@@ -49,7 +49,6 @@ void BallFactory::makeBall(const std::string &name,
     entity->connectWidget(s);
     sprite->connectEntity(e);
     entity->activate();
-    sprite->startAnimation("roll");
 }
 
 } // namespace senseless_soccer

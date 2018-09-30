@@ -42,6 +42,10 @@ public:
     // helper to init the animatio map
     static void Init();
 
+    // movedmanually
+    void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
+                 float dy = 0) override;
+
 protected:
     // hook for states to react to state changed
     void on_change_state() override;

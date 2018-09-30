@@ -29,6 +29,7 @@ add_definitions(-std=c++11)
 # --------------------------------------------------
 add_executable(senseless_soccer
   src/main.cpp
+  src/metrics/metrics.cpp
   src/player/player.cpp
   src/player/states/state.cpp
   src/player/states/stand.cpp
