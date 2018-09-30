@@ -13,7 +13,7 @@ const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.01f;
-static const float co_friction = 0.1f;
+static const float co_friction = 0.98f;
 static const float co_bounciness = 0.8f;
 static const float ball_mass =
   100; // mass is irrelevant, used as air resistance for bounce :p
@@ -24,6 +24,7 @@ static const int SHADOW_OFFSET = 1;
 // -----------------------------------------------------------------------------
 Ball::Ball(std::string in_name)
   : gamelib2::Entity(std::move(in_name)) {
+    circle.setRadius(0.6f);
 }
 
 // -----------------------------------------------------------------------------
@@ -38,7 +39,7 @@ Ball::~Ball() {
 void Ball::activate() {
     position.x = 100;
     position.y = 100;
-    position.z = 10;
+    position.z = 0;
     perspectivize(40);
 }
 // -----------------------------------------------------------------------------
@@ -52,7 +53,7 @@ void Ball::update(float dt) {
 
     // update widget (sprite)
     auto w = widget.lock();
-    gamelib2::Sprite *sprite = static_cast<gamelib2::Sprite *>(w.get());
+    auto *sprite = dynamic_cast<gamelib2::Sprite *>(w.get());
     sprite->setPosition(position.x, position.y);
     sprite->animate();
 
@@ -60,13 +61,14 @@ void Ball::update(float dt) {
     if (sprite->has_shadow) {
         auto s = widget.lock();
         auto *shadow =
-          static_cast<gamelib2::Sprite *>(sprite->shadow.lock().get());
+          dynamic_cast<gamelib2::Sprite *>(sprite->shadow.lock().get());
         shadow->setPosition(sprite->position().x + SHADOW_OFFSET,
                             sprite->position().y + SHADOW_OFFSET);
         shadow->scale(sprite->scale(), sprite->scale());
     }
 
     perspectivize(10);
+    circle.setPosition(position.x, position.y);
 }
 
 // -----------------------------------------------------------------------------
@@ -95,7 +97,7 @@ void Ball::do_physics(float dt) {
     }
 
     // friction
-    else if (gamelib2::Floats::less_than(velocity.z, 0) &&
+    else if (gamelib2::Floats::equal(velocity.z, 0) &&
              gamelib2::Floats::greater_than(velocity.magnidude2d(), 0)) {
         velocity *= co_friction;
     }
@@ -125,14 +127,14 @@ void Ball::do_physics(float dt) {
 // -----------------------------------------------------------------------------
 void Ball::perspectivize(float camera_height) {
     // size depending on distance from camera
-    float dimensions = radius * 2;
+    float dimensions = circle.getRadius() * 2;
     float dist_from_camera = camera_height - position.z;
     float angular_diameter = 2 * (atanf(dimensions / (2 * dist_from_camera)));
     float degs = DEGREES(angular_diameter);
     float sprite_scale_factor = degs / dimensions;
 
     gamelib2::Sprite *sprite =
-      static_cast<gamelib2::Sprite *>(widget.lock().get());
+      dynamic_cast<gamelib2::Sprite *>(widget.lock().get());
 
     float sprite_ratio = dimensions / sprite->image_width;
     sprite_scale_factor *= sprite_ratio;
@@ -157,5 +159,14 @@ void Ball::onMoved(const gamelib2::Vector3 &new_position, float dx, float dy) {
     position.x += dx;
     position.y += dy;
     perspectivize(10);
+}
+
+// -----------------------------------------------------------------------------
+// kick
+// -----------------------------------------------------------------------------
+void Ball::kick(const gamelib2::Vector3 &force) {
+    acceleration.reset();
+    velocity.reset();
+    acceleration = force;
 }
 } // namespace senseless_soccer

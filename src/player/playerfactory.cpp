@@ -48,7 +48,7 @@ void PlayerFactory::makePlayer(const std::string &name,
     shadow = std::make_shared<gamelib2::Sprite>(
       working_dir + "/gfx/player/player_shadow.png", 6, 24);
 
-    auto spr = static_cast<gamelib2::Sprite *>(sprite.get());
+    auto spr = dynamic_cast<gamelib2::Sprite *>(sprite.get());
     std::weak_ptr<gamelib2::Widget> sh = shadow;
     spr->connectShadow(sh);
 

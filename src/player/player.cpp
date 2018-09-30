@@ -28,11 +28,14 @@ namespace senseless_soccer {
 std::map<gamelib2::Direction, std::string> Player::stand_animation_map;
 std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 
+Ball *Player::ball = nullptr;
+
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
   : Entity(std::move(in_name)) {
+    feet.setRadius(8.0f);
 }
 
 // -----------------------------------------------------------------------------
@@ -64,7 +67,7 @@ void Player::update(float dt) {
 
     // update widget (sprite)
     auto w = widget.lock();
-    gamelib2::Sprite *sprite = static_cast<gamelib2::Sprite *>(w.get());
+    auto *sprite = dynamic_cast<gamelib2::Sprite *>(w.get());
     sprite->setPosition(position.x, position.y);
     sprite->animate();
 
@@ -72,10 +75,13 @@ void Player::update(float dt) {
     if (sprite->has_shadow) {
         auto s = widget.lock();
         auto *shadow =
-          static_cast<gamelib2::Sprite *>(sprite->shadow.lock().get());
+          dynamic_cast<gamelib2::Sprite *>(sprite->shadow.lock().get());
         shadow->setFrame(sprite->getFrame());
         shadow->setPosition(sprite->position().x + 3, sprite->position().y + 7);
     }
+
+    feet.setPosition(sprite->position().x,
+                     sprite->position().y + (sprite->image_height / 2) - 4);
 
     // state machine
     current_state->update(dt);
@@ -116,6 +122,28 @@ void Player::onMoved(const gamelib2::Vector3 &new_position, float dx,
     auto w = widget.lock();
     w->setPosition(position.x, position.y);
     w->animate();
+}
+
+// -----------------------------------------------------------------------------
+// do_dribble
+// -----------------------------------------------------------------------------
+void Player::do_dribble(const gamelib2::Vector3 &direction) {
+    // TODO height
+    if (ball->position.z > 30)
+        return;
+
+    // calc force needed for kick
+    float force_needed = speed * 120.0f;
+    Vector3 kick = direction * force_needed;
+
+    // normalize for diagonals
+    if (kick.magnitude() > force_needed) {
+        kick /= kick.magnitude();
+        kick *= force_needed;
+    }
+
+    // apply the kick force to ball
+    ball->kick(kick);
 }
 
 // -----------------------------------------------------------------------------

@@ -101,6 +101,8 @@ int main() {
     engine.connectViewer(&viewer);
     viewer.connectEngine(&engine);
 
+    Player::ball = dynamic_cast<Ball *>(ball.get());
+
     // start the game!
     start_viewer(viewer);
     while (viewer.running) {

@@ -19,12 +19,15 @@
  ****************************************************************************/
 #pragma once
 
+#include <SFML/Graphics/CircleShape.hpp>
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/input/keyboardlistener.hpp>
 #include <gamelib2/statemachine/state_machine.hpp>
 #include <gamelib2/types.hpp>
 #include <memory>
+
+#include "../ball/ball.hpp"
 
 namespace senseless_soccer {
 
@@ -46,12 +49,18 @@ public:
     void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
                  float dy = 0) override;
 
+    // shared ball
+    static Ball *ball;
+
 protected:
     // hook for states to react to state changed
     void on_change_state() override;
 
     // helper to do the movement physics
     void do_physics(float dt);
+
+    // knock the ball on
+    void do_dribble(const gamelib2::Vector3 &direction);
 
     // track facing direction
     gamelib2::Compass facing;
@@ -61,6 +70,9 @@ protected:
 
     // changed direction since last frame?
     bool changed_direction = true;
+
+    // for collisions
+    sf::CircleShape feet;
 
     // map animations based on running direction
     static std::map<gamelib2::Direction, std::string> stand_animation_map;

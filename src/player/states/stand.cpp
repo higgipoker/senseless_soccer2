@@ -16,7 +16,12 @@ Stand::Stand(Player *context)
 // -----------------------------------------------------------------------------
 void Stand::start() {
     auto w = player->widget.lock();
-    w->startAnimation("stand_south");
+    if (player->ball) {
+
+        gamelib2::Vector3 to_ball = player->ball->position - player->position;
+        gamelib2::Compass c(to_ball.normalise());
+        w->startAnimation(player->stand_animation_map[c.direction]);
+    }
 }
 
 // -----------------------------------------------------------------------------
