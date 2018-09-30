@@ -63,7 +63,6 @@ void Player::update(float dt) {
     } else {
         changed_direction = false;
     }
-    facing_old = facing;
 
     // update widget (sprite)
     auto w = widget.lock();
@@ -88,6 +87,8 @@ void Player::update(float dt) {
     if (current_state->finished()) {
         current_state->changeToNextState();
     }
+
+    facing_old = facing;
 }
 
 // -----------------------------------------------------------------------------
@@ -144,6 +145,22 @@ void Player::do_dribble(const gamelib2::Vector3 &direction) {
 
     // apply the kick force to ball
     ball->kick(kick);
+}
+
+// -----------------------------------------------------------------------------
+// do_close_control
+// -----------------------------------------------------------------------------
+void Player::do_close_control() {
+
+    // player position + control range
+    Vector3 f(feet.getPosition().x, feet.getPosition().y);
+    Vector3 ball_pos = f + (facing.toVector() * 5);
+
+    // reset ball
+    ball->velocity.reset();
+
+    // set new position
+    ball->position = ball_pos;
 }
 
 // -----------------------------------------------------------------------------

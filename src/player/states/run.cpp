@@ -31,7 +31,15 @@ void Run::update(const float _dt) {
     }
 
     // dribble?
-    if (gamelib2::Collision::collides(player->feet, player->ball->circle)) {
+    if (player->changed_direction) {
+        sf::CircleShape control = player->feet;
+        control.setRadius(control.getRadius() * 2);
+        if (gamelib2::Collision::collides(control, player->ball->circle)) {
+            player->do_close_control();
+        }
+
+    } else if (gamelib2::Collision::collides(player->feet,
+                                             player->ball->circle)) {
         player->ball->kick(player->velocity.normalise() * player->speed * 120);
     }
 }

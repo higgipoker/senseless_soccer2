@@ -62,6 +62,9 @@ protected:
     // knock the ball on
     void do_dribble(const gamelib2::Vector3 &direction);
 
+    // control the ball
+    void do_close_control();
+
     // track facing direction
     gamelib2::Compass facing;
 

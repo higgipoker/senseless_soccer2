@@ -158,7 +158,7 @@ void Ball::perspectivize(float camera_height) {
 void Ball::onMoved(const gamelib2::Vector3 &new_position, float dx, float dy) {
     position.x += dx;
     position.y += dy;
-    perspectivize(10);
+    circle.setPosition(position.x, position.y);
 }
 
 // -----------------------------------------------------------------------------
