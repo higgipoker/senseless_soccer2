@@ -17,6 +17,7 @@ static const float co_friction = 0.1f;
 static const float co_bounciness = 0.8f;
 static const float ball_mass =
   100; // mass is irrelevant, used as air resistance for bounce :p
+static const int SHADOW_OFFSET = 1;
 
 // -----------------------------------------------------------------------------
 // Ball
@@ -38,7 +39,7 @@ void Ball::activate() {
     position.x = 100;
     position.y = 100;
     position.z = 10;
-    perspectivize(10);
+    perspectivize(40);
 }
 // -----------------------------------------------------------------------------
 // update
@@ -51,8 +52,19 @@ void Ball::update(float dt) {
 
     // update widget (sprite)
     auto w = widget.lock();
-    w->setPosition(position.x, position.y);
-    w->animate();
+    gamelib2::Sprite *sprite = static_cast<gamelib2::Sprite *>(w.get());
+    sprite->setPosition(position.x, position.y);
+    sprite->animate();
+
+    // sync shadow with sprite
+    if (sprite->has_shadow) {
+        auto s = widget.lock();
+        auto *shadow =
+          static_cast<gamelib2::Sprite *>(sprite->shadow.lock().get());
+        shadow->setPosition(sprite->position().x + SHADOW_OFFSET,
+                            sprite->position().y + SHADOW_OFFSET);
+        shadow->scale(sprite->scale(), sprite->scale());
+    }
 
     perspectivize(10);
 }

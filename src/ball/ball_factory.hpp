@@ -24,6 +24,9 @@ namespace senseless_soccer {
 class BallFactory {
 public:
     // constructs a ball and delivers shared pointer
-    static void makeBall(const std::string &name, std::shared_ptr<gamelib2::Entity> &entity, std::shared_ptr<gamelib2::Widget> &sprite);
+    static void makeBall(const std::string &name,
+                         std::shared_ptr<gamelib2::Entity> &entity,
+                         std::shared_ptr<gamelib2::Widget> &sprite,
+                         std::shared_ptr<gamelib2::Widget> &shadow);
 };
 } // namespace senseless_soccer

@@ -64,8 +64,18 @@ void Player::update(float dt) {
 
     // update widget (sprite)
     auto w = widget.lock();
-    w->setPosition(position.x, position.y);
-    w->animate();
+    gamelib2::Sprite *sprite = static_cast<gamelib2::Sprite *>(w.get());
+    sprite->setPosition(position.x, position.y);
+    sprite->animate();
+
+    // sync shadow with sprite
+    if (sprite->has_shadow) {
+        auto s = widget.lock();
+        auto *shadow =
+          static_cast<gamelib2::Sprite *>(sprite->shadow.lock().get());
+        shadow->setFrame(sprite->getFrame());
+        shadow->setPosition(sprite->position().x + 3, sprite->position().y + 7);
+    }
 
     // state machine
     current_state->update(dt);

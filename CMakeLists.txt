@@ -37,6 +37,7 @@ add_executable(senseless_soccer
   src/player/playerfactory.cpp
   src/ball/ball.cpp
   src/ball/ball_factory.cpp
+  src/pitch/pitch.cpp
 )
 
 # --------------------------------------------------

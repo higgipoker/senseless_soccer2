@@ -26,7 +26,7 @@ protected:
     void perspectivize(float camera_height) override;
 
     // ball radius
-    float radius = 0.8f;
+    float radius = 0.5f;
 };
 
 } // namespace senseless_soccer

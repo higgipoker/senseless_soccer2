@@ -30,7 +30,8 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 void PlayerFactory::makePlayer(const std::string &name,
                                std::shared_ptr<gamelib2::Entity> &entity,
-                               std::shared_ptr<gamelib2::Widget> &sprite) {
+                               std::shared_ptr<gamelib2::Widget> &sprite,
+                               std::shared_ptr<gamelib2::Widget> &shadow) {
     // for gfx
     std::string working_dir = gamelib2::Files::getWorkingDirectory();
 
@@ -42,6 +43,14 @@ void PlayerFactory::makePlayer(const std::string &name,
       working_dir + "/gfx/player/player.png", 6, 24);
     sprite->clickable = true;
     player_animations::fill_animations(sprite.get());
+
+    // make a shadow for the sprite
+    shadow = std::make_shared<gamelib2::Sprite>(
+      working_dir + "/gfx/player/player_shadow.png", 6, 24);
+
+    auto spr = static_cast<gamelib2::Sprite *>(sprite.get());
+    std::weak_ptr<gamelib2::Widget> sh = shadow;
+    spr->connectShadow(sh);
 
     std::weak_ptr<gamelib2::Widget> s = sprite;
     std::weak_ptr<gamelib2::Entity> e = entity;
