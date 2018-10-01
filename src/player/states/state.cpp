@@ -69,7 +69,9 @@ bool State::handle_input(ControllerEvent event) {
             player.velocity.x = -1;
             std::cout << "Pressed" << std::endl;
         } else {
-            player.velocity.x = 0;
+            if (Floats::equal(player.velocity.x, -1)) {
+                player.velocity.x = 0;
+            }
             std::cout << "Released" << std::endl;
         }
         break;
@@ -80,7 +82,9 @@ bool State::handle_input(ControllerEvent event) {
             player.velocity.x = 1;
             std::cout << "Pressed" << std::endl;
         } else {
-            player.velocity.x = 0;
+            if (Floats::equal(player.velocity.x, 1)) {
+                player.velocity.x = 0;
+            }
             std::cout << "Released" << std::endl;
         }
         break;
@@ -91,7 +95,9 @@ bool State::handle_input(ControllerEvent event) {
             player.velocity.y = -1;
             std::cout << "Pressed" << std::endl;
         } else {
-            player.velocity.y = 0;
+            if (Floats::equal(player.velocity.y, -1)) {
+                player.velocity.y = 0;
+            }
             std::cout << "Released" << std::endl;
         }
         break;
@@ -102,8 +108,10 @@ bool State::handle_input(ControllerEvent event) {
             player.velocity.y = 1;
             std::cout << "Pressed" << std::endl;
         } else {
+            if (Floats::equal(player.velocity.y, 1)) {
+                player.velocity.y = 0;
+            }
             std::cout << "Released" << std::endl;
-            player.velocity.y = 0;
         }
         break;
 
