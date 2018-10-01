@@ -25,6 +25,9 @@ public:
 
     // change to next state
     void changeToNextState() override;
+
+private:
+    void face_ball();
 };
 
 } // namespace senseless_soccer

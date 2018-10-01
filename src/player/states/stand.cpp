@@ -15,23 +15,14 @@ Stand::Stand(Player *context)
 // start
 // -----------------------------------------------------------------------------
 void Stand::start() {
-    auto w = player->widget.lock();
-    if (player->ball) {
-
-        gamelib2::Vector3 to_ball = player->ball->position - player->position;
-        gamelib2::Compass c(to_ball.normalise());
-        w->startAnimation(player->stand_animation_map[c.direction]);
-    }
+    face_ball();
 }
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Stand::update(const float _dt) {
-    if (player->velocity.magnidude2d() > 0) {
-        std::unique_ptr<gamelib2::State> state(new Run(player));
-        player->ChangeState(state);
-    }
+    face_ball();
 }
 
 // -----------------------------------------------------------------------------
@@ -44,15 +35,27 @@ void Stand::end() {
 // finished
 // -----------------------------------------------------------------------------
 bool Stand::finished() {
-    return (player->velocity.magnidude2d() > 0);
+    return (gamelib2::Floats::greater_than(player->velocity.magnidude2d(), 0));
 }
 
 // -----------------------------------------------------------------------------
 // changeToNextState
 // -----------------------------------------------------------------------------
 void Stand::changeToNextState() {
-    std::unique_ptr<gamelib2::State> state(new Run(player));
-    player->ChangeState(state);
+    player->change_state(PlayerState::Run);
 }
 
+// -----------------------------------------------------------------------------
+// face_ball
+// -----------------------------------------------------------------------------
+void Stand::face_ball() {
+    auto w = player->widget.lock();
+    if (player->ball.lock()) {
+
+        gamelib2::Vector3 to_ball =
+          player->ball.lock()->position - player->position;
+        gamelib2::Compass c(to_ball.normalise());
+        w->startAnimation(player->stand_animation_map[c.direction]);
+    }
+}
 } // namespace senseless_soccer

@@ -22,7 +22,7 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/lib)
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 # --------------------------------------------------
 # build files
@@ -48,3 +48,4 @@ target_link_libraries (senseless_soccer sfml-graphics-d)
 target_link_libraries (senseless_soccer sfml-window-d)
 target_link_libraries (senseless_soccer sfml-system-d)
 target_link_libraries (senseless_soccer pthread)
+target_link_libraries (senseless_soccer X11)

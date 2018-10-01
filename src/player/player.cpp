@@ -28,14 +28,18 @@ namespace senseless_soccer {
 std::map<gamelib2::Direction, std::string> Player::stand_animation_map;
 std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 
-Ball *Player::ball = nullptr;
+std::weak_ptr<Ball> Player::ball;
 
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
-  : Entity(std::move(in_name)) {
-    feet.setRadius(8.0f);
+  : Entity(std::move(in_name))
+  , stand_state(new Stand(this))
+  , run_state(new Run(this)) {
+    feet.setRadius(4.0f);
+
+    current_state = stand_state.get();
 }
 
 // -----------------------------------------------------------------------------
@@ -43,8 +47,7 @@ Player::Player(std::string in_name)
 // -----------------------------------------------------------------------------
 void Player::activate() {
     // init state machine
-    std::unique_ptr<gamelib2::State> state(new Stand(this));
-    init(state);
+    change_state(PlayerState::Stand);
 }
 
 // -----------------------------------------------------------------------------
@@ -85,16 +88,12 @@ void Player::update(float dt) {
     // state machine
     current_state->update(dt);
     if (current_state->finished()) {
+        current_state->end();
         current_state->changeToNextState();
+        current_state->start();
     }
 
     facing_old = facing;
-}
-
-// -----------------------------------------------------------------------------
-// on_change_state
-// -----------------------------------------------------------------------------
-void Player::on_change_state() {
 }
 
 // -----------------------------------------------------------------------------
@@ -128,14 +127,14 @@ void Player::onMoved(const gamelib2::Vector3 &new_position, float dx,
 // -----------------------------------------------------------------------------
 // do_dribble
 // -----------------------------------------------------------------------------
-void Player::do_dribble(const gamelib2::Vector3 &direction) {
+void Player::do_dribble() {
     // TODO height
-    if (ball->position.z > 30)
+    if (ball.lock()->position.z > 30)
         return;
 
     // calc force needed for kick
     float force_needed = speed * 120.0f;
-    Vector3 kick = direction * force_needed;
+    Vector3 kick = facing_old.toVector() * force_needed;
 
     // normalize for diagonals
     if (kick.magnitude() > force_needed) {
@@ -144,7 +143,7 @@ void Player::do_dribble(const gamelib2::Vector3 &direction) {
     }
 
     // apply the kick force to ball
-    ball->kick(kick);
+    ball.lock()->kick(kick);
 }
 
 // -----------------------------------------------------------------------------
@@ -157,10 +156,25 @@ void Player::do_close_control() {
     Vector3 ball_pos = f + (facing.toVector() * 5);
 
     // reset ball
-    ball->velocity.reset();
+    ball.lock()->velocity.reset();
 
     // set new position
-    ball->position = ball_pos;
+    ball.lock()->position = ball_pos;
+}
+
+// -----------------------------------------------------------------------------
+// change_state
+// -----------------------------------------------------------------------------
+void Player::change_state(const PlayerState &state) {
+    switch (state) {
+    case PlayerState::Stand:
+        current_state = stand_state.get();
+        break;
+
+    case PlayerState::Run:
+        current_state = run_state.get();
+        break;
+    }
 }
 
 // -----------------------------------------------------------------------------

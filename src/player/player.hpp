@@ -28,10 +28,16 @@
 #include <memory>
 
 #include "../ball/ball.hpp"
+#include "states/stand.hpp"
+#include "states/run.hpp"
 
 namespace senseless_soccer {
 
-class Player : public gamelib2::Entity, gamelib2::StateMachine {
+enum class PlayerState { Stand, Run };
+
+class Run;
+class Stand;
+class Player : public gamelib2::Entity {
 public:
     // construct with an entity name
     Player(std::string in_name);
@@ -50,17 +56,17 @@ public:
                  float dy = 0) override;
 
     // shared ball
-    static Ball *ball;
+    static std::weak_ptr<Ball> ball;
 
 protected:
-    // hook for states to react to state changed
-    void on_change_state() override;
+    // state machine
+    void change_state(const PlayerState &new_state);
 
     // helper to do the movement physics
     void do_physics(float dt);
 
     // knock the ball on
-    void do_dribble(const gamelib2::Vector3 &direction);
+    void do_dribble();
 
     // control the ball
     void do_close_control();
@@ -80,6 +86,12 @@ protected:
     // map animations based on running direction
     static std::map<gamelib2::Direction, std::string> stand_animation_map;
     static std::map<gamelib2::Direction, std::string> run_animation_map;
+
+private:
+    // states
+    std::unique_ptr<Stand> stand_state;
+    std::unique_ptr<Run> run_state;
+    gamelib2::State *current_state = nullptr;
 
 public:
     // for state machine pattern
