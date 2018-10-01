@@ -7,7 +7,7 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // Stand
 // -----------------------------------------------------------------------------
-Stand::Stand(Player *context)
+Stand::Stand(Player &context)
   : State(context) {
 }
 
@@ -35,27 +35,27 @@ void Stand::end() {
 // finished
 // -----------------------------------------------------------------------------
 bool Stand::finished() {
-    return (gamelib2::Floats::greater_than(player->velocity.magnidude2d(), 0));
+    return (gamelib2::Floats::greater_than(player.velocity.magnidude2d(), 0));
 }
 
 // -----------------------------------------------------------------------------
 // changeToNextState
 // -----------------------------------------------------------------------------
 void Stand::changeToNextState() {
-    player->change_state(PlayerState::Run);
+    player.change_state(PlayerState::Run);
 }
 
 // -----------------------------------------------------------------------------
 // face_ball
 // -----------------------------------------------------------------------------
 void Stand::face_ball() {
-    auto w = player->widget.lock();
-    if (player->ball.lock()) {
+    auto w = player.widget.lock();
+    if (player.ball.lock()) {
 
         gamelib2::Vector3 to_ball =
-          player->ball.lock()->position - player->position;
+          player.ball.lock()->position - player.position;
         gamelib2::Compass c(to_ball.normalise());
-        w->startAnimation(player->stand_animation_map[c.direction]);
+        w->startAnimation(player.stand_animation_map[c.direction]);
     }
 }
 } // namespace senseless_soccer

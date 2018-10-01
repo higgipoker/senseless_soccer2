@@ -8,6 +8,7 @@
 #include <gamelib2/engine/engine.hpp>
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/graphics/autotexture.hpp>
+#include <gamelib2/input/controller.hpp>
 #include <gamelib2/input/keyboard.hpp>
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/utils/files.hpp>
@@ -32,9 +33,9 @@ int main() {
     // inits static stuff
     Player::Init();
 
-    // keyboard to handle inputs
-    auto keyboard = std::make_shared<Keyboard>();
-    std::weak_ptr<gamelib2::Keyboard> kb = keyboard;
+    // set up a controller from a keyboard inpout
+    std::unique_ptr<Keyboard> keyboard(new Keyboard());
+    Controller controller(std::move(keyboard));
 
     // scrolling background
     std::shared_ptr<gamelib2::Entity> tile_entity =
@@ -57,11 +58,11 @@ int main() {
         name << "player" << i;
         PlayerFactory::makePlayer(name.str(), player, player_sprite,
                                   player_shadow);
-        tiledbg->addChild(player_sprite);
         tiledbg->addChild(player_shadow);
+        tiledbg->addChild(player_sprite);
         engine.addEntity(player);
         if (i == 0) {
-            player->connectKeyboard(kb);
+            controller.setListener(dynamic_cast<Player *>(player.get()));
         }
     }
 
@@ -71,10 +72,8 @@ int main() {
     std::shared_ptr<gamelib2::Widget> ball_shadow;
     BallFactory::makeBall("ball", ball, ball_sprite, ball_shadow);
 
-    viewer.connectKeyboard(kb);
-
-    tiledbg->addChild(ball_sprite);
     tiledbg->addChild(ball_shadow);
+    tiledbg->addChild(ball_sprite);
 
     // add entities to engine
 
@@ -89,6 +88,7 @@ int main() {
 
     viewer.startup();
     while (viewer.running) {
+        controller.update();
         engine.frame(0.01f);
         viewer.run();
     }

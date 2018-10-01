@@ -10,7 +10,7 @@ namespace senseless_soccer {
 class Run : public State {
 public:
     // specific constructor to get player pointer
-    Run(Player *context);
+    Run(Player &context);
 
     // state started
     void start() override;

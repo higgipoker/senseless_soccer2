@@ -2,14 +2,16 @@
 #include <gamelib2/statemachine/state.hpp>
 #include <gamelib2/types.hpp>
 #include <gamelib2/widgets/sprite.hpp>
+#include <gamelib2/input/controller.hpp>
 
 namespace senseless_soccer {
 
+using namespace gamelib2;
 class Player;
 class State : public gamelib2::State {
 public:
     // specific constructor to get player pointer
-    State(Player *context);
+    State(Player &context);
 
     // state started
     void start() override;
@@ -26,9 +28,12 @@ public:
     // change to next state
     void changeToNextState() override;
 
+    // event handler
+    bool handle_input(ControllerEvent event);
+
 protected:
     // pointer back to player for state machine
-    Player *player;
+    Player &player;
 
     // quick access to the widget
     gamelib2::WidgetPtrWeak sprite;

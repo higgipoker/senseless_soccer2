@@ -35,8 +35,8 @@ std::weak_ptr<Ball> Player::ball;
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
   : Entity(std::move(in_name))
-  , stand_state(new Stand(this))
-  , run_state(new Run(this)) {
+  , stand_state(new Stand(*this))
+  , run_state(new Run(*this)) {
     feet.setRadius(4.0f);
 
     current_state = stand_state.get();
@@ -111,6 +111,13 @@ void Player::do_physics(float dt) {
     velocity += acceleration * dt;
     position += velocity * dt * speed;
     acceleration.reset();
+}
+
+// -----------------------------------------------------------------------------
+// OnControllerEvent
+// -----------------------------------------------------------------------------
+void Player::onControllerEvent(ControllerEvent event) {
+    current_state->handle_input(event);
 }
 
 // -----------------------------------------------------------------------------

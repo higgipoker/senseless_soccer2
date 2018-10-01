@@ -22,7 +22,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
-#include <gamelib2/input/keyboardlistener.hpp>
+#include <gamelib2/input/controller.hpp>
 #include <gamelib2/statemachine/state_machine.hpp>
 #include <gamelib2/types.hpp>
 #include <memory>
@@ -31,16 +31,18 @@
 #include "states/stand.hpp"
 #include "states/run.hpp"
 
+using namespace gamelib2;
 namespace senseless_soccer {
 
 enum class PlayerState { Stand, Run };
 
 class Run;
 class Stand;
-class Player : public gamelib2::Entity {
+class Player : public gamelib2::Entity, public ControllerListener {
 public:
     // construct with an entity name
     Player(std::string in_name);
+    ~Player() = default;
 
     // main update
     void update(float dt) override;
@@ -54,6 +56,9 @@ public:
     // movedmanually
     void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
                  float dy = 0) override;
+
+    // controller interface
+    void onControllerEvent(ControllerEvent event) override;
 
     // shared ball
     static std::weak_ptr<Ball> ball;
@@ -95,6 +100,7 @@ private:
 
 public:
     // for state machine pattern
+    friend class State;
     friend class Stand;
     friend class Run;
 };
