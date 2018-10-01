@@ -14,12 +14,13 @@ const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.01f;
-static const float co_friction = 0.9f;
+static const float co_friction = 0.98f;
+static const float co_friction2 = 0.8; // bounce fricton
 static const float co_bounciness = 0.8f;
 static const float ball_mass =
-  100; // mass is irrelevant, used as air resistance for bounce!
+  100; // mass is irrelevant, used as air resistance for bounce :p
 static const int SHADOW_OFFSET = 1;
-static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4.5f);
+static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
 
 // -----------------------------------------------------------------------------
 // Ball
@@ -99,23 +100,20 @@ void Ball::do_physics(float dt) {
     // friction
     else if (Floats::equal(velocity.z, 0) &&
              Floats::greater_than(velocity.magnidude2d(), 0)) {
-        velocity *= co_friction * 2;
+        velocity *= co_friction;
     }
 
     // bounce
     else if (Floats::less_than(position.z, 0) &&
              Floats::less_than(velocity.z, 0)) {
-        // rebound
         velocity.z = -velocity.z * co_bounciness;
-
-        // some friction at momentof bounce
-        velocity *= co_friction;
-
         // round off float unlimited bounce
         float v = fabsf(velocity.z);
         if (Floats::less_than(v, 0.5f)) {
             position.z = 0;
             velocity.z = 0;
+        } else {
+            velocity *= co_friction2;
         }
     }
 
