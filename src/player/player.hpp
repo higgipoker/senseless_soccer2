@@ -22,19 +22,27 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
-#include <gamelib2/input/keyboardlistener.hpp>
+#include <gamelib2/input/controller.hpp>
 #include <gamelib2/statemachine/state_machine.hpp>
 #include <gamelib2/types.hpp>
 #include <memory>
 
 #include "../ball/ball.hpp"
+#include "states/stand.hpp"
+#include "states/run.hpp"
 
+using namespace gamelib2;
 namespace senseless_soccer {
 
-class Player : public gamelib2::Entity, gamelib2::StateMachine {
+enum class PlayerState { Stand, Run };
+
+class Run;
+class Stand;
+class Player : public gamelib2::Entity, public ControllerListener {
 public:
     // construct with an entity name
     Player(std::string in_name);
+    ~Player() = default;
 
     // main update
     void update(float dt) override;
@@ -49,18 +57,21 @@ public:
     void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
                  float dy = 0) override;
 
+    // controller interface
+    void onControllerEvent(ControllerEvent event) override;
+
     // shared ball
-    static Ball *ball;
+    static std::weak_ptr<Ball> ball;
 
 protected:
-    // hook for states to react to state changed
-    void on_change_state() override;
+    // state machine
+    void change_state(const PlayerState &new_state);
 
     // helper to do the movement physics
     void do_physics(float dt);
 
     // knock the ball on
-    void do_dribble(const gamelib2::Vector3 &direction);
+    void do_dribble();
 
     // control the ball
     void do_close_control();
@@ -81,8 +92,15 @@ protected:
     static std::map<gamelib2::Direction, std::string> stand_animation_map;
     static std::map<gamelib2::Direction, std::string> run_animation_map;
 
+private:
+    // states
+    std::unique_ptr<Stand> stand_state;
+    std::unique_ptr<Run> run_state;
+    gamelib2::State *current_state = nullptr;
+
 public:
     // for state machine pattern
+    friend class State;
     friend class Stand;
     friend class Run;
 };

@@ -4,12 +4,13 @@
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/physics/collisions.hpp>
 
+using namespace gamelib2;
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
 // Run
 // -----------------------------------------------------------------------------
-Run::Run(Player *context)
+Run::Run(Player &context)
   : State(context) {
 }
 
@@ -17,30 +18,30 @@ Run::Run(Player *context)
 // start
 // -----------------------------------------------------------------------------
 void Run::start() {
-    auto w = player->widget.lock();
-    w->startAnimation(player->run_animation_map[player->facing.direction]);
+    auto w = player.widget.lock();
+    w->startAnimation(player.run_animation_map[player.facing.direction]);
 }
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Run::update(const float _dt) {
-    if (player->changed_direction) {
-        auto w = player->widget.lock();
-        w->startAnimation(player->run_animation_map[player->facing.direction]);
-    }
 
-    // dribble?
-    if (player->changed_direction) {
-        sf::CircleShape control = player->feet;
+    // dribble or close control
+    if (player.changed_direction) {
+        // change the running animation
+        auto w = player.widget.lock();
+        w->startAnimation(player.run_animation_map[player.facing.direction]);
+
+        // close control
+        sf::CircleShape control = player.feet;
         control.setRadius(control.getRadius() * 2);
-        if (gamelib2::Collision::collides(control, player->ball->circle)) {
-            player->do_close_control();
+        if (Collision::collides(control, player.ball.lock()->circle)) {
+            player.do_close_control();
         }
 
-    } else if (gamelib2::Collision::collides(player->feet,
-                                             player->ball->circle)) {
-        player->ball->kick(player->velocity.normalise() * player->speed * 120);
+    } else if (Collision::collides(player.feet, player.ball.lock()->circle)) {
+        player.do_dribble();
     }
 }
 
@@ -54,15 +55,14 @@ void Run::end() {
 // finished
 // -----------------------------------------------------------------------------
 bool Run::finished() {
-    return (player->velocity.magnidude2d() <= 0);
+    return (Floats::equal(player.velocity.magnidude2d(), 0));
 }
 
 // -----------------------------------------------------------------------------
 // changeToNextState
 // -----------------------------------------------------------------------------
 void Run::changeToNextState() {
-    std::unique_ptr<gamelib2::State> state(new Stand(player));
-    player->ChangeState(state);
+    player.change_state(PlayerState::Stand);
 }
 
 } // namespace senseless_soccer

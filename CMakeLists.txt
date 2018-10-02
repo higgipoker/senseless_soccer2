@@ -24,7 +24,7 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib)
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 # --------------------------------------------------
 # build files
@@ -50,3 +50,4 @@ target_link_libraries (senseless_soccer sfml-graphics)
 target_link_libraries (senseless_soccer sfml-window)
 target_link_libraries (senseless_soccer sfml-system)
 target_link_libraries (senseless_soccer pthread)
+target_link_libraries (senseless_soccer X11)

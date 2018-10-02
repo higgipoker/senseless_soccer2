@@ -1,4 +1,6 @@
 #include "pitch.hpp"
+
+#include <gamelib2/widgets/widget.hpp>
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
