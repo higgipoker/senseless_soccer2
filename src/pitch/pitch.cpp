@@ -21,8 +21,8 @@ Pitch::~Pitch() {
 // -----------------------------------------------------------------------------
 void Pitch::onMoved(const gamelib2::Vector3 &new_position, float dx, float dy) {
     Entity::onMoved(new_position);
-    if (widget.get()) {
-        widget.get()->setPosition(position.x, position.y);
+    if (widget) {
+        widget->setPosition(position.x, position.y);
     }
 }
 } // namespace senseless_soccer

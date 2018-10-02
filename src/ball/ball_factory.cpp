@@ -25,39 +25,34 @@
 
 #include <iostream>
 
+using namespace gamelib2;
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
-void BallFactory::makeBall(const std::string &name,
-                           std::shared_ptr<gamelib2::Entity> &entity,
-                           std::shared_ptr<gamelib2::Widget> &sprite,
-                           std::shared_ptr<gamelib2::Widget> &shadow) {
+Ball *BallFactory::makeBall(const std::string &name) {
     // for gfx
     std::string working_dir = gamelib2::Files::getWorkingDirectory();
 
     // make the entity
-    entity = std::make_shared<Ball>(name);
+    Ball *ball = new Ball(name);
 
-    // make a sprite for the ball
-    sprite = std::make_shared<gamelib2::Sprite>(
-      working_dir + "/gfx/ball_new.png", 4, 2);
-    std::cout << sprite.use_count() << std::endl;
+    // make a sprite for the player
+    auto *sprite = new Sprite(working_dir + "/gfx/ball_new.png", 4, 2);
     sprite->clickable = true;
-    ball_animations::fill_animations(sprite.get());
+    ball_animations::fill_animations(sprite);
 
     // make a shadow for the sprite
-    shadow = std::make_shared<gamelib2::Sprite>(
-      working_dir + "/gfx/ball_shadow.png", 1, 1);
+    Sprite *shadow = new Sprite(working_dir + "/gfx/ball_shadow.png", 1, 1);
+    shadow->z_order = -1;
 
-    auto spr = dynamic_cast<gamelib2::Sprite *>(sprite.get());
-    spr->connectShadow(shadow);
-
-    entity->connectWidget(sprite);
-    sprite->connectEntity(entity);
-    entity->activate();
-    sprite->startAnimation("roll");
+    // connect everyting together
+    sprite->connectShadow(shadow);
+    sprite->connectEntity(ball);
+    ball->connectWidget(sprite);
+    ball->activate();
+    return ball;
 }
 
 } // namespace senseless_soccer

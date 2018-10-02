@@ -18,10 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include <gamelib2/widgets/widget.hpp>
+#include <gamelib2/widgets/sprite.hpp>
 #include <vector>
 namespace senseless_soccer {
-namespace ball_animations{
+namespace ball_animations {
 static unsigned int anim_speed = 3;
 static std::vector<unsigned int> roll() {
     std::vector<unsigned int> v;
@@ -35,9 +35,9 @@ static std::vector<unsigned int> roll() {
     return v;
 }
 
-static void fill_animations(gamelib2::Widget *spr) {
+static void fill_animations(gamelib2::Sprite *spr) {
     spr->addAnimation("roll", anim_speed, true, roll());
 }
 
-}// namespace
-}// namespace
+} // namespace ball_animations
+} // namespace senseless_soccer

@@ -61,7 +61,7 @@ public:
     void onControllerEvent(ControllerEvent event) override;
 
     // shared ball
-    static std::shared_ptr<Ball> ball;
+    static Ball *ball;
 
 protected:
     // state machine
@@ -88,7 +88,7 @@ protected:
     // for collisions
     sf::CircleShape feet;
 
-    // map animations based on running direction
+    // map animations based on direction
     static std::map<gamelib2::Direction, std::string> stand_animation_map;
     static std::map<gamelib2::Direction, std::string> run_animation_map;
 

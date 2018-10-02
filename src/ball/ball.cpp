@@ -56,14 +56,14 @@ void Ball::update(float dt) {
     do_physics(dt);
 
     // update widget (sprite)
-    if (widget.get()) {
-        auto sprite = dynamic_cast<Sprite *>(widget.get());
+    if (widget) {
+        Sprite *sprite = static_cast<Sprite *>(widget);
         sprite->setPosition(position.x, position.y);
         sprite->animate();
 
         // sync shadow with sprite
-        if (sprite->has_shadow && sprite->shadow.get()) {
-            auto *shadow = dynamic_cast<Sprite *>(sprite->shadow.get());
+        Sprite *shadow = sprite->getShadow();
+        if (shadow) {
             shadow->setPosition(sprite->position().x + SHADOW_OFFSET,
                                 sprite->position().y + SHADOW_OFFSET);
             shadow->scale(sprite->scale(), sprite->scale());
@@ -138,8 +138,8 @@ void Ball::perspectivize(float camera_height) {
     float degs = DEGREES(angular_diameter);
     float sprite_scale_factor = degs / dimensions;
 
-    assert(widget.get());
-    Sprite *sprite = dynamic_cast<Sprite *>(widget.get());
+    assert(widget);
+    Sprite *sprite = static_cast<Sprite *>(widget);
 
     float sprite_ratio = dimensions / sprite->image_width;
     sprite_scale_factor *= sprite_ratio;

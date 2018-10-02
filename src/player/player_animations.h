@@ -18,7 +18,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include <gamelib2/widgets/widget.hpp>
+#include <gamelib2/widgets/sprite.hpp>
 #include <vector>
 namespace senseless_soccer {
 namespace player_animations {
@@ -128,28 +128,24 @@ static std::vector<unsigned int> run_northeast() {
     return v;
 }
 
-static void fill_animations(gamelib2::WidgetPtr &spr) {
-    spr.get()->addAnimation("stand_east", anim_speed, true, stand_east());
-    spr.get()->addAnimation("stand_southeast", anim_speed, true,
-                            stand_southeast());
-    spr.get()->addAnimation("stand_south", anim_speed, true, stand_south());
-    spr.get()->addAnimation("stand_southwest", anim_speed, true,
-                            stand_southwest());
-    spr.get()->addAnimation("stand_west", anim_speed, true, stand_west());
-    spr.get()->addAnimation("stand_northwest", anim_speed, true,
-                            stand_northwest());
-    spr.get()->addAnimation("stand_north", anim_speed, true, stand_north());
-    spr.get()->addAnimation("stand_northeast", anim_speed, true,
-                            stand_northeast());
+static void fill_animations(Sprite *spr) {
+    spr->addAnimation("stand_east", anim_speed, true, stand_east());
+    spr->addAnimation("stand_southeast", anim_speed, true, stand_southeast());
+    spr->addAnimation("stand_south", anim_speed, true, stand_south());
+    spr->addAnimation("stand_southwest", anim_speed, true, stand_southwest());
+    spr->addAnimation("stand_west", anim_speed, true, stand_west());
+    spr->addAnimation("stand_northwest", anim_speed, true, stand_northwest());
+    spr->addAnimation("stand_north", anim_speed, true, stand_north());
+    spr->addAnimation("stand_northeast", anim_speed, true, stand_northeast());
 
-    spr.get()->addAnimation("run_east", anim_speed, true, run_east());
-    spr.get()->addAnimation("run_southeast", anim_speed, true, run_southeast());
-    spr.get()->addAnimation("run_south", anim_speed, true, run_south());
-    spr.get()->addAnimation("run_southwest", anim_speed, true, run_southwest());
-    spr.get()->addAnimation("run_west", anim_speed, true, run_west());
-    spr.get()->addAnimation("run_northwest", anim_speed, true, run_northwest());
-    spr.get()->addAnimation("run_north", anim_speed, true, run_north());
-    spr.get()->addAnimation("run_northeast", anim_speed, true, run_northeast());
+    spr->addAnimation("run_east", anim_speed, true, run_east());
+    spr->addAnimation("run_southeast", anim_speed, true, run_southeast());
+    spr->addAnimation("run_south", anim_speed, true, run_south());
+    spr->addAnimation("run_southwest", anim_speed, true, run_southwest());
+    spr->addAnimation("run_west", anim_speed, true, run_west());
+    spr->addAnimation("run_northwest", anim_speed, true, run_northwest());
+    spr->addAnimation("run_north", anim_speed, true, run_north());
+    spr->addAnimation("run_northeast", anim_speed, true, run_northeast());
 }
 } // namespace player_animations
 } // namespace senseless_soccer

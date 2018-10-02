@@ -34,47 +34,43 @@ int main() {
     Player::Init();
 
     // set up a controller from a keyboard inpout
-    std::unique_ptr<Keyboard> keyboard(new Keyboard());
-    Controller controller(std::move(keyboard));
+    Keyboard *keyboard = new Keyboard();
+    Controller controller(keyboard);
 
     // scrolling background
-    std::shared_ptr<gamelib2::Entity> tile_entity =
-      std::make_shared<Pitch>("background");
-    WidgetPtr tiledbg =
-      std::make_shared<TiledScrollingBackground>(dir + "/gfx/grass_dry.png");
-
+    Entity *tile_entity = new Pitch("background");
+    Widget *tiledbg = new TiledScrollingBackground(dir + "/gfx/grass_dry.png");
+    tiledbg->z_order = -10;
     tiledbg->connectEntity(tile_entity);
     tile_entity->connectWidget(tiledbg);
-    viewer.addWidget(tiledbg.get());
+    viewer.addWidget(tiledbg);
 
     // players
+    std::vector<Player *> players;
     for (int i = 0; i < 30; ++i) {
-        std::shared_ptr<gamelib2::Entity> player;
         std::stringstream name;
         name << "player" << i;
-        PlayerFactory::makePlayer(name.str(), player);
-        // tiledbg->addChild(player_shadow);
-        // tiledbg->addChild(player_sprite);
+
+        Player *player = PlayerFactory::makePlayer(name.str());
+        tiledbg->addChild(player->widget);
+        Widget *w = player->widget;
+        Sprite *s = static_cast<Sprite *>(w);
+        tiledbg->addChild(s->getShadow());
         engine.addEntity(player);
         if (i == 0) {
-            controller.setListener(dynamic_cast<Player *>(player.get()));
+            controller.setListener(dynamic_cast<Player *>(player));
         }
+        players.emplace_back(player);
     }
 
     // ball
-    std::shared_ptr<gamelib2::Entity> ball;
-    std::shared_ptr<gamelib2::Widget> ball_sprite;
-    std::cout << ball_sprite.use_count() << std::endl;
-    std::shared_ptr<gamelib2::Widget> ball_shadow;
-    BallFactory::makeBall("ball", ball, ball_sprite, ball_shadow);
-    std::cout << ball_sprite.use_count() << std::endl;
+    Ball *ball = BallFactory::makeBall("ball");
 
-    tiledbg->addChild(ball_shadow.get());
-    tiledbg->addChild(ball_sprite.get());
-    std::cout << ball_sprite.use_count() << std::endl;
+    Sprite *ballsprite = static_cast<Sprite *>(ball->widget);
+    tiledbg->addChild(ballsprite->getShadow());
+    tiledbg->addChild(ballsprite);
 
     // add entities to engine
-
     engine.addEntity(ball);
     engine.addEntity(tile_entity);
 
@@ -82,7 +78,7 @@ int main() {
     engine.connectViewer(&viewer);
     viewer.connectEngine(&engine);
 
-    Player::ball = std::dynamic_pointer_cast<Ball>(ball);
+    Player::ball = static_cast<Ball *>(ball);
 
     viewer.startup();
     while (viewer.running) {
@@ -92,7 +88,15 @@ int main() {
     }
     viewer.close();
 
-    std::cout << ball_sprite.use_count() << std::endl;
+    for (auto &player : players) {
+        delete player->widget;
+        delete player;
+    }
+    delete ball->widget;
+    delete ball;
+    delete tiledbg;
+    delete tile_entity;
+    delete keyboard;
 
     return 0;
 }

@@ -28,7 +28,7 @@ namespace senseless_soccer {
 std::map<gamelib2::Direction, std::string> Player::stand_animation_map;
 std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 
-std::shared_ptr<Ball> Player::ball;
+Ball *Player::ball = nullptr;
 
 // -----------------------------------------------------------------------------
 // Player
@@ -68,20 +68,16 @@ void Player::update(float dt) {
     }
 
     // update widget (sprite)
-    if (widget.get()) {
+    if (widget) {
 
-        std::shared_ptr<Sprite> sprite =
-          std::dynamic_pointer_cast<Sprite>(widget);
+        Sprite *sprite = static_cast<Sprite *>(widget);
 
         sprite->setPosition(position.x, position.y);
         sprite->animate();
 
         // sync shadow with sprite
-        if (sprite->has_shadow) {
-
-            std::shared_ptr<Sprite> shadow =
-              std::dynamic_pointer_cast<Sprite>(sprite->shadow);
-
+        Sprite *shadow = sprite->getShadow();
+        if (shadow) {
             shadow->setFrame(sprite->getFrame());
             shadow->setPosition(sprite->position().x + 3,
                                 sprite->position().y + 7);
@@ -131,7 +127,7 @@ void Player::onControllerEvent(ControllerEvent event) {
 void Player::onMoved(const gamelib2::Vector3 &new_position, float dx,
                      float dy) {
     Entity::onMoved(new_position);
-    auto w = widget.get();
+    auto w = widget;
     w->setPosition(position.x, position.y);
     w->animate();
 }
@@ -141,7 +137,7 @@ void Player::onMoved(const gamelib2::Vector3 &new_position, float dx,
 // -----------------------------------------------------------------------------
 void Player::do_dribble() {
     // TODO height
-    if (ball.get()->position.z > 30)
+    if (ball->position.z > 30)
         return;
 
     // calc force needed for kick
@@ -155,7 +151,7 @@ void Player::do_dribble() {
     }
 
     // apply the kick force to ball
-    ball.get()->kick(kick);
+    ball->kick(kick);
 }
 
 // -----------------------------------------------------------------------------
@@ -168,10 +164,10 @@ void Player::do_close_control() {
     Vector3 ball_pos = f + (facing.toVector() * 5);
 
     // reset ball
-    ball.get()->velocity.reset();
+    ball->velocity.reset();
 
     // set new position
-    ball.get()->position = ball_pos;
+    ball->position = ball_pos;
 }
 
 // -----------------------------------------------------------------------------

@@ -7,8 +7,8 @@ namespace senseless_soccer {
 // State
 // -----------------------------------------------------------------------------
 State::State(Player &context)
-  : player(context) {
-    sprite = player.widget;
+  : player(context)
+  , sprite(*player.widget) {
 }
 
 // -----------------------------------------------------------------------------
