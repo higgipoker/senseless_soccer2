@@ -8,7 +8,7 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 State::State(Player &context)
   : player(context) {
-    sprite = player.widget.lock();
+    sprite = player.widget;
 }
 
 // -----------------------------------------------------------------------------
@@ -59,7 +59,7 @@ bool State::handle_input(ControllerEvent event) {
             //            }
             Vector3 kick_force = (player.facing.toVector() * event.param * 700);
             kick_force.z = kick_force.magnitude() * 0.2f;
-            player.ball.lock()->kick(kick_force);
+            player.ball->kick(kick_force);
         }
         break;
 

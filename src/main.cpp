@@ -43,23 +43,18 @@ int main() {
     WidgetPtr tiledbg =
       std::make_shared<TiledScrollingBackground>(dir + "/gfx/grass_dry.png");
 
-    std::weak_ptr<gamelib2::Entity> t = tile_entity;
-    std::weak_ptr<gamelib2::Widget> s = tiledbg;
-    tiledbg->connectEntity(t);
-    tile_entity->connectWidget(s);
-    viewer.addWidget(tiledbg);
+    tiledbg->connectEntity(tile_entity);
+    tile_entity->connectWidget(tiledbg);
+    viewer.addWidget(tiledbg.get());
 
     // players
     for (int i = 0; i < 30; ++i) {
         std::shared_ptr<gamelib2::Entity> player;
-        std::shared_ptr<gamelib2::Widget> player_sprite;
-        std::shared_ptr<gamelib2::Widget> player_shadow;
         std::stringstream name;
         name << "player" << i;
-        PlayerFactory::makePlayer(name.str(), player, player_sprite,
-                                  player_shadow);
-        //tiledbg->addChild(player_shadow);
-        //tiledbg->addChild(player_sprite);
+        PlayerFactory::makePlayer(name.str(), player);
+        // tiledbg->addChild(player_shadow);
+        // tiledbg->addChild(player_sprite);
         engine.addEntity(player);
         if (i == 0) {
             controller.setListener(dynamic_cast<Player *>(player.get()));
@@ -69,11 +64,14 @@ int main() {
     // ball
     std::shared_ptr<gamelib2::Entity> ball;
     std::shared_ptr<gamelib2::Widget> ball_sprite;
+    std::cout << ball_sprite.use_count() << std::endl;
     std::shared_ptr<gamelib2::Widget> ball_shadow;
     BallFactory::makeBall("ball", ball, ball_sprite, ball_shadow);
+    std::cout << ball_sprite.use_count() << std::endl;
 
-    tiledbg->addChild(ball_shadow);
-    tiledbg->addChild(ball_sprite);
+    tiledbg->addChild(ball_shadow.get());
+    tiledbg->addChild(ball_sprite.get());
+    std::cout << ball_sprite.use_count() << std::endl;
 
     // add entities to engine
 
@@ -93,6 +91,8 @@ int main() {
         viewer.run();
     }
     viewer.close();
+
+    std::cout << ball_sprite.use_count() << std::endl;
 
     return 0;
 }

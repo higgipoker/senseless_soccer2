@@ -23,6 +23,8 @@
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
 
+#include <iostream>
+
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
@@ -41,6 +43,7 @@ void BallFactory::makeBall(const std::string &name,
     // make a sprite for the ball
     sprite = std::make_shared<gamelib2::Sprite>(
       working_dir + "/gfx/ball_new.png", 4, 2);
+    std::cout << sprite.use_count() << std::endl;
     sprite->clickable = true;
     ball_animations::fill_animations(sprite.get());
 
@@ -49,14 +52,10 @@ void BallFactory::makeBall(const std::string &name,
       working_dir + "/gfx/ball_shadow.png", 1, 1);
 
     auto spr = dynamic_cast<gamelib2::Sprite *>(sprite.get());
-    std::weak_ptr<gamelib2::Widget> sh = shadow;
-    spr->connectShadow(sh);
+    spr->connectShadow(shadow);
 
-    std::weak_ptr<gamelib2::Widget> s = sprite;
-    std::weak_ptr<gamelib2::Entity> e = entity;
-
-    entity->connectWidget(s);
-    sprite->connectEntity(e);
+    entity->connectWidget(sprite);
+    sprite->connectEntity(entity);
     entity->activate();
     sprite->startAnimation("roll");
 }

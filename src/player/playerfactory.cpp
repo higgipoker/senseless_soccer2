@@ -29,34 +29,32 @@ namespace senseless_soccer {
 // makePlayer
 // -----------------------------------------------------------------------------
 void PlayerFactory::makePlayer(const std::string &name,
-                               std::shared_ptr<gamelib2::Entity> &entity,
-                               std::shared_ptr<gamelib2::Widget> &sprite,
-                               std::shared_ptr<gamelib2::Widget> &shadow) {
+                               std::shared_ptr<gamelib2::Entity> &entity) {
     // for gfx
     std::string working_dir = gamelib2::Files::getWorkingDirectory();
 
     // make the entity
     entity = std::make_shared<Player>(name);
 
+    // an entity has a sprite and a shadow
+    std::shared_ptr<gamelib2::Widget> sprite;
+    std::shared_ptr<gamelib2::Widget> shadow;
+
     // make a sprite for the player
     sprite = std::make_shared<gamelib2::Sprite>(
       working_dir + "/gfx/player/player.png", 6, 24);
     sprite->clickable = true;
-    player_animations::fill_animations(sprite.get());
+    player_animations::fill_animations(sprite);
 
     // make a shadow for the sprite
     shadow = std::make_shared<gamelib2::Sprite>(
       working_dir + "/gfx/player/player_shadow.png", 6, 24);
 
-    auto spr = dynamic_cast<gamelib2::Sprite *>(sprite.get());
-    std::weak_ptr<gamelib2::Widget> sh = shadow;
-    spr->connectShadow(sh);
+    auto spr = std::dynamic_pointer_cast<Sprite>(sprite);
+    spr->connectShadow(shadow);
 
-    std::weak_ptr<gamelib2::Widget> s = sprite;
-    std::weak_ptr<gamelib2::Entity> e = entity;
-
-    entity->connectWidget(s);
-    sprite->connectEntity(e);
+    entity->connectWidget(sprite);
+    sprite->connectEntity(entity);
     entity->activate();
 }
 

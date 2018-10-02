@@ -25,9 +25,7 @@ class PlayerFactory {
 public:
     // constructs a complete player and delivers shared pointer
     static void makePlayer(const std::string &name,
-                           std::shared_ptr<gamelib2::Entity> &entity,
-                           std::shared_ptr<gamelib2::Widget> &sprite,
-                           std::shared_ptr<gamelib2::Widget> &shadow);
+                           std::shared_ptr<gamelib2::Entity> &entity);
 
 private:
 };

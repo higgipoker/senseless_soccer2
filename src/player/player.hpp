@@ -61,7 +61,7 @@ public:
     void onControllerEvent(ControllerEvent event) override;
 
     // shared ball
-    static std::weak_ptr<Ball> ball;
+    static std::shared_ptr<Ball> ball;
 
 protected:
     // state machine

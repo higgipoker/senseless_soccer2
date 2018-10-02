@@ -18,8 +18,9 @@ Run::Run(Player &context)
 // start
 // -----------------------------------------------------------------------------
 void Run::start() {
-    if(player.widget.lock()){
-        player.widget.lock()->startAnimation(player.run_animation_map[player.facing.direction]);
+    if (player.widget.get()) {
+        player.widget.get()->startAnimation(
+          player.run_animation_map[player.facing.direction]);
     }
 }
 
@@ -31,18 +32,19 @@ void Run::update(const float _dt) {
     // dribble or close control
     if (player.changed_direction) {
         // change the running animation
-        if(player.widget.lock()){
-            player.widget.lock()->startAnimation(player.run_animation_map[player.facing.direction]);
+        if (player.widget.get()) {
+            player.widget.get()->startAnimation(
+              player.run_animation_map[player.facing.direction]);
         }
 
         // close control
         sf::CircleShape control = player.feet;
         control.setRadius(control.getRadius() * 2);
-        if (Collision::collides(control, player.ball.lock()->circle)) {
+        if (Collision::collides(control, player.ball.get()->circle)) {
             player.do_close_control();
         }
 
-    } else if (Collision::collides(player.feet, player.ball.lock()->circle)) {
+    } else if (Collision::collides(player.feet, player.ball.get()->circle)) {
         player.do_dribble();
     }
 }
