@@ -18,8 +18,9 @@ Run::Run(Player &context)
 // start
 // -----------------------------------------------------------------------------
 void Run::start() {
-    auto w = player.widget.lock();
-    w->startAnimation(player.run_animation_map[player.facing.direction]);
+    if(player.widget.lock()){
+        player.widget.lock()->startAnimation(player.run_animation_map[player.facing.direction]);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -30,8 +31,9 @@ void Run::update(const float _dt) {
     // dribble or close control
     if (player.changed_direction) {
         // change the running animation
-        auto w = player.widget.lock();
-        w->startAnimation(player.run_animation_map[player.facing.direction]);
+        if(player.widget.lock()){
+            player.widget.lock()->startAnimation(player.run_animation_map[player.facing.direction]);
+        }
 
         // close control
         sf::CircleShape control = player.feet;

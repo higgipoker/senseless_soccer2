@@ -49,13 +49,14 @@ void Stand::changeToNextState() {
 // face_ball
 // -----------------------------------------------------------------------------
 void Stand::face_ball() {
-    auto w = player.widget.lock();
-    if (player.ball.lock()) {
+    if(player.widget.lock()){
+        if (player.ball.lock()) {
 
-        gamelib2::Vector3 to_ball =
-          player.ball.lock()->position - player.position;
-        gamelib2::Compass c(to_ball.normalise());
-        w->startAnimation(player.stand_animation_map[c.direction]);
+            gamelib2::Vector3 to_ball =
+              player.ball.lock()->position - player.position;
+            gamelib2::Compass c(to_ball.normalise());
+            player.widget.lock()->startAnimation(player.stand_animation_map[c.direction]);
+        }
     }
 }
 } // namespace senseless_soccer

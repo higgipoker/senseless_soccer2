@@ -14,11 +14,11 @@ const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.01f;
-static const float co_friction = 0.98f;
-static const float co_friction2 = 0.8; // bounce fricton
+static const float co_friction = 0.99f;
+static const float co_friction2 = 0.8f; // bounce fricton
 static const float co_bounciness = 0.8f;
 static const float ball_mass =
-  100; // mass is irrelevant, used as air resistance for bounce :p
+  200; // mass is irrelevant, used as air resistance for bounce :p
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
 
@@ -54,21 +54,21 @@ void Ball::update(float dt) {
     do_physics(dt);
 
     // update widget (sprite)
-    auto w = widget.lock();
-    auto *sprite = dynamic_cast<Sprite *>(w.get());
-    sprite->setPosition(position.x, position.y);
-    sprite->animate();
+    if(widget.lock()){
+        auto *sprite = dynamic_cast<Sprite *>(widget.lock().get());
+        sprite->setPosition(position.x, position.y);
+        sprite->animate();
 
-    // sync shadow with sprite
-    if (sprite->has_shadow) {
-        auto s = widget.lock();
-        auto *shadow = dynamic_cast<Sprite *>(sprite->shadow.lock().get());
-        shadow->setPosition(sprite->position().x + SHADOW_OFFSET,
-                            sprite->position().y + SHADOW_OFFSET);
-        shadow->scale(sprite->scale(), sprite->scale());
+        // sync shadow with sprite
+        if (sprite->has_shadow) {
+            auto *shadow = dynamic_cast<Sprite *>(sprite->shadow.lock().get());
+            shadow->setPosition(sprite->position().x + SHADOW_OFFSET,
+                                sprite->position().y + SHADOW_OFFSET);
+            shadow->scale(sprite->scale(), sprite->scale());
+        }
+
+        perspectivize(CAMERA_HEIGHT);
     }
-
-    perspectivize(CAMERA_HEIGHT);
     circle.setPosition(position.x, position.y);
 }
 

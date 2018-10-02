@@ -58,8 +58,8 @@ int main() {
         name << "player" << i;
         PlayerFactory::makePlayer(name.str(), player, player_sprite,
                                   player_shadow);
-        tiledbg->addChild(player_shadow);
-        tiledbg->addChild(player_sprite);
+        //tiledbg->addChild(player_shadow);
+        //tiledbg->addChild(player_sprite);
         engine.addEntity(player);
         if (i == 0) {
             controller.setListener(dynamic_cast<Player *>(player.get()));
