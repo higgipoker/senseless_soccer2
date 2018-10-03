@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(senseless_soccer2)
+project(senseless_soccer)
 
 # --------------------------------------------------
 # environment variables
@@ -24,7 +24,7 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib)
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std=c++14)
+add_definitions(-std=c++11)
 
 # --------------------------------------------------
 # build files
@@ -32,13 +32,14 @@ add_definitions(-std=c++14)
 add_executable(senseless_soccer
   src/main.cpp
   src/metrics/metrics.cpp
+  src/memory/playerfactory.cpp
+  src/memory/ballfactory.cpp
+  src/joysticker/aftertouch.cpp
   src/player/player.cpp
   src/player/states/state.cpp
   src/player/states/stand.cpp
   src/player/states/run.cpp
-  src/player/playerfactory.cpp
   src/ball/ball.cpp
-  src/ball/ball_factory.cpp
   src/pitch/pitch.cpp
 )
 

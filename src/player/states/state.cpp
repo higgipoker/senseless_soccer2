@@ -52,14 +52,13 @@ bool State::handle_input(ControllerEvent event) {
         if (event.status == Pressed) {
             std::cout << "Pressed" << std::endl;
         } else {
-            std::cout << "Released (" << event.param << ")" << std::endl;
+
             //            if (player.ball_under_control()) {
-            //                player.kick(event.param);
-            //                return true;
+            Vector3 kick_force =
+              (player.facing.toVector() * event.param * 2000);
+            // kick_force.z = kick_force.magnitude() * 0.2f;
+            player.kick(kick_force);
             //            }
-            Vector3 kick_force = (player.facing.toVector() * event.param * 700);
-            kick_force.z = kick_force.magnitude() * 0.2f;
-            player.ball->kick(kick_force);
         }
         break;
 

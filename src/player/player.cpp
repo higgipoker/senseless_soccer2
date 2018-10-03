@@ -20,6 +20,7 @@
 #include "player.hpp"
 #include "states/run.hpp"
 #include "states/stand.hpp"
+#include "../joysticker/aftertouch.hpp"
 #include <cassert>
 #include <gamelib2/math/vector.hpp>
 using namespace gamelib2;
@@ -38,7 +39,6 @@ Player::Player(std::string in_name)
   , stand_state(new Stand(*this))
   , run_state(new Run(*this)) {
     feet.setRadius(4.0f);
-
     current_state = stand_state.get();
 }
 
@@ -183,6 +183,17 @@ void Player::change_state(const PlayerState &state) {
         current_state = run_state.get();
         break;
     }
+}
+
+// -----------------------------------------------------------------------------
+// kick
+// -----------------------------------------------------------------------------
+void Player::kick(Vector3 force) {
+    //  apply to ball
+    ball->kick(force);
+
+    //  start aftertouch!
+    Aftertouch::startAftertouch(ball, input, force.normalise());
 }
 
 // -----------------------------------------------------------------------------

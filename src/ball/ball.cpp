@@ -1,6 +1,7 @@
 #include "ball.hpp"
 #include "../metrics/metrics.hpp"
 #include "ball_animations.hpp"
+#include "../joysticker/aftertouch.hpp"
 
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/widgets/sprite.hpp>
@@ -15,12 +16,11 @@ const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
 const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
-static const float AIR_FACTOR = 0.02f;
-static const float co_friction = 0.99f;
+static const float AIR_FACTOR = 0.03f;
+static const float co_friction = 0.98f;
 static const float co_friction2 = 0.8f; // bounce fricton
 static const float co_bounciness = 0.8f;
-static const float ball_mass =
-  200; // mass is irrelevant, used as air resistance for bounce :p
+static const float ball_mass = 200.f; // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
 
@@ -87,9 +87,9 @@ void Ball::do_physics(float dt) {
     // ball is in the air so do gravity and air resistance
     if (Floats::greater_than(position.z, 0)) {
 
-	//
-	// gravity
-	//
+        //
+        // gravity
+        //
         // change gravity meters into screen pixels
         float pixels_per_sec_squared = Metrics::MetersToPixels(gravity_act);
 
@@ -102,14 +102,14 @@ void Ball::do_physics(float dt) {
         // accumulate forces
         acceleration += gravity;
 
-	//
-	// air resistance
-	//
-	// air resistance increases with height
-	Vector3 air = velocity.reverse() * AIR_FACTOR * position.z;
+        //
+        // air resistance
+        //
+        // air resistance increases with height
+        Vector3 air = velocity.reverse() * AIR_FACTOR * position.z;
 
-	// accumulate forces
-	acceleration += air;
+        // accumulate forces
+        acceleration += air;
 
     }
 
@@ -131,6 +131,9 @@ void Ball::do_physics(float dt) {
         } else {
             velocity *= co_friction2;
         }
+
+        // aftertouch not effective after a bounce
+        Aftertouch::endAftertouch();
     }
 
     // basic euler is enough for our purposes
@@ -187,5 +190,12 @@ void Ball::kick(const Vector3 &force) {
     acceleration.reset();
     velocity.reset();
     acceleration = force;
+}
+
+// -----------------------------------------------------------------------------
+// aftertouch
+// -----------------------------------------------------------------------------
+void Ball::aftertouch(const Vector3 &aftertouch) {
+    acceleration += aftertouch;
 }
 } // namespace senseless_soccer

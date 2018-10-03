@@ -1,11 +1,12 @@
 #pragma once
 #include <SFML/Graphics/CircleShape.hpp>
 #include <gamelib2/game/entity.hpp>
+
+using namespace gamelib2;
 namespace senseless_soccer {
 
-class Ball : public gamelib2::Entity {
+class Ball : public Entity {
 public:
-
     // main update
     void update(float dt) override;
 
@@ -13,11 +14,14 @@ public:
     void activate() override;
 
     // the entity was manually moved
-    void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
+    void onMoved(const Vector3 &new_position, float dx = 0,
                  float dy = 0) override;
 
     // kick it
-    void kick(const gamelib2::Vector3 &force);
+    void kick(const Vector3 &force);
+
+    // aftertouch interface
+    void aftertouch(const Vector3 &aftertouch);
 
     // ball collidable
     sf::CircleShape circle;

@@ -23,8 +23,8 @@
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/input/controller.hpp>
-#include <gamelib2/statemachine/state_machine.hpp>
 #include <gamelib2/types.hpp>
+#include <gamelib2/input/input.hpp>
 #include <memory>
 
 #include "../ball/ball.hpp"
@@ -38,11 +38,10 @@ enum class PlayerState { Stand, Run };
 
 class Run;
 class Stand;
-class Player : public gamelib2::Entity, public ControllerListener {
+class Player : public Entity, public ControllerListener {
 public:
     // construct with an entity name
     Player(std::string in_name);
-    ~Player() = default;
 
     // main update
     void update(float dt) override;
@@ -54,7 +53,7 @@ public:
     static void Init();
 
     // movedmanually
-    void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
+    void onMoved(const Vector3 &new_position, float dx = 0,
                  float dy = 0) override;
 
     // controller interface
@@ -76,11 +75,14 @@ protected:
     // control the ball
     void do_close_control();
 
+    // kick the ball
+    void kick(Vector3 force);
+
     // track facing direction
-    gamelib2::Compass facing;
+    Compass facing;
 
     // save last direction
-    gamelib2::Compass facing_old;
+    Compass facing_old;
 
     // changed direction since last frame?
     bool changed_direction = true;
@@ -88,15 +90,18 @@ protected:
     // for collisions
     sf::CircleShape feet;
 
+    // attached input
+    Input *input = nullptr;
+
     // map animations based on direction
-    static std::map<gamelib2::Direction, std::string> stand_animation_map;
-    static std::map<gamelib2::Direction, std::string> run_animation_map;
+    static std::map<Direction, std::string> stand_animation_map;
+    static std::map<Direction, std::string> run_animation_map;
 
 private:
     // states
     std::unique_ptr<Stand> stand_state;
     std::unique_ptr<Run> run_state;
-    gamelib2::State *current_state = nullptr;
+    State *current_state = nullptr;
 
 public:
     // for state machine pattern

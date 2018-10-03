@@ -10,6 +10,7 @@
 #include <gamelib2/graphics/autotexture.hpp>
 #include <gamelib2/input/controller.hpp>
 #include <gamelib2/input/keyboard.hpp>
+#include <gamelib2/input/xbox_gamepad.hpp>
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/viewer/viewer.hpp>
@@ -34,8 +35,9 @@ int main() {
     Player::Init();
 
     // set up a controller from a keyboard inpout
+    XboxController *xbox_controller = new XboxController();
     Keyboard *keyboard = new Keyboard();
-    Controller controller(keyboard);
+    Controller controller(xbox_controller);
 
     // scrolling background
     Entity *tile_entity = new Pitch("background");
@@ -63,7 +65,6 @@ int main() {
 
     // ball
     Ball *ball = BallFactory::makeBall("ball");
-
     Sprite *ballsprite = static_cast<Sprite *>(ball->widget);
     tiledbg->addChild(ballsprite->getShadow());
     tiledbg->addChild(ballsprite);
@@ -92,6 +93,7 @@ int main() {
     delete tiledbg;
     delete tile_entity;
     delete keyboard;
+    delete xbox_controller;
 
     return 0;
 }
