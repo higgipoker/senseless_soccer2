@@ -15,7 +15,7 @@ const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
 const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
-static const float AIR_FACTOR = 0.01f;
+static const float AIR_FACTOR = 0.02f;
 static const float co_friction = 0.99f;
 static const float co_friction2 = 0.8f; // bounce fricton
 static const float co_bounciness = 0.8f;
@@ -84,8 +84,12 @@ void Ball::do_physics(float dt) {
     // actual acceleration due to gravity for this time slice
     float gravity_act = GRAVITY * time_slice;
 
-    // gravity
+    // ball is in the air so do gravity and air resistance
     if (Floats::greater_than(position.z, 0)) {
+
+	//
+	// gravity
+	//
         // change gravity meters into screen pixels
         float pixels_per_sec_squared = Metrics::MetersToPixels(gravity_act);
 
@@ -97,6 +101,16 @@ void Ball::do_physics(float dt) {
 
         // accumulate forces
         acceleration += gravity;
+
+	//
+	// air resistance
+	//
+	// air resistance increases with height
+	Vector3 air = velocity.reverse() * AIR_FACTOR * position.z;
+
+	// accumulate forces
+	acceleration += air;
+
     }
 
     // friction

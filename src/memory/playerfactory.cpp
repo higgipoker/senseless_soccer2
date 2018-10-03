@@ -18,36 +18,46 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "playerfactory.hpp"
-#include "player_animations.h"
+#include "../player/player_animations.h"
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
 
 namespace senseless_soccer {
+std::vector<Player *> PlayerFactory::players;
 
+void PlayerFactory::destroy() {
+  for (auto &player : players) {
+    gamelib2::Sprite *sprite = static_cast<gamelib2::Sprite *>(player->widget);
+    delete sprite->shadow;
+    delete player->widget;
+    delete player;
+  }
+}
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
 Player *PlayerFactory::makePlayer(const std::string &name) {
-    // for gfx
-    std::string dir = gamelib2::Files::getWorkingDirectory();
+  // for gfx
+  std::string dir = gamelib2::Files::getWorkingDirectory();
 
-    // make the entity
-    auto *player = new Player(name);
+  // make the entity
+  auto *player = new Player(name);
 
-    // make a sprite for the player
-    auto sprite = new Sprite(dir + "/gfx/player/player.png", 6, 24);
-    sprite->clickable = true;
-    player_animations::fill_animations(sprite);
+  // make a sprite for the player
+  auto sprite = new Sprite(dir + "/gfx/player/player.png", 6, 24);
+  sprite->clickable = true;
+  player_animations::fill_animations(sprite);
 
-    // make a shadow for the sprite
-    auto *shadow = new Sprite(dir + "/gfx/player/player_shadow.png", 6, 24);
-    shadow->z_order = -1;
+  // make a shadow for the sprite
+  auto *shadow = new Sprite(dir + "/gfx/player/player_shadow.png", 6, 24);
+  shadow->z_order = -1;
 
-    sprite->connectShadow(shadow);
-    sprite->connectEntity(player);
-    player->connectWidget(sprite);
-    player->activate();
-    return player;
+  sprite->connectShadow(shadow);
+  sprite->connectEntity(player);
+  player->connectWidget(sprite);
+  player->activate();
+  players.emplace_back(player);
+  return player;
 }
 
 } // namespace senseless_soccer

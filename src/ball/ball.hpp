@@ -5,9 +5,6 @@ namespace senseless_soccer {
 
 class Ball : public gamelib2::Entity {
 public:
-    // construct with an entity name
-    Ball(std::string in_name);
-    virtual ~Ball();
 
     // main update
     void update(float dt) override;
@@ -31,6 +28,13 @@ protected:
 
     // add perspective to the ball
     void perspectivize(float camera_height) override;
+
+    // construct with an entity name
+    Ball(std::string in_name);
+    virtual ~Ball();
+
+public:
+    friend class BallFactory;
 };
 
 } // namespace senseless_soccer

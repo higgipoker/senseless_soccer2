@@ -17,10 +17,10 @@
 #include <gamelib2/widgets/spriteanimation.hpp>
 #include <gamelib2/widgets/tiledscrollingbackground.hpp>
 
-#include "ball/ball_factory.hpp"
+#include "memory/ballfactory.hpp"
 #include "pitch/pitch.hpp"
 #include "player/player.hpp"
-#include "player/playerfactory.hpp"
+#include "memory/playerfactory.hpp"
 
 using namespace gamelib2;
 using namespace senseless_soccer;
@@ -46,7 +46,6 @@ int main() {
     viewer.addWidget(tiledbg);
 
     // players
-    std::vector<Player *> players;
     for (int i = 0; i < 30; ++i) {
         std::stringstream name;
         name << "player" << i;
@@ -60,7 +59,6 @@ int main() {
         if (i == 0) {
             controller.setListener(dynamic_cast<Player *>(player));
         }
-        players.emplace_back(player);
     }
 
     // ball
@@ -88,12 +86,9 @@ int main() {
     }
     viewer.close();
 
-    for (auto &player : players) {
-        delete player->widget;
-        delete player;
-    }
-    delete ball->widget;
-    delete ball;
+    PlayerFactory::destroy();
+    BallFactory::destroy();
+
     delete tiledbg;
     delete tile_entity;
     delete keyboard;

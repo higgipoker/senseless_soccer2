@@ -17,9 +17,9 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "ball_factory.hpp"
-#include "ball.hpp"
-#include "ball_animations.hpp"
+#include "ballfactory.hpp"
+#include "../ball/ball.hpp"
+#include "../ball/ball_animations.hpp"
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
 
@@ -27,6 +27,17 @@
 
 using namespace gamelib2;
 namespace senseless_soccer {
+std::vector<Ball*> BallFactory::balls;
+
+void BallFactory::destroy(){
+	for(auto &ball : balls){
+		Sprite *sprite = static_cast<Sprite*> (ball->widget);
+		delete sprite->shadow;
+		delete ball->widget;
+		delete ball;
+	}
+}
+
 
 // -----------------------------------------------------------------------------
 // makePlayer
@@ -52,6 +63,7 @@ Ball *BallFactory::makeBall(const std::string &name) {
     sprite->connectEntity(ball);
     ball->connectWidget(sprite);
     ball->activate();
+    balls.emplace_back(ball);
     return ball;
 }
 
