@@ -19,7 +19,7 @@
  ****************************************************************************/
 #pragma once
 #include "../ball/ball.hpp"
-#include <gamelib2/input/input.hpp>
+#include <gamelib2/input/controller.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {
@@ -29,14 +29,14 @@ class Aftertouch {
 public:
     Aftertouch();
 
-    static void startAftertouch(Ball *b, gamelib2::Input *i,
+    static void startAftertouch(Ball *b, Controller *c,
                                 const Vector3 &initial_normal);
     static void endAftertouch();
     static void update();
 
 private:
     static Ball *ball;
-    static Input *input;
+    static Controller *controller;
     static Vector3 normal;
     static Vector3 accumulated_aftertouch;
     static bool accumulation_applied;

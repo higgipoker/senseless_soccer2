@@ -18,29 +18,32 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "aftertouch.hpp"
+#include <iostream>
 
 namespace senseless_soccer {
 
-static const int MODIFIER_FULL = 100;
-static const int MODIFIER_HALF = 60;
+static const int MODIFIER_FULL = 10;
+static const int MODIFIER_HALF = 20;
 
-static const int LIFT_FORWARD = -20;
-static const int LIFT_NEUTRAL = 150;
-static const int LIFT_REVERSE = 400;
+static const int LIFT_FORWARD = -10;
+static const int LIFT_NEUTRAL = 10;
+static const int LIFT_REVERSE = 30;
 
-static const int APPLY_AFTERTOUCH_DELAY = 200;
-static const int MAX_AFTERTOUCH_TIME = 600;
+static const int APPLY_AFTERTOUCH_DELAY = 10;
+static const int MAX_AFTERTOUCH_TIME = 500;
 
 //  --------------------------------------------------
 //  init static members
 //  --------------------------------------------------
 Ball *Aftertouch::ball = nullptr;
-Input *Aftertouch::input = nullptr;
+Controller *Aftertouch::controller = nullptr;
 unsigned int Aftertouch::ticks = 0;
 Vector3 Aftertouch::normal;
 Vector3 Aftertouch::accumulated_aftertouch;
 bool Aftertouch::accumulation_applied = false;
 
+using std::cout;
+using std::endl;
 //  --------------------------------------------------
 //  constructor
 //  --------------------------------------------------
@@ -50,15 +53,17 @@ Aftertouch::Aftertouch() {
 //  --------------------------------------------------
 //  start aftertouch handling
 //  --------------------------------------------------
-void Aftertouch::startAftertouch(Ball *b, Input *i,
+void Aftertouch::startAftertouch(Ball *b, Controller *c,
                                  const Vector3 &initial_normal) {
     ball = b;
+    controller = c;
     normal = initial_normal;
     normal = normal.normalizeToUnits();
     normal.z = 0;
-    input = i;
     accumulation_applied = false;
     ticks = 0;
+
+    cout << "start aftertouch" << endl;
 }
 
 //  --------------------------------------------------
@@ -67,7 +72,9 @@ void Aftertouch::startAftertouch(Ball *b, Input *i,
 void Aftertouch::endAftertouch() {
     ticks = 0;
     ball = nullptr;
-    input = nullptr;
+    controller = nullptr;
+
+    cout << "end aftertouch" << endl;
 }
 
 //  --------------------------------------------------
@@ -75,23 +82,23 @@ void Aftertouch::endAftertouch() {
 //  --------------------------------------------------
 void Aftertouch::update() {
     // don't start yet
-    if (ball == nullptr || input == nullptr) {
+    if (ball == nullptr || controller == nullptr) {
         return;
     }
 
     Vector3 dpad;
     Vector3 aftertouch;
 
-    if (input->states[Up])
+    if (controller->input.states[Up])
         dpad.y = -1;
 
-    if (input->states[Down])
+    if (controller->input.states[Down])
         dpad.y = 1;
 
-    if (input->states[Left])
+    if (controller->input.states[Left])
         dpad.x = -1;
 
-    if (input->states[Right])
+    if (controller->input.states[Right])
         dpad.x = 1;
 
     normal.z = 0;
@@ -118,8 +125,6 @@ void Aftertouch::update() {
     Vector3 forward = normal;
     Vector3 back = forward.reverse();
     Vector3 neutral;
-
-    ++ticks;
 
     if (ticks >= APPLY_AFTERTOUCH_DELAY && !accumulation_applied) {
         accumulation_applied = true;
@@ -176,7 +181,7 @@ void Aftertouch::update() {
     }
 
     // now do the pure lift
-    if (ticks < APPLY_AFTERTOUCH_DELAY) {
+    if (ticks > APPLY_AFTERTOUCH_DELAY) {
         if (dpad.equals(neutral)) {
             if (ticks > APPLY_AFTERTOUCH_DELAY) {
                 aftertouch.z += LIFT_NEUTRAL;
@@ -205,7 +210,7 @@ void Aftertouch::update() {
     ball->aftertouch(aftertouch);
 
     // end condition
-    if (ticks > MAX_AFTERTOUCH_TIME) {
+    if (++ticks > MAX_AFTERTOUCH_TIME) {
         endAftertouch();
     } else {
         //        if (dpad.equals(forward))

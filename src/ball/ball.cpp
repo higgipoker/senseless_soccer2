@@ -42,8 +42,8 @@ Ball::~Ball() {
 // activate
 // -----------------------------------------------------------------------------
 void Ball::activate() {
-    position.x = 300;
-    position.y = 300;
+    position.x = 20;
+    position.y = 20;
     position.z = Metrics::MetersToPixels(0);
 }
 // -----------------------------------------------------------------------------
@@ -125,15 +125,12 @@ void Ball::do_physics(float dt) {
         velocity.z = -velocity.z * co_bounciness;
         // round off float unlimited bounce
         float v = fabsf(velocity.z);
-        if (Floats::less_than(v, 0.5f)) {
+        if (Floats::less_than(v, 1.f)) {
             position.z = 0;
             velocity.z = 0;
         } else {
             velocity *= co_friction2;
         }
-
-        // aftertouch not effective after a bounce
-        Aftertouch::endAftertouch();
     }
 
     // basic euler is enough for our purposes

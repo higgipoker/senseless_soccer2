@@ -23,6 +23,8 @@
 #include "../joysticker/aftertouch.hpp"
 #include <cassert>
 #include <gamelib2/math/vector.hpp>
+#include <gamelib2/physics/collisions.hpp>
+
 using namespace gamelib2;
 namespace senseless_soccer {
 
@@ -31,6 +33,10 @@ std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 
 Ball *Player::ball = nullptr;
 
+// tmp - these will be player attribs
+static const float dribble_radius = 4.f;
+static const float control_radius = 8.f;
+
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
@@ -38,7 +44,8 @@ Player::Player(std::string in_name)
   : Entity(std::move(in_name))
   , stand_state(new Stand(*this))
   , run_state(new Run(*this)) {
-    feet.setRadius(4.0f);
+    feet.setRadius(dribble_radius);
+    control.setRadius(control_radius);
     current_state = stand_state.get();
 }
 
@@ -55,6 +62,8 @@ void Player::activate() {
 // -----------------------------------------------------------------------------
 void Player::update(float dt) {
     Entity::update(dt);
+
+    Aftertouch::update();
 
     // movement
     do_physics(dt);
@@ -85,6 +94,8 @@ void Player::update(float dt) {
 
         feet.setPosition(sprite->position().x,
                          sprite->position().y + (sprite->image_height / 2) - 4);
+        control = feet;
+        control.setRadius(control_radius);
     }
     // state machine
     current_state->update(dt);
@@ -193,7 +204,22 @@ void Player::kick(Vector3 force) {
     ball->kick(force);
 
     //  start aftertouch!
-    Aftertouch::startAftertouch(ball, input, force.normalise());
+    Aftertouch::startAftertouch(ball, controller, force.normalise());
+}
+
+// -----------------------------------------------------------------------------
+// ball_under_control
+// -----------------------------------------------------------------------------
+bool Player::ball_under_control() {
+    return Collision::collides(control, ball->circle);
+}
+
+// -----------------------------------------------------------------------------
+// attachInput
+// -----------------------------------------------------------------------------
+void Player::attachInput(Controller *c) {
+    controller = c;
+    controller->setListener(this);
 }
 
 // -----------------------------------------------------------------------------

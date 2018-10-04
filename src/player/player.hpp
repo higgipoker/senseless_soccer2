@@ -24,7 +24,7 @@
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/input/controller.hpp>
 #include <gamelib2/types.hpp>
-#include <gamelib2/input/input.hpp>
+#include <gamelib2/input/controller.hpp>
 #include <memory>
 
 #include "../ball/ball.hpp"
@@ -59,6 +59,12 @@ public:
     // controller interface
     void onControllerEvent(ControllerEvent event) override;
 
+    // check if ball is under control
+    bool ball_under_control();
+
+    // attach an input
+    void attachInput(Controller *i);
+
     // shared ball
     static Ball *ball;
 
@@ -87,11 +93,14 @@ protected:
     // changed direction since last frame?
     bool changed_direction = true;
 
-    // for collisions
+    // for dribble hit detection
     sf::CircleShape feet;
 
+    // for close control detection
+    sf::CircleShape control;
+
     // attached input
-    Input *input = nullptr;
+    Controller *controller = nullptr;
 
     // map animations based on direction
     static std::map<Direction, std::string> stand_animation_map;

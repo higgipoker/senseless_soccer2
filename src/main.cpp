@@ -35,8 +35,8 @@ int main() {
     Player::Init();
 
     // set up a controller from a keyboard inpout
-    XboxController *xbox_controller = new XboxController();
-    Keyboard *keyboard = new Keyboard();
+    XboxController xbox_controller;
+    Keyboard keyboard;
     Controller controller(xbox_controller);
 
     // scrolling background
@@ -59,7 +59,7 @@ int main() {
         tiledbg->addChild(s->getShadow());
         engine.addEntity(player);
         if (i == 0) {
-            controller.setListener(dynamic_cast<Player *>(player));
+            player->attachInput(&controller);
         }
     }
 
@@ -92,8 +92,6 @@ int main() {
 
     delete tiledbg;
     delete tile_entity;
-    delete keyboard;
-    delete xbox_controller;
 
     return 0;
 }

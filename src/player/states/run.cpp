@@ -38,9 +38,7 @@ void Run::update(const float _dt) {
         }
 
         // close control
-        sf::CircleShape control = player.feet;
-        control.setRadius(control.getRadius() * 2);
-        if (Collision::collides(control, player.ball->circle)) {
+        if (player.ball_under_control()) {
             player.do_close_control();
         }
 
