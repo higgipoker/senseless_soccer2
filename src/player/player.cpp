@@ -63,8 +63,6 @@ void Player::activate() {
 void Player::update(float dt) {
     Entity::update(dt);
 
-    Aftertouch::update();
-
     // movement
     do_physics(dt);
 
@@ -204,7 +202,7 @@ void Player::kick(Vector3 force) {
     ball->kick(force);
 
     //  start aftertouch!
-    Aftertouch::startAftertouch(ball, controller, force.normalise());
+    controller->startAftertouch(ball, force.normalise(), force.magnitude());
 }
 
 // -----------------------------------------------------------------------------
@@ -217,7 +215,7 @@ bool Player::ball_under_control() {
 // -----------------------------------------------------------------------------
 // attachInput
 // -----------------------------------------------------------------------------
-void Player::attachInput(Controller *c) {
+void Player::attachInput(SensiController *c) {
     controller = c;
     controller->setListener(this);
 }

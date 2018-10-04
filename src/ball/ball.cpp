@@ -121,7 +121,7 @@ void Ball::do_physics(float dt) {
 
     // bounce
     else if (Floats::less_than(position.z, 0) &&
-             Floats::less_than(velocity.z, 0)) {
+             Floats::greater_than(fabsf(velocity.z), 0)) {
         velocity.z = -velocity.z * co_bounciness;
         // round off float unlimited bounce
         float v = fabsf(velocity.z);

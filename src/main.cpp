@@ -22,6 +22,7 @@
 #include "pitch/pitch.hpp"
 #include "player/player.hpp"
 #include "memory/playerfactory.hpp"
+#include "joysticker/sensicontroller.hpp"
 
 using namespace gamelib2;
 using namespace senseless_soccer;
@@ -37,7 +38,7 @@ int main() {
     // set up a controller from a keyboard inpout
     XboxController xbox_controller;
     Keyboard keyboard;
-    Controller controller(xbox_controller);
+    SensiController controller(xbox_controller);
 
     // scrolling background
     Entity *tile_entity = new Pitch("background");

@@ -22,11 +22,11 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
-#include <gamelib2/input/controller.hpp>
 #include <gamelib2/types.hpp>
 #include <gamelib2/input/controller.hpp>
 #include <memory>
 
+#include "../joysticker/sensicontroller.hpp"
 #include "../ball/ball.hpp"
 #include "states/stand.hpp"
 #include "states/run.hpp"
@@ -63,7 +63,7 @@ public:
     bool ball_under_control();
 
     // attach an input
-    void attachInput(Controller *i);
+    void attachInput(SensiController *i);
 
     // shared ball
     static Ball *ball;
@@ -100,7 +100,7 @@ protected:
     sf::CircleShape control;
 
     // attached input
-    Controller *controller = nullptr;
+    SensiController *controller = nullptr;
 
     // map animations based on direction
     static std::map<Direction, std::string> stand_animation_map;

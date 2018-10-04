@@ -22,41 +22,32 @@
 
 namespace senseless_soccer {
 
-static const int MODIFIER_FULL = 10;
-static const int MODIFIER_HALF = 20;
+static const int MODIFIER_FULL = 0;
+static const int MODIFIER_HALF = 0;
 
-static const int LIFT_FORWARD = -10;
-static const int LIFT_NEUTRAL = 10;
-static const int LIFT_REVERSE = 30;
+static const int LIFT_FORWARD = -0;
+static const int LIFT_NEUTRAL = 300;
+static const int LIFT_REVERSE = 0;
 
-static const int APPLY_AFTERTOUCH_DELAY = 10;
-static const int MAX_AFTERTOUCH_TIME = 500;
-
-//  --------------------------------------------------
-//  init static members
-//  --------------------------------------------------
-Ball *Aftertouch::ball = nullptr;
-Controller *Aftertouch::controller = nullptr;
-unsigned int Aftertouch::ticks = 0;
-Vector3 Aftertouch::normal;
-Vector3 Aftertouch::accumulated_aftertouch;
-bool Aftertouch::accumulation_applied = false;
+static const int APPLY_AFTERTOUCH_DELAY = 5;
+static const int MAX_AFTERTOUCH_TIME = 30;
 
 using std::cout;
 using std::endl;
-//  --------------------------------------------------
-//  constructor
-//  --------------------------------------------------
-Aftertouch::Aftertouch() {
+
+// -----------------------------------------------------------------------------
+// construct
+// -----------------------------------------------------------------------------
+Aftertouch::Aftertouch(Controller &c)
+  : controller(c) {
 }
 
 //  --------------------------------------------------
 //  start aftertouch handling
 //  --------------------------------------------------
-void Aftertouch::startAftertouch(Ball *b, Controller *c,
-                                 const Vector3 &initial_normal) {
+void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
+                       const float initial_mag) {
     ball = b;
-    controller = c;
     normal = initial_normal;
     normal = normal.normalizeToUnits();
     normal.z = 0;
@@ -69,10 +60,9 @@ void Aftertouch::startAftertouch(Ball *b, Controller *c,
 //  --------------------------------------------------
 //  end aftertouch handling
 //  --------------------------------------------------
-void Aftertouch::endAftertouch() {
+void Aftertouch::end() {
     ticks = 0;
     ball = nullptr;
-    controller = nullptr;
 
     cout << "end aftertouch" << endl;
 }
@@ -81,24 +71,23 @@ void Aftertouch::endAftertouch() {
 //  Update
 //  --------------------------------------------------
 void Aftertouch::update() {
-    // don't start yet
-    if (ball == nullptr || controller == nullptr) {
+    if (ball == nullptr) {
         return;
     }
 
     Vector3 dpad;
     Vector3 aftertouch;
 
-    if (controller->input.states[Up])
+    if (controller.input.states[Up])
         dpad.y = -1;
 
-    if (controller->input.states[Down])
+    if (controller.input.states[Down])
         dpad.y = 1;
 
-    if (controller->input.states[Left])
+    if (controller.input.states[Left])
         dpad.x = -1;
 
-    if (controller->input.states[Right])
+    if (controller.input.states[Right])
         dpad.x = 1;
 
     normal.z = 0;
@@ -211,7 +200,7 @@ void Aftertouch::update() {
 
     // end condition
     if (++ticks > MAX_AFTERTOUCH_TIME) {
-        endAftertouch();
+        end();
     } else {
         //        if (dpad.equals(forward))
         //        {

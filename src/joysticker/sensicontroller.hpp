@@ -18,28 +18,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+
+#include "aftertouch.hpp"
 #include "../ball/ball.hpp"
 #include <gamelib2/input/controller.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {
-
-class Aftertouch {
-
+class SensiController : public Controller{
 public:
-    Aftertouch(Controller &c);
-    void start(Ball *b, const Vector3 &initial_normal, const float initial_mag);
-    void end();
-    void update();
+    SensiController(Input &i);
 
+    void update() override;
+    void startAftertouch(Ball *b, const Vector3 &normal, const float initial_mag);
+    void stopAftertouch();
 private:
-    Ball *ball = nullptr;
-    Controller &controller;
-    Vector3 normal;
-    Vector3 accumulated_aftertouch;
-    bool accumulation_applied = false;
-    float initial_force = 0;
-    unsigned int ticks = 0;
+    Aftertouch aftertouch;
 };
-
 } // namespace senseless_soccer

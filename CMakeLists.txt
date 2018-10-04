@@ -34,6 +34,7 @@ add_executable(senseless_soccer
   src/metrics/metrics.cpp
   src/memory/playerfactory.cpp
   src/memory/ballfactory.cpp
+  src/joysticker/sensicontroller.cpp
   src/joysticker/aftertouch.cpp
   src/player/player.cpp
   src/player/states/state.cpp
