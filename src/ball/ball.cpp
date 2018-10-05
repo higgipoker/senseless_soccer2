@@ -156,16 +156,21 @@ void Ball::do_physics(float dt) {
         cout << "bounce" << endl;
     }
 
-    // motion integration. pick one, these 2 are very similar!
+    // -------------------------------------------------------------------------
+    // MOTION INTEGRATION
+    // pick one, these 2 are very similar!
 
-    // verlet motion integration
+    // 1. verlet motion integration
     old_velocity = velocity;
     velocity = velocity + acceleration * dt;
     position = position + (old_velocity + velocity) * 0.5 * dt;
 
-    // semi-implicit euler motion integration
+    // 2. semi-implicit euler motion integration
     //    velocity += acceleration * dt;
     //    position += velocity * dt;
+
+    //
+    // -------------------------------------------------------------------------
 
     // round off float unlimited bounce
     if (bounced) {
