@@ -6,10 +6,24 @@
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/widgets/sprite.hpp>
 
+#include <iostream>
 #include <cassert>
 
 using namespace gamelib2;
 namespace senseless_soccer {
+
+// -----------------------------------------------------------------------------
+// stuff for ball physics mark 2!!!
+// -----------------------------------------------------------------------------
+
+// Vector initial_force;
+// Vector topspin;
+// Vector sidespin;
+// Vector drag;
+// float air_density;
+// float ball_mass;
+
+// -----------------------------------------------------------------------------
 
 /// dictated by the graphics style
 const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
@@ -18,18 +32,21 @@ const float CM_PER_PIXEL = 7.6f;
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.03f;
 static const float co_friction = 0.98f;
-static const float co_friction2 = 0.8f; // bounce fricton
+static const float co_friction_bounce = 0.9f; // bounce fricton
 static const float co_bounciness = 0.8f;
 static const float ball_mass = 200.f; // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
+
+using std::cout;
+using std::endl;
 
 // -----------------------------------------------------------------------------
 // Ball
 // -----------------------------------------------------------------------------
 Ball::Ball(std::string in_name)
   : Entity(std::move(in_name)) {
-    circle.setRadius(5.0f);
+    circle.setRadius(4.0f);
 }
 
 // -----------------------------------------------------------------------------
@@ -42,9 +59,10 @@ Ball::~Ball() {
 // activate
 // -----------------------------------------------------------------------------
 void Ball::activate() {
-    position.x = 20;
-    position.y = 20;
-    position.z = Metrics::MetersToPixels(0);
+    position.x = 60;
+    position.y = 60;
+    position.z = Metrics::MetersToPixels(4);
+    old_position = position;
 }
 // -----------------------------------------------------------------------------
 // update
@@ -119,23 +137,35 @@ void Ball::do_physics(float dt) {
         velocity *= co_friction;
     }
 
-    // bounce
+    // bounce if z < - and moving down
     else if (Floats::less_than(position.z, 0) &&
-             Floats::greater_than(fabsf(velocity.z), 0)) {
+             Floats::less_than(velocity.z, 0)) {
+
+        // apply bounciness
         velocity.z = -velocity.z * co_bounciness;
-        // round off float unlimited bounce
-        float v = fabsf(velocity.z);
-        if (Floats::less_than(v, 1.f)) {
+
+        // ball also loses some speed on bounce
+        velocity *= co_friction_bounce;
+
+        cout << "bounce" << endl;
+    }
+
+    // verlet
+    old_velocity = velocity;
+    velocity = velocity + acceleration * dt;
+    position = position + (old_velocity + velocity) * 0.5 * dt;
+
+    // round off float unlimited bounce
+    if (Floats::less_than(position.z, 0) && Floats::less_than(velocity.z, 0)) {
+        if (Floats::less_than(fabsf(velocity.z), 20.f)) {
             position.z = 0;
             velocity.z = 0;
-        } else {
-            velocity *= co_friction2;
         }
     }
 
-    // basic euler is enough for our purposes
-    velocity += acceleration * dt;
-    position += velocity * dt;
+    // semi-implicit euler
+    //    velocity += acceleration * dt;
+    //    position += velocity * dt;
 
     // reset acceleration ready for next frame
     acceleration.reset();
@@ -184,6 +214,8 @@ void Ball::onMoved(const Vector3 &new_position, float dx, float dy) {
 // kick
 // -----------------------------------------------------------------------------
 void Ball::kick(const Vector3 &force) {
+
+    // this is where the initial force is applied
     acceleration.reset();
     velocity.reset();
     acceleration = force;

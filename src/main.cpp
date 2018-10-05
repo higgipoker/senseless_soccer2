@@ -81,9 +81,10 @@ int main() {
     Player::ball = static_cast<Ball *>(ball);
 
     viewer.startup();
+    float timestep = 0.01f; // optimal for semi-implicit euler
     while (viewer.running) {
         controller.update();
-        engine.frame(0.01f);
+        engine.frame(timestep);
         viewer.run();
     }
     viewer.close();

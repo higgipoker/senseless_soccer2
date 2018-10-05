@@ -102,6 +102,9 @@ protected:
     // attached input
     SensiController *controller = nullptr;
 
+    // don't control and shoot at the same time
+    bool shooting = false;
+
     // map animations based on direction
     static std::map<Direction, std::string> stand_animation_map;
     static std::map<Direction, std::string> run_animation_map;

@@ -37,6 +37,9 @@ protected:
     Ball(std::string in_name);
     virtual ~Ball();
 
+    Vector3 old_position; // for verlet
+    Vector3 old_velocity;
+
 public:
     friend class BallFactory;
 };

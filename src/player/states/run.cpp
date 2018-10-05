@@ -43,7 +43,9 @@ void Run::update(const float _dt) {
         }
 
     } else if (Collision::collides(player.feet, player.ball->circle)) {
-        player.do_dribble();
+        if (!player.shooting) {
+            player.do_dribble();
+        }
     }
 }
 

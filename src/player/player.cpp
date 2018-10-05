@@ -95,6 +95,11 @@ void Player::update(float dt) {
         control = feet;
         control.setRadius(control_radius);
     }
+
+    if (!ball_under_control()) {
+        shooting = false;
+    }
+
     // state machine
     current_state->update(dt);
     if (current_state->finished()) {
@@ -150,7 +155,7 @@ void Player::do_dribble() {
         return;
 
     // calc force needed for kick
-    float force_needed = speed * 120.0f;
+    float force_needed = speed * 200.0f;
     Vector3 kick = facing_old.toVector() * force_needed;
 
     // normalize for diagonals
@@ -200,6 +205,7 @@ void Player::change_state(const PlayerState &state) {
 void Player::kick(Vector3 force) {
     //  apply to ball
     ball->kick(force);
+    shooting = true;
 
     //  start aftertouch!
     controller->startAftertouch(ball, force.normalise(), force.magnitude());

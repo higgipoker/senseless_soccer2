@@ -22,14 +22,22 @@
 
 namespace senseless_soccer {
 
-static const int MODIFIER_FULL = 0;
-static const int MODIFIER_HALF = 0;
+// base trajectory with no aftertouch applied
+static const float INITIAL_TRAJECTORY = 0.16f;
 
-static const int LIFT_FORWARD = -0;
-static const int LIFT_NEUTRAL = 300;
+// lift
+static const int LIFT_FORWARD = 0;
+static const int LIFT_NEUTRAL = 0;
 static const int LIFT_REVERSE = 0;
 
-static const int APPLY_AFTERTOUCH_DELAY = 5;
+// left or right
+static const int MODIFIER_FULL = 0;
+
+// diagonals
+static const int MODIFIER_HALF = 0;
+
+// restrictions
+static const int APPLY_AFTERTOUCH_DELAY = 0;
 static const int MAX_AFTERTOUCH_TIME = 30;
 
 using std::cout;
@@ -42,9 +50,9 @@ Aftertouch::Aftertouch(Controller &c)
   : controller(c) {
 }
 
-//  --------------------------------------------------
+// -----------------------------------------------------------------------------
 //  start aftertouch handling
-//  --------------------------------------------------
+// -----------------------------------------------------------------------------
 void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
                        const float initial_mag) {
     ball = b;
@@ -54,29 +62,56 @@ void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
     accumulation_applied = false;
     ticks = 0;
 
-    cout << "start aftertouch" << endl;
+    normal.z = 0;
+
+    // get Left pointing vector
+    left = normal.perpendicular();
+    left = left.normalizeToUnits();
+
+    // get Right pointing vector
+    right = left.reverse();
+
+    // get Left diagonal vector
+    left_diagonal = normal + left;
+    left_diagonal = left_diagonal.normalizeToUnits();
+
+    // get Right diagonal vector
+    right_diagonal = normal + right;
+    right_diagonal = right_diagonal.normalizeToUnits();
+
+    // get the reverse vectors (for lift)
+    left_diagonal_reversed = right_diagonal.reverse();
+    right_diagonal_reversed = left_diagonal.reverse();
+
+    forward = normal;
+    back = forward.reverse();
+
+    aftertouch.z += INITIAL_TRAJECTORY * initial_mag;
+    ball->aftertouch(aftertouch);
+
+    cout << "start aftertouch, " << initial_mag << endl;
 }
 
-//  --------------------------------------------------
+// -----------------------------------------------------------------------------
 //  end aftertouch handling
-//  --------------------------------------------------
+// -----------------------------------------------------------------------------
 void Aftertouch::end() {
     ticks = 0;
     ball = nullptr;
+    accumulated_aftertouch.reset();
 
     cout << "end aftertouch" << endl;
 }
 
-//  --------------------------------------------------
+// -----------------------------------------------------------------------------
 //  Update
-//  --------------------------------------------------
+// -----------------------------------------------------------------------------
 void Aftertouch::update() {
     if (ball == nullptr) {
         return;
     }
 
     Vector3 dpad;
-    Vector3 aftertouch;
 
     if (controller.input.states[Up])
         dpad.y = -1;
@@ -89,31 +124,6 @@ void Aftertouch::update() {
 
     if (controller.input.states[Right])
         dpad.x = 1;
-
-    normal.z = 0;
-
-    // get Left pointing vector
-    Vector3 left = normal.perpendicular();
-    left = left.normalizeToUnits();
-
-    // get Right pointing vector
-    Vector3 right = left.reverse();
-
-    // get Left diagonal vector
-    Vector3 left_diagonal = normal + left;
-    left_diagonal = left_diagonal.normalizeToUnits();
-
-    // get Right diagonal vector
-    Vector3 right_diagonal = normal + right;
-    right_diagonal = right_diagonal.normalizeToUnits();
-
-    // get the reverse vectors (for lift)
-    Vector3 left_diagonal_reversed = right_diagonal.reverse();
-    Vector3 right_diagonal_reversed = left_diagonal.reverse();
-
-    Vector3 forward = normal;
-    Vector3 back = forward.reverse();
-    Vector3 neutral;
 
     if (ticks >= APPLY_AFTERTOUCH_DELAY && !accumulation_applied) {
         accumulation_applied = true;
@@ -178,6 +188,7 @@ void Aftertouch::update() {
                 accumulated_aftertouch.z += LIFT_NEUTRAL;
             }
         } else if (dpad.equals(forward)) {
+            cout << "FORWARD" << endl;
             if (ticks > APPLY_AFTERTOUCH_DELAY) {
                 aftertouch.z += LIFT_FORWARD;
             } else {
