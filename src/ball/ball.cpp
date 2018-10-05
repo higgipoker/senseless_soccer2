@@ -102,6 +102,9 @@ void Ball::do_physics(float dt) {
     // actual acceleration due to gravity for this time slice
     float gravity_act = GRAVITY * time_slice;
 
+    // save bounce so we dont have to calc again for dampening
+    bool bounced = false;
+
     // ball is in the air so do gravity and air resistance
     if (Floats::greater_than(position.z, 0)) {
 
@@ -141,6 +144,9 @@ void Ball::do_physics(float dt) {
     else if (Floats::less_than(position.z, 0) &&
              Floats::less_than(velocity.z, 0)) {
 
+        // do dampening for infinite bounce later
+        bounced = true;
+
         // apply bounciness
         velocity.z = -velocity.z * co_bounciness;
 
@@ -150,22 +156,24 @@ void Ball::do_physics(float dt) {
         cout << "bounce" << endl;
     }
 
-    // verlet
+    // motion integration. pick one, these 2 are very similar!
+
+    // verlet motion integration
     old_velocity = velocity;
     velocity = velocity + acceleration * dt;
     position = position + (old_velocity + velocity) * 0.5 * dt;
 
+    // semi-implicit euler motion integration
+    //    velocity += acceleration * dt;
+    //    position += velocity * dt;
+
     // round off float unlimited bounce
-    if (Floats::less_than(position.z, 0) && Floats::less_than(velocity.z, 0)) {
+    if (bounced) {
         if (Floats::less_than(fabsf(velocity.z), 20.f)) {
             position.z = 0;
             velocity.z = 0;
         }
     }
-
-    // semi-implicit euler
-    //    velocity += acceleration * dt;
-    //    position += velocity * dt;
 
     // reset acceleration ready for next frame
     acceleration.reset();
