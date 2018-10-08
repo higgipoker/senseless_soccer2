@@ -22,23 +22,19 @@
 
 namespace senseless_soccer {
 
-// base trajectory with no aftertouch applied
-static const float INITIAL_TRAJECTORY = 0.16f;
-
 // lift
-static const int LIFT_FORWARD = 0;
-static const int LIFT_NEUTRAL = 0;
-static const int LIFT_REVERSE = 0;
+static const float LIFT_FORWARD = 0;
+static const float LIFT_NEUTRAL = 0;
+static const float LIFT_REVERSE = 0;
 
 // left or right
-static const int MODIFIER_FULL = 0;
+static const float MODIFIER_FULL = 400;
 
 // diagonals
-static const int MODIFIER_HALF = 0;
+static const float MODIFIER_HALF = 200;
 
 // restrictions
-static const int APPLY_AFTERTOUCH_DELAY = 0;
-static const int MAX_AFTERTOUCH_TIME = 30;
+static const int MAX_AFTERTOUCH_TIME = 20;
 
 using std::cout;
 using std::endl;
@@ -59,7 +55,6 @@ void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
     normal = initial_normal;
     normal = normal.normalizeToUnits();
     normal.z = 0;
-    accumulation_applied = false;
     ticks = 0;
 
     normal.z = 0;
@@ -86,9 +81,6 @@ void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
     forward = normal;
     back = forward.reverse();
 
-    aftertouch.z += INITIAL_TRAJECTORY * initial_mag;
-    ball->aftertouch(aftertouch);
-
     cout << "start aftertouch, " << initial_mag << endl;
 }
 
@@ -98,7 +90,8 @@ void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
 void Aftertouch::end() {
     ticks = 0;
     ball = nullptr;
-    accumulated_aftertouch.reset();
+    topspin.reset();
+    sidespin.reset();
 
     cout << "end aftertouch" << endl;
 }
@@ -125,89 +118,51 @@ void Aftertouch::update() {
     if (controller.input.states[Right])
         dpad.x = 1;
 
-    if (ticks >= APPLY_AFTERTOUCH_DELAY && !accumulation_applied) {
-        accumulation_applied = true;
-        aftertouch = accumulated_aftertouch;
-        accumulated_aftertouch.reset();
-    }
-
     // apply Left aftertouch
     if (dpad.equals(left)) {
-        if (ticks > APPLY_AFTERTOUCH_DELAY)
-            aftertouch += (left * MODIFIER_FULL);
-        else
-            accumulated_aftertouch += (left * MODIFIER_FULL);
+        sidespin += (left * MODIFIER_FULL);
     }
 
     // apply Right aftertouch
     else if (dpad.equals(right)) {
-        if (ticks > APPLY_AFTERTOUCH_DELAY)
-            aftertouch += (right * MODIFIER_FULL);
-        else
-            accumulated_aftertouch += (right * MODIFIER_FULL);
+        sidespin += (right * MODIFIER_FULL);
     }
 
     // apply Left-diagonal aftertouch
     else if (dpad.equals(left_diagonal)) {
-        if (ticks > APPLY_AFTERTOUCH_DELAY)
-            aftertouch += (left * MODIFIER_HALF);
-        else
-            accumulated_aftertouch += (left * MODIFIER_HALF);
+        sidespin += (left * MODIFIER_HALF);
     }
 
     // apply Right-diagonal aftertouch
     else if (dpad.equals(right_diagonal)) {
-        if (ticks > APPLY_AFTERTOUCH_DELAY)
-            aftertouch += (right * MODIFIER_HALF);
-        else
-            accumulated_aftertouch += (right * MODIFIER_HALF);
+        sidespin += (right * MODIFIER_HALF);
     }
 
     // apply Left diagonal reversed for lift
     else if (dpad.equals(left_diagonal_reversed)) {
-        if (ticks > APPLY_AFTERTOUCH_DELAY)
-            aftertouch += (left * MODIFIER_HALF);
-        else
-            accumulated_aftertouch += (left * MODIFIER_HALF);
+        aftertouch += (left * MODIFIER_HALF);
     }
 
     // apply Right diagonal reversed for lift
     else if (dpad.equals(right_diagonal_reversed)) {
-        if (ticks > APPLY_AFTERTOUCH_DELAY)
-            aftertouch += (right * MODIFIER_HALF);
-        else
-            accumulated_aftertouch += (right * MODIFIER_HALF);
+        aftertouch += (right * MODIFIER_HALF);
     }
 
     // now do the pure lift
-    if (ticks > APPLY_AFTERTOUCH_DELAY) {
-        if (dpad.equals(neutral)) {
-            if (ticks > APPLY_AFTERTOUCH_DELAY) {
-                aftertouch.z += LIFT_NEUTRAL;
-            } else {
-                accumulated_aftertouch.z += LIFT_NEUTRAL;
-            }
-        } else if (dpad.equals(forward)) {
-            cout << "FORWARD" << endl;
-            if (ticks > APPLY_AFTERTOUCH_DELAY) {
-                aftertouch.z += LIFT_FORWARD;
-            } else {
-                accumulated_aftertouch.z += LIFT_FORWARD;
-            }
-        } else {
-            // reversed for high
-            if (dpad.equals(back)) {
-                if (ticks > APPLY_AFTERTOUCH_DELAY) {
-                    aftertouch.z += LIFT_REVERSE;
-                } else {
-                    accumulated_aftertouch.z += LIFT_REVERSE;
-                }
-            }
+    if (dpad.equals(neutral)) {
+        aftertouch.z += LIFT_NEUTRAL;
+    } else if (dpad.equals(forward)) {
+        aftertouch.z += LIFT_FORWARD;
+    } else {
+        // reversed for high
+        if (dpad.equals(back)) {
+            aftertouch.z += LIFT_REVERSE;
         }
     }
 
     // apply aftertouch to ball
-    ball->aftertouch(aftertouch);
+    // ball->aftertouch(aftertouch);
+    ball->addSideSpin(sidespin);
 
     // end condition
     if (++ticks > MAX_AFTERTOUCH_TIME) {

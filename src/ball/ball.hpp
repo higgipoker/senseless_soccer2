@@ -14,14 +14,17 @@ public:
     void activate() override;
 
     // the entity was manually moved
-    void onMoved(const Vector3 &new_position, float dx = 0,
-                 float dy = 0) override;
+    void onDragged(const Vector3 &new_position);
 
     // kick it
     void kick(const Vector3 &force);
 
     // aftertouch interface
     void aftertouch(const Vector3 &aftertouch);
+
+    // apply spin to the ball
+    void addSideSpin(const Vector3 &s);
+    void addTopSpin(const Vector3 &s);
 
     // ball collidable
     sf::CircleShape circle;
@@ -33,12 +36,19 @@ protected:
     // add perspective to the ball
     void perspectivize(float camera_height) override;
 
-    // construct with an entity name
-    Ball(std::string in_name);
-    virtual ~Ball();
+    // forces acting on the ball
+    struct {
+        Vector3 drag;
+        Vector3 topspin;
+        Vector3 sidespin;
+        Vector3 gravity;
+    } forces;
 
-    Vector3 old_position; // for verlet
-    Vector3 old_velocity;
+    // construct with an entity name
+    Ball(std::string in_name, float dt = 0.01f);
+    virtual ~Ball() override;
+
+    Vector3 old_velocity; // for verlet
 
 public:
     friend class BallFactory;

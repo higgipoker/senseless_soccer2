@@ -30,10 +30,11 @@ const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
 const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
-static const float AIR_FACTOR = 0.03f;
+static const float AIR_FACTOR = 0.01f;
 static const float co_friction = 0.98f;
 static const float co_friction_bounce = 0.9f; // bounce fricton
 static const float co_bounciness = 0.8f;
+static const float co_spin_decay = 0.001f; // how much spin decays over time
 static const float ball_mass = 200.f; // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
@@ -44,9 +45,26 @@ using std::endl;
 // -----------------------------------------------------------------------------
 // Ball
 // -----------------------------------------------------------------------------
-Ball::Ball(std::string in_name)
+Ball::Ball(std::string in_name, float dt)
   : Entity(std::move(in_name)) {
     circle.setRadius(4.0f);
+
+    // gravity is a constant, can set it up here once
+
+    // formulas are in seconds, physics step is in "dt"
+    float time_slice = dt / 1;
+
+    // actual acceleration due to gravity for this time slice
+    float gravity_act = GRAVITY * time_slice;
+
+    // change gravity meters into screen pixels
+    float pixels_per_sec_squared = Metrics::MetersToPixels(gravity_act);
+
+    // find gravity in pixels for one physics frame
+    float grv = pixels_per_sec_squared;
+
+    // make the gravity vector
+    forces.gravity = Vector3(0, 0, -grv * ball_mass);
 }
 
 // -----------------------------------------------------------------------------
@@ -61,8 +79,7 @@ Ball::~Ball() {
 void Ball::activate() {
     position.x = 60;
     position.y = 60;
-    position.z = Metrics::MetersToPixels(4);
-    old_position = position;
+    position.z = Metrics::MetersToPixels(0);
 }
 // -----------------------------------------------------------------------------
 // update
@@ -96,42 +113,31 @@ void Ball::update(float dt) {
 // do_physics
 // -----------------------------------------------------------------------------
 void Ball::do_physics(float dt) {
-    // formulas are in seconds, physics step is in "dt"
-    float time_slice = dt / 1;
-
-    // actual acceleration due to gravity for this time slice
-    float gravity_act = GRAVITY * time_slice;
 
     // save bounce so we dont have to calc again for dampening
     bool bounced = false;
 
-    // ball is in the air so do gravity and air resistance
+    // ball is in the air so do gravity, drag and spin
     if (Floats::greater_than(position.z, 0)) {
 
         //
         // gravity
         //
-        // change gravity meters into screen pixels
-        float pixels_per_sec_squared = Metrics::MetersToPixels(gravity_act);
-
-        // find gravity in pixels for one physics frame
-        float grv = pixels_per_sec_squared;
-
-        // make the gravity vector
-        Vector3 gravity(0, 0, -grv * ball_mass);
-
-        // accumulate forces
-        acceleration += gravity;
+        acceleration += forces.gravity;
 
         //
-        // air resistance
+        // drag
         //
-        // air resistance increases with height
-        Vector3 air = velocity.reverse() * AIR_FACTOR * position.z;
+        // drag increases with height and ball size
+        forces.drag = Vector3(velocity.reverse() * AIR_FACTOR * position.z *
+                              circle.getRadius() * 2);
+        acceleration += forces.drag;
 
-        // accumulate forces
-        acceleration += air;
-
+        //
+        // spin
+        //
+        acceleration += forces.topspin;
+        acceleration += forces.sidespin;
     }
 
     // friction
@@ -152,8 +158,6 @@ void Ball::do_physics(float dt) {
 
         // ball also loses some speed on bounce
         velocity *= co_friction_bounce;
-
-        cout << "bounce" << endl;
     }
 
     // -------------------------------------------------------------------------
@@ -180,8 +184,24 @@ void Ball::do_physics(float dt) {
         }
     }
 
+    // spin decays over time
+    if (Floats::greater_than(forces.topspin.magnidude2d(), 0)) {
+        forces.topspin = forces.topspin * co_spin_decay;
+    } else {
+        forces.topspin.reset();
+    }
+    if (Floats::greater_than(forces.sidespin.magnidude2d(), 0)) {
+        forces.sidespin = forces.sidespin * co_spin_decay;
+    } else {
+        forces.sidespin.reset();
+    }
+
     // reset acceleration ready for next frame
     acceleration.reset();
+
+    if (forces.sidespin.magnitude()) {
+        cout << forces.sidespin.magnitude() << endl;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -217,9 +237,8 @@ void Ball::perspectivize(float camera_height) {
 // -----------------------------------------------------------------------------
 // onMoved
 // -----------------------------------------------------------------------------
-void Ball::onMoved(const Vector3 &new_position, float dx, float dy) {
-    position.x += dx;
-    position.y += dy;
+void Ball::onDragged(const Vector3 &new_position) {
+    position += new_position;
     circle.setPosition(position.x, position.y);
 }
 
@@ -232,6 +251,20 @@ void Ball::kick(const Vector3 &force) {
     acceleration.reset();
     velocity.reset();
     acceleration = force;
+}
+
+// -----------------------------------------------------------------------------
+// addSideSpin
+// -----------------------------------------------------------------------------
+void Ball::addSideSpin(const Vector3 &s) {
+    forces.sidespin += s;
+}
+
+// -----------------------------------------------------------------------------
+// addTopSpin
+// -----------------------------------------------------------------------------
+void Ball::addTopSpin(const Vector3 &s) {
+    forces.topspin += s;
 }
 
 // -----------------------------------------------------------------------------

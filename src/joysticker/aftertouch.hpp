@@ -35,9 +35,10 @@ public:
 private:
     Ball *ball = nullptr;
     Controller &controller;
+    Vector3 topspin;
+    Vector3 sidespin;
     Vector3 aftertouch;
     Vector3 normal;
-    Vector3 accumulated_aftertouch;
     Vector3 left;
     Vector3 right;
     Vector3 left_diagonal;
@@ -48,7 +49,6 @@ private:
     Vector3 back;
     Vector3 neutral;
 
-    bool accumulation_applied = false;
     float initial_force = 0;
     unsigned int ticks = 0;
 };

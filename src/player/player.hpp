@@ -52,9 +52,8 @@ public:
     // helper to init the animatio map
     static void Init();
 
-    // movedmanually
-    void onMoved(const Vector3 &new_position, float dx = 0,
-                 float dy = 0) override;
+    // moved manually
+    void onDragged(const Vector3 &diff) override;
 
     // controller interface
     void onControllerEvent(ControllerEvent event) override;

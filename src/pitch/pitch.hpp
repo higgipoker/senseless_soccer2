@@ -9,11 +9,9 @@ public:
     virtual ~Pitch();
 
     // the entity was manually moved
-    void onMoved(const gamelib2::Vector3 &new_position, float dx = 0,
-                 float dy = 0) override;
+    void onDragged(const gamelib2::Vector3 &new_position) override;
 
 protected:
-
 };
 
 } // namespace senseless_soccer

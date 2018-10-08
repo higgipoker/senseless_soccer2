@@ -138,12 +138,8 @@ void Player::onControllerEvent(ControllerEvent event) {
 // -----------------------------------------------------------------------------
 // onMoved
 // -----------------------------------------------------------------------------
-void Player::onMoved(const gamelib2::Vector3 &new_position, float dx,
-                     float dy) {
-    Entity::onMoved(new_position);
-    auto w = widget;
-    w->setPosition(position.x, position.y);
-    w->animate();
+void Player::onDragged(const gamelib2::Vector3 &new_position) {
+    Entity::onDragged(new_position);
 }
 
 // -----------------------------------------------------------------------------

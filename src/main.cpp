@@ -49,7 +49,7 @@ int main() {
     viewer.addWidget(tiledbg);
 
     // players
-    for (int i = 0; i < 30; ++i) {
+    for (int i = 0; i < 1; ++i) {
         std::stringstream name;
         name << "player" << i;
 

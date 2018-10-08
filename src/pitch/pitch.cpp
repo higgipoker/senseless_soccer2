@@ -19,10 +19,10 @@ Pitch::~Pitch() {
 // -----------------------------------------------------------------------------
 // on_moved
 // -----------------------------------------------------------------------------
-void Pitch::onMoved(const gamelib2::Vector3 &new_position, float dx, float dy) {
-    Entity::onMoved(new_position);
+void Pitch::onDragged(const gamelib2::Vector3 &diff) {
+    Entity::onDragged(diff);
     if (widget) {
-        widget->setPosition(position.x, position.y);
+        widget->move(diff.x, diff.y);
     }
 }
 } // namespace senseless_soccer

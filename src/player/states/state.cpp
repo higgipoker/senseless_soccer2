@@ -53,7 +53,8 @@ bool State::handle_input(ControllerEvent event) {
 
             if (player.ball_under_control()) {
                 Vector3 kick_force =
-                  (player.facing.toVector() * event.param * 1000);
+                  player.facing.toVector() * event.param * 1000;
+                kick_force.z = event.param * 200;
                 player.kick(kick_force);
             }
         }
