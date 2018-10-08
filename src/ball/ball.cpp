@@ -30,7 +30,7 @@ const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
 const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
-static const float AIR_FACTOR = 0.01f;
+static const float AIR_FACTOR = 0.001f;
 static const float co_friction = 0.98f;
 static const float co_friction_bounce = 0.9f; // bounce fricton
 static const float co_bounciness = 0.8f;

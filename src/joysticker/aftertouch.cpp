@@ -24,8 +24,8 @@ namespace senseless_soccer {
 
 // lift
 static const float LIFT_FORWARD = 0;
-static const float LIFT_NEUTRAL = 0;
-static const float LIFT_REVERSE = 0;
+static const float LIFT_NEUTRAL = 2.5f;
+static const float LIFT_REVERSE = 4.0f;
 
 // left or right
 static const float MODIFIER_FULL = 10;
@@ -34,7 +34,7 @@ static const float MODIFIER_FULL = 10;
 static const float MODIFIER_HALF = 5;
 
 // restrictions
-static const int MAX_AFTERTOUCH_TIME = 100;
+static const int MAX_AFTERTOUCH_TIME = 20;
 
 using std::cout;
 using std::endl;
@@ -140,29 +140,30 @@ void Aftertouch::update() {
 
     // apply Left diagonal reversed for lift
     else if (dpad.equals(left_diagonal_reversed)) {
-        aftertouch += (left * MODIFIER_HALF);
+        sidespin += (left * MODIFIER_HALF);
     }
 
     // apply Right diagonal reversed for lift
     else if (dpad.equals(right_diagonal_reversed)) {
-        aftertouch += (right * MODIFIER_HALF);
+        sidespin += (right * MODIFIER_HALF);
     }
 
     // now do the pure lift
     if (dpad.equals(neutral)) {
-        aftertouch.z += LIFT_NEUTRAL;
+        topspin.z += LIFT_NEUTRAL;
     } else if (dpad.equals(forward)) {
-        aftertouch.z += LIFT_FORWARD;
+        topspin.z += LIFT_FORWARD;
     } else {
         // reversed for high
         if (dpad.equals(back)) {
-            aftertouch.z += LIFT_REVERSE;
+            topspin.z += LIFT_REVERSE;
         }
     }
 
     // apply aftertouch to ball
     // ball->aftertouch(aftertouch);
     ball->addSideSpin(sidespin);
+    ball->addTopSpin(topspin);
 
     // end condition
     if (++ticks > MAX_AFTERTOUCH_TIME) {
