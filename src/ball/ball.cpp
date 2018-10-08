@@ -34,7 +34,7 @@ static const float AIR_FACTOR = 0.01f;
 static const float co_friction = 0.98f;
 static const float co_friction_bounce = 0.9f; // bounce fricton
 static const float co_bounciness = 0.8f;
-static const float co_spin_decay = 0.001f; // how much spin decays over time
+static const float co_spin_decay = 0.0001f; // how much spin decays over time
 static const float ball_mass = 200.f; // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
@@ -199,7 +199,7 @@ void Ball::do_physics(float dt) {
     // reset acceleration ready for next frame
     acceleration.reset();
 
-    if (forces.sidespin.magnitude()) {
+    if (forces.sidespin.magnitude() > 0) {
         cout << forces.sidespin.magnitude() << endl;
     }
 }

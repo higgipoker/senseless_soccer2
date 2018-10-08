@@ -28,13 +28,13 @@ static const float LIFT_NEUTRAL = 0;
 static const float LIFT_REVERSE = 0;
 
 // left or right
-static const float MODIFIER_FULL = 400;
+static const float MODIFIER_FULL = 10;
 
 // diagonals
-static const float MODIFIER_HALF = 200;
+static const float MODIFIER_HALF = 5;
 
 // restrictions
-static const int MAX_AFTERTOUCH_TIME = 20;
+static const int MAX_AFTERTOUCH_TIME = 100;
 
 using std::cout;
 using std::endl;
