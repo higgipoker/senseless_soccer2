@@ -87,6 +87,7 @@ void Ball::update(float dt) {
             shadow->scale(sprite->scale(), sprite->scale());
         }
 
+	// add perspective to the ball sprite
         perspectivize(CAMERA_HEIGHT);
     }
     circle.setPosition(position.x, position.y);
@@ -172,7 +173,7 @@ void Ball::do_physics(float dt) {
     //
     // -------------------------------------------------------------------------
 
-    // round off float unlimited bounce
+    // round off infinite bounce
     if (bounced) {
         if (Floats::less_than(fabsf(velocity.z), 20.f)) {
             position.z = 0;
@@ -206,12 +207,10 @@ void Ball::perspectivize(float camera_height) {
     float z_cm = position.z * CM_PER_PIXEL;
 
     if (Floats::greater_than(z_cm, 0)) {
-        // tmp hard code offset = 0.133px per cm
+        // tmp hard code offset = 0.133px per cm according to sprite design
         float y_offset = Y_OFFSET_DUE_TO_HEIGHT * z_cm;
         sprite->move(0, -y_offset);
     }
-
-    // update the shadow
 }
 
 // -----------------------------------------------------------------------------
@@ -227,8 +226,6 @@ void Ball::onMoved(const Vector3 &new_position, float dx, float dy) {
 // kick
 // -----------------------------------------------------------------------------
 void Ball::kick(const Vector3 &force) {
-
-    // this is where the initial force is applied
     acceleration.reset();
     velocity.reset();
     acceleration = force;
