@@ -86,8 +86,7 @@ void Player::update(float dt) {
         Sprite *shadow = sprite->getShadow();
         if (shadow) {
             shadow->setFrame(sprite->getFrame());
-            shadow->setPosition(sprite->position().x + 3,
-                                sprite->position().y + 7);
+            shadow->setPosition(sprite->position().x, sprite->position().y);
         }
 
         feet.setPosition(sprite->position().x,
