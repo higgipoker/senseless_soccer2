@@ -37,6 +37,9 @@ protected:
 
     // quick access to the widget
     Widget &sprite;
+
+    // lock dpad if fire pressed ef
+    bool lock_dpad = false;
 };
 
 } // namespace senseless_soccer

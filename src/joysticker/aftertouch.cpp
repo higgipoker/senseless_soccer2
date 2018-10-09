@@ -22,19 +22,24 @@
 
 namespace senseless_soccer {
 
+static const float SPIN_FACTOR = 100;
+
 // lift
 static const float LIFT_FORWARD = 0;
-static const float LIFT_NEUTRAL = 2.5f;
-static const float LIFT_REVERSE = 4.0f;
+static const float LIFT_NEUTRAL = 0;
+static const float LIFT_REVERSE = 0;
 
 // left or right
-static const float MODIFIER_FULL = 10;
+static const float MODIFIER_FULL = 0;
 
 // diagonals
-static const float MODIFIER_HALF = 5;
+static const float MODIFIER_HALF = 0;
 
-// restrictions
-static const int MAX_AFTERTOUCH_TIME = 20;
+// delay (give initial conditions time)
+static const int WAIT = 10;
+
+// time to read for aftertouch (frames) based on 120fps, 12 frames = 100ms
+static const int MAX_AFTERTOUCH_TIME = 50;
 
 using std::cout;
 using std::endl;
@@ -49,10 +54,128 @@ Aftertouch::Aftertouch(Controller &c)
 // -----------------------------------------------------------------------------
 //  start aftertouch handling
 // -----------------------------------------------------------------------------
-void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
-                       const float initial_mag) {
+void Aftertouch::start(Ball *b, const Vector3 &normal, const float mag) {
     ball = b;
-    normal = initial_normal;
+
+    // sets up the left, right vectors etc
+    set_dpad();
+    set_vectors(normal);
+
+    topspin.z = 1000;
+
+    ball->addTopSpin(topspin);
+    topspin.reset();
+    sidespin.reset();
+
+    // set the initial force on the ball depending on the dpad at start
+    //    if (dpad.equals(forward)) {
+    //        // a flat kick
+    //        topspin.z = 1000; // the flattest possible kick
+    //    } else if (dpad.equals(back)) {
+    //        topspin.z = -1000; // the lobbiest possible kick
+    //    }
+
+    //     else if (dpad.equals(left_diagonal)) {
+    //        // a flat kick with left curl
+    //        topspin.z += LIFT_FORWARD;
+    //        sidespin += (left * MODIFIER_FULL);
+
+    //    } else if (dpad.equals(right_diagonal)) {
+    //        // a flat kick with right curl
+    //        topspin.z += LIFT_FORWARD;
+    //        sidespin += (right * MODIFIER_FULL);
+    //    } else if (dpad.equals(back)) {
+    //        // a lobbed kick
+    //        topspin.z -= LIFT_FORWARD;
+    //    } else if (dpad.equals(left_diagonal_reversed)) {
+    //        // a lobbed kick with left curl
+    //        topspin.z -= LIFT_FORWARD;
+    //        sidespin += (left * MODIFIER_FULL);
+    //    } else if (dpad.equals(right_diagonal_reversed)) {
+    //        // a lobbed kick with right curl
+    //        topspin.z -= LIFT_FORWARD;
+    //        sidespin += (right * MODIFIER_FULL);
+    //    } else if (dpad.equals(left)) {
+    //        // a normal kick with left curl
+    //        sidespin += (left * MODIFIER_FULL);
+    //    } else if (dpad.equals(right)) {
+    //        // a normal kick with right curl
+    //        sidespin += (right * MODIFIER_FULL);
+    //    } else {
+    //        // a normal kick (dpad in neutral position)
+    //    }
+
+    //    ball->addSideSpin(sidespin);
+    //    ball->addTopSpin(topspin);
+
+    cout << "start aftertouch, " << mag << endl;
+}
+
+// -----------------------------------------------------------------------------
+//  end aftertouch handling
+// -----------------------------------------------------------------------------
+void Aftertouch::end() {
+    ticks = 0;
+    ball = nullptr;
+    topspin.reset();
+    sidespin.reset();
+
+    cout << "end aftertouch" << endl;
+}
+
+// -----------------------------------------------------------------------------
+//  Update
+// -----------------------------------------------------------------------------
+void Aftertouch::update() {
+
+    if (ball == nullptr) {
+        return;
+    }
+
+    //    if (++ticks < WAIT) {
+    //        return;
+    //    }
+
+    set_dpad();
+
+    if (dpad_left()) {
+        sidespin += (left * SPIN_FACTOR);
+    }
+
+    if (dpad_right()) {
+        sidespin += (right * SPIN_FACTOR);
+    }
+
+    if (dpad_forward()) {
+        // topspin.z -= (SPIN_FACTOR * 0.5f);
+    }
+
+    if (dpad_back()) {
+        topspin.z += (SPIN_FACTOR * 0.5f);
+    }
+
+    if (dpad_neutral()) {
+        topspin.z += (SPIN_FACTOR * 0.2f);
+    }
+
+    // apply aftertouch to ball
+    ball->addSideSpin(sidespin);
+    ball->addTopSpin(topspin);
+
+    topspin.reset();
+    sidespin.reset();
+
+    // end condition
+    if (++ticks > MAX_AFTERTOUCH_TIME) {
+        end();
+    }
+}
+
+// -----------------------------------------------------------------------------
+// set_vectors
+// -----------------------------------------------------------------------------
+void Aftertouch::set_vectors(Vector3 normal) {
+    normal = normal;
     normal = normal.normalizeToUnits();
     normal.z = 0;
     ticks = 0;
@@ -80,32 +203,13 @@ void Aftertouch::start(Ball *b, const Vector3 &initial_normal,
 
     forward = normal;
     back = forward.reverse();
-
-    cout << "start aftertouch, " << initial_mag << endl;
 }
 
 // -----------------------------------------------------------------------------
-//  end aftertouch handling
+// set_dpad
 // -----------------------------------------------------------------------------
-void Aftertouch::end() {
-    ticks = 0;
-    ball = nullptr;
-    topspin.reset();
-    sidespin.reset();
-
-    cout << "end aftertouch" << endl;
-}
-
-// -----------------------------------------------------------------------------
-//  Update
-// -----------------------------------------------------------------------------
-void Aftertouch::update() {
-    if (ball == nullptr) {
-        return;
-    }
-
-    Vector3 dpad;
-
+void Aftertouch::set_dpad() {
+    dpad.reset();
     if (controller.input.states[Up])
         dpad.y = -1;
 
@@ -117,77 +221,45 @@ void Aftertouch::update() {
 
     if (controller.input.states[Right])
         dpad.x = 1;
+}
 
-    // apply Left aftertouch
-    if (dpad.equals(left)) {
-        sidespin += (left * MODIFIER_FULL);
-    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Aftertouch::dpad_forward() {
+    return (dpad.equals(forward) || dpad.equals(left_diagonal) ||
+            dpad.equals(right_diagonal));
+}
 
-    // apply Right aftertouch
-    else if (dpad.equals(right)) {
-        sidespin += (right * MODIFIER_FULL);
-    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Aftertouch::dpad_back() {
+    return (dpad.equals(back) || dpad.equals(left_diagonal_reversed) ||
+            dpad.equals(right_diagonal_reversed));
+}
 
-    // apply Left-diagonal aftertouch
-    else if (dpad.equals(left_diagonal)) {
-        sidespin += (left * MODIFIER_HALF);
-    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Aftertouch::dpad_left() {
+    return (dpad.equals(left) || dpad.equals(left_diagonal) ||
+            dpad.equals(left_diagonal_reversed));
+}
 
-    // apply Right-diagonal aftertouch
-    else if (dpad.equals(right_diagonal)) {
-        sidespin += (right * MODIFIER_HALF);
-    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Aftertouch::dpad_right() {
+    return (dpad.equals(right) || dpad.equals(right_diagonal) ||
+            dpad.equals(right_diagonal_reversed));
+}
 
-    // apply Left diagonal reversed for lift
-    else if (dpad.equals(left_diagonal_reversed)) {
-        sidespin += (left * MODIFIER_HALF);
-    }
-
-    // apply Right diagonal reversed for lift
-    else if (dpad.equals(right_diagonal_reversed)) {
-        sidespin += (right * MODIFIER_HALF);
-    }
-
-    // now do the pure lift
-    if (dpad.equals(neutral)) {
-        topspin.z += LIFT_NEUTRAL;
-    } else if (dpad.equals(forward)) {
-        topspin.z += LIFT_FORWARD;
-    } else {
-        // reversed for high
-        if (dpad.equals(back)) {
-            topspin.z += LIFT_REVERSE;
-        }
-    }
-
-    // apply aftertouch to ball
-    // ball->aftertouch(aftertouch);
-    ball->addSideSpin(sidespin);
-    ball->addTopSpin(topspin);
-
-    // end condition
-    if (++ticks > MAX_AFTERTOUCH_TIME) {
-        end();
-    } else {
-        //        if (dpad.equals(forward))
-        //        {
-        //            print("aftertouch forward");
-        //        }
-        //
-        //        if (dpad.equals(back))
-        //        {
-        //            print("aftertouch back");
-        //        }
-        //
-        //        if (dpad.equals(Left))
-        //        {
-        //            print("aftertouch Left");
-        //        }
-        //
-        //        if (dpad.equals(Right))
-        //        {
-        //            print("aftertouch Right");
-        //        }
-    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Aftertouch::dpad_neutral() {
+    return (dpad.equals(Vector3(0, 0, 0)) || dpad.equals(left) ||
+            dpad.equals(right));
 }
 } // namespace senseless_soccer

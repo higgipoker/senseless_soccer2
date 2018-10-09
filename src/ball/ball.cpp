@@ -31,10 +31,10 @@ const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.001f;
-static const float co_friction = 0.98f;
+static const float co_friction = 0.99f;
 static const float co_friction_bounce = 0.9f; // bounce fricton
 static const float co_bounciness = 0.8f;
-static const float co_spin_decay = 0.0001f; // how much spin decays over time
+static const float co_spin_decay = 0.8f; // how much spin decays over time
 static const float ball_mass = 200.f; // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
@@ -65,12 +65,6 @@ Ball::Ball(std::string in_name, float dt)
 
     // make the gravity vector
     forces.gravity = Vector3(0, 0, -grv * ball_mass);
-}
-
-// -----------------------------------------------------------------------------
-// ~Ball
-// -----------------------------------------------------------------------------
-Ball::~Ball() {
 }
 
 // -----------------------------------------------------------------------------
@@ -132,17 +126,11 @@ void Ball::do_physics(float dt) {
         forces.drag = Vector3(velocity.reverse() * AIR_FACTOR * position.z *
                               circle.getRadius() * 2);
         acceleration += forces.drag;
-
-        //
-        // spin
-        //
-        acceleration += forces.topspin;
-        acceleration += forces.sidespin;
     }
 
     // friction
     else if (Floats::equal(velocity.z, 0) &&
-             Floats::greater_than(velocity.magnidude2d(), 0)) {
+             Floats::greater_than(velocity.magnitude2d(), 0)) {
         velocity *= co_friction;
     }
 
@@ -159,6 +147,12 @@ void Ball::do_physics(float dt) {
         // ball also loses some speed on bounce
         velocity *= co_friction_bounce;
     }
+
+    //
+    // spin
+    //
+    acceleration += forces.topspin;
+    acceleration += forces.sidespin;
 
     // -------------------------------------------------------------------------
     // MOTION INTEGRATION
@@ -185,12 +179,12 @@ void Ball::do_physics(float dt) {
     }
 
     // spin decays over time
-    if (Floats::greater_than(forces.topspin.magnidude2d(), 0)) {
+    if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
         forces.topspin = forces.topspin * co_spin_decay;
     } else {
         forces.topspin.reset();
     }
-    if (Floats::greater_than(forces.sidespin.magnidude2d(), 0)) {
+    if (Floats::greater_than(forces.sidespin.magnitude(), 0)) {
         forces.sidespin = forces.sidespin * co_spin_decay;
     } else {
         forces.sidespin.reset();
@@ -199,9 +193,16 @@ void Ball::do_physics(float dt) {
     // reset acceleration ready for next frame
     acceleration.reset();
 
-    if (forces.sidespin.magnitude() > 0) {
+    if (Floats::greater_than(forces.sidespin.magnitude(), 0)) {
         cout << forces.sidespin.magnitude() << endl;
     }
+
+    if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
+        cout << forces.topspin.magnitude() << endl;
+    }
+
+    // tmp
+    keep_in_bounds();
 }
 
 // -----------------------------------------------------------------------------
@@ -248,6 +249,8 @@ void Ball::onDragged(const Vector3 &new_position) {
 void Ball::kick(const Vector3 &force) {
 
     // this is where the initial force is applied
+    forces.sidespin.reset();
+    forces.topspin.reset();
     acceleration.reset();
     velocity.reset();
     acceleration = force;
@@ -268,9 +271,35 @@ void Ball::addTopSpin(const Vector3 &s) {
 }
 
 // -----------------------------------------------------------------------------
-// aftertouch
+// rebound
 // -----------------------------------------------------------------------------
-void Ball::aftertouch(const Vector3 &aftertouch) {
-    acceleration += aftertouch;
+void Ball::rebound(Vector3 &wall, const Vector3 dampen) {
+    wall = wall.normalise();
+    velocity = velocity.reflect(wall);
+    velocity *= dampen;
 }
+
+// -----------------------------------------------------------------------------
+// keep_in_bounds
+// -----------------------------------------------------------------------------
+void Ball::keep_in_bounds() {
+    if (position.x - circle.getRadius() < bounds.getPosition().x) {
+        Vector3 wall(1, 0);
+        rebound(wall);
+    } else if (position.x + circle.getRadius() >
+               bounds.getPosition().x + bounds.getSize().x) {
+        Vector3 wall(1, 0);
+        rebound(wall);
+
+    } else if (position.y - circle.getRadius() < bounds.getPosition().y) {
+        Vector3 wall(0, 1);
+        rebound(wall);
+
+    } else if (position.y + circle.getRadius() >
+               bounds.getPosition().y + bounds.getSize().y) {
+        Vector3 wall(0, 1);
+        rebound(wall);
+    }
+}
+
 } // namespace senseless_soccer

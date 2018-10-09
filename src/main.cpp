@@ -69,6 +69,7 @@ int main() {
     Sprite *ballsprite = static_cast<Sprite *>(ball->widget);
     tiledbg->addChild(ballsprite->getShadow());
     tiledbg->addChild(ballsprite);
+    ball->bounds.setSize(sf::Vector2f(800, 600));
 
     // add entities to engine
     engine.addEntity(ball);

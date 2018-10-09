@@ -197,13 +197,19 @@ void Player::change_state(const PlayerState &state) {
 // -----------------------------------------------------------------------------
 // kick
 // -----------------------------------------------------------------------------
-void Player::kick(Vector3 force) {
-    //  apply to ball
-    ball->kick(force);
-    shooting = true;
+void Player::kick(float power) {
 
-    //  start aftertouch!
+    // always kick in direction player is facing
+    Vector3 force = facing.toVector().normalise() * power;
+
+    //  apply to ball
+    ball->kick(force * 1000);
+
+    //  start aftertouch and apply initial extra force to ball depending on dpad
     controller->startAftertouch(ball, force.normalise(), force.magnitude());
+
+    // temp suspend control and dribble
+    shooting = true;
 }
 
 // -----------------------------------------------------------------------------

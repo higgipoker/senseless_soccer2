@@ -28,7 +28,7 @@ class Aftertouch {
 
 public:
     Aftertouch(Controller &c);
-    void start(Ball *b, const Vector3 &initial_normal, const float initial_mag);
+    void start(Ball *b, const Vector3 &normal, const float mag);
     void end();
     void update();
 
@@ -38,7 +38,6 @@ private:
     Vector3 topspin;
     Vector3 sidespin;
     Vector3 aftertouch;
-    Vector3 normal;
     Vector3 left;
     Vector3 right;
     Vector3 left_diagonal;
@@ -48,9 +47,23 @@ private:
     Vector3 forward;
     Vector3 back;
     Vector3 neutral;
+    Vector3 dpad;
 
     float initial_force = 0;
     unsigned int ticks = 0;
+
+    // helper to set up directions orientated around the initial normal
+    void set_vectors(Vector3 normal);
+
+    // setup the dpad vector depending on current controller status
+    void set_dpad();
+
+    // helpers - dpad in relation to players orientation
+    bool dpad_forward();
+    bool dpad_back();
+    bool dpad_left();
+    bool dpad_right();
+    bool dpad_neutral();
 };
 
 } // namespace senseless_soccer

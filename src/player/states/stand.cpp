@@ -35,7 +35,7 @@ void Stand::end() {
 // finished
 // -----------------------------------------------------------------------------
 bool Stand::finished() {
-    return (gamelib2::Floats::greater_than(player.velocity.magnidude2d(), 0));
+    return (gamelib2::Floats::greater_than(player.velocity.magnitude2d(), 0));
 }
 
 // -----------------------------------------------------------------------------

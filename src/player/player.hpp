@@ -81,7 +81,7 @@ protected:
     void do_close_control();
 
     // kick the ball
-    void kick(Vector3 force);
+    void kick(float power);
 
     // track facing direction
     Compass facing;

@@ -59,7 +59,7 @@ void Run::end() {
 // finished
 // -----------------------------------------------------------------------------
 bool Run::finished() {
-    return (Floats::equal(player.velocity.magnidude2d(), 0));
+    return (Floats::equal(player.velocity.magnitude2d(), 0));
 }
 
 // -----------------------------------------------------------------------------
