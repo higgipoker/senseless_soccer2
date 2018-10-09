@@ -224,7 +224,7 @@ void Aftertouch::set_dpad() {
 }
 
 // -----------------------------------------------------------------------------
-//
+// dpad_forward
 // -----------------------------------------------------------------------------
 bool Aftertouch::dpad_forward() {
     return (dpad.equals(forward) || dpad.equals(left_diagonal) ||
@@ -232,7 +232,7 @@ bool Aftertouch::dpad_forward() {
 }
 
 // -----------------------------------------------------------------------------
-//
+// dpad_back
 // -----------------------------------------------------------------------------
 bool Aftertouch::dpad_back() {
     return (dpad.equals(back) || dpad.equals(left_diagonal_reversed) ||
@@ -240,7 +240,7 @@ bool Aftertouch::dpad_back() {
 }
 
 // -----------------------------------------------------------------------------
-//
+// dpad_left
 // -----------------------------------------------------------------------------
 bool Aftertouch::dpad_left() {
     return (dpad.equals(left) || dpad.equals(left_diagonal) ||
@@ -248,7 +248,7 @@ bool Aftertouch::dpad_left() {
 }
 
 // -----------------------------------------------------------------------------
-//
+// dpad_right
 // -----------------------------------------------------------------------------
 bool Aftertouch::dpad_right() {
     return (dpad.equals(right) || dpad.equals(right_diagonal) ||
@@ -256,7 +256,7 @@ bool Aftertouch::dpad_right() {
 }
 
 // -----------------------------------------------------------------------------
-//
+// dpad_neutral
 // -----------------------------------------------------------------------------
 bool Aftertouch::dpad_neutral() {
     return (dpad.equals(Vector3(0, 0, 0)) || dpad.equals(left) ||
