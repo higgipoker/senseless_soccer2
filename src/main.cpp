@@ -86,7 +86,7 @@ int main() {
     while (viewer.running) {
         controller.update();
         engine.frame(timestep);
-        viewer.run();
+        viewer.frame();
     }
     viewer.close();
 
