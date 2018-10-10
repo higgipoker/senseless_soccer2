@@ -23,12 +23,9 @@
 namespace senseless_soccer {
 class PlayerFactory {
 public:
-    static void destroy();
-
     // constructs a complete player and delivers shared pointer
-    static senseless_soccer::Player *makePlayer(const std::string &name);
+    static std::unique_ptr<Player> makePlayer(const std::string &name);
 
 private:
-static std::vector<Player*> players;
 };
 } // namespace senseless_soccer

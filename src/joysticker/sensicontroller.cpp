@@ -18,15 +18,43 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "sensicontroller.hpp"
+#include "../ball/ball.hpp"
+#include "../player/player.hpp"
+#include <gamelib2/utils/files.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <iostream>
 
+using namespace gamelib2;
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
 // SensiController
 // -----------------------------------------------------------------------------
-SensiController::SensiController(Input &i)
+SensiController::SensiController(InputDevice &i)
   : Controller(i)
+  , label(Files::getWorkingDirectory() + "/fonts/swos.ttf") // todo font factory
   , aftertouch(*this) {
+
+    label.setSize(12);
+    label.setColor(sf::Color::White);
+
+} // namespace senseless_soccer
+
+// -----------------------------------------------------------------------------
+// attachToPlayer
+// -----------------------------------------------------------------------------
+void SensiController::attachToPlayer(Player *p) {
+    if (p == player)
+        return;
+
+    if (player) {
+        player->detatchInput();
+    }
+    player = p;
+    if (player) {
+        player->attachInput(this);
+        label.setText("9");
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -35,6 +63,13 @@ SensiController::SensiController(Input &i)
 void SensiController::update() {
     Controller::update();
     aftertouch.update();
+
+    // attached to a player?
+    if (player) {
+        auto rect = player->widget->bounds();
+        label.setCenter(rect.left + rect.width / 2,
+                        rect.top + rect.width / 2 - rect.height / 2 - 4);
+    }
 }
 
 // -----------------------------------------------------------------------------

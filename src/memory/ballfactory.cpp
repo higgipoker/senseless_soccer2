@@ -27,43 +27,43 @@
 
 using namespace gamelib2;
 namespace senseless_soccer {
-std::vector<Ball*> BallFactory::balls;
-
-void BallFactory::destroy(){
-	for(auto &ball : balls){
-		Sprite *sprite = static_cast<Sprite*> (ball->widget);
-		delete sprite->shadow;
-		delete ball->widget;
-		delete ball;
-	}
-}
-
 
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
-Ball *BallFactory::makeBall(const std::string &name) {
+std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
     // for gfx
-    std::string working_dir = gamelib2::Files::getWorkingDirectory();
+    static const std::string working_dir =
+      gamelib2::Files::getWorkingDirectory();
+    static const std::string ball_file = working_dir + "/gfx/ball_new.png";
+    static const std::string ball_shadow_file =
+      working_dir + "/gfx/ball_shadow.png";
 
     // make the entity
-    Ball *ball = new Ball(name);
+    std::unique_ptr<Ball> ball = std::make_unique<Ball>(name);
 
     // make a sprite for the player
-    auto *sprite = new Sprite(working_dir + "/gfx/ball_new.png", 4, 2);
+    std::unique_ptr<Widget> widget = std::make_unique<Sprite>(ball_file, 4, 2);
+
+    // get a pointer to derived class sprite
+    auto sprite = static_cast<Sprite *>(widget.get());
+
     sprite->clickable = true;
     ball_animations::fill_animations(sprite);
 
     // make a shadow for the sprite
-    Sprite *shadow = new Sprite(working_dir + "/gfx/ball_shadow.png", 1, 1);
+    auto shadow = std::make_unique<Sprite>(ball_shadow_file, 1, 1);
     shadow->z_order = -1;
 
-    // connect everyting together
-    sprite->connectShadow(shadow);
-    sprite->connectEntity(ball);
-    ball->connectWidget(sprite);
+    // entity owns the sprite
+    ball->connectWidget(std::move(widget));
+
+    // sprite owns the shadow
+    sprite->connectShadow(std::move(shadow));
+
+    // sprite has raw "look at" pointer back to entity
+    sprite->connectEntity(ball.get());
     ball->activate();
-    balls.emplace_back(ball);
     return ball;
 }
 

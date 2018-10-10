@@ -42,8 +42,8 @@ static const float control_radius = 8.f;
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
   : Entity(std::move(in_name))
-  , stand_state(new Stand(*this))
-  , run_state(new Run(*this)) {
+  , stand_state(std::make_unique<Stand>(*this))
+  , run_state(std::make_unique<Run>(*this)) {
     feet.setRadius(dribble_radius);
     control.setRadius(control_radius);
     current_state = stand_state.get();
@@ -77,7 +77,7 @@ void Player::update(float dt) {
     // update widget (sprite)
     if (widget) {
 
-        Sprite *sprite = static_cast<Sprite *>(widget);
+        auto sprite = static_cast<Sprite *>(widget.get());
 
         sprite->setPosition(position.x, position.y);
         sprite->animate();
@@ -108,6 +108,7 @@ void Player::update(float dt) {
     }
 
     facing_old = facing;
+    distance_from_ball = (ball->position - position).magnitude();
 }
 
 // -----------------------------------------------------------------------------
@@ -225,6 +226,14 @@ bool Player::ball_under_control() {
 void Player::attachInput(SensiController *c) {
     controller = c;
     controller->setListener(this);
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Player::detatchInput() {
+    velocity.reset();
+    controller = nullptr;
 }
 
 // -----------------------------------------------------------------------------

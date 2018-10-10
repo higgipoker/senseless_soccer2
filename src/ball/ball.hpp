@@ -2,12 +2,19 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <gamelib2/game/entity.hpp>
+#include <gamelib2/widgets/widget.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {
 
 class Ball : public Entity {
 public:
+    // construct with an entity name
+    Ball(std::string in_name, float dt = 0.01f);
+
+    virtual ~Ball() {
+    }
+
     // main update
     void update(float dt) override;
 
@@ -49,9 +56,6 @@ protected:
         Vector3 sidespin;
         Vector3 gravity;
     } forces;
-
-    // construct with an entity name
-    Ball(std::string in_name, float dt = 0.01f);
 
     // for verlet
     Vector3 old_velocity;

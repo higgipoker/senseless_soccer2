@@ -2,7 +2,7 @@
 #include <gamelib2/statemachine/state.hpp>
 #include <gamelib2/types.hpp>
 #include <gamelib2/widgets/sprite.hpp>
-#include <gamelib2/input/controller.hpp>
+#include <gamelib2/input/device.hpp>
 
 namespace senseless_soccer {
 

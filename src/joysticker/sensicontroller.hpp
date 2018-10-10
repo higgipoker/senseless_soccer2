@@ -20,19 +20,30 @@
 #pragma once
 
 #include "aftertouch.hpp"
-#include "../ball/ball.hpp"
-#include <gamelib2/input/controller.hpp>
+#include <gamelib2/input/device.hpp>
+#include <gamelib2/widgets/label.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {
-class SensiController : public Controller{
+
+class Ball;
+class Player;
+
+// todo make this an entity!
+class SensiController : public Controller {
 public:
-    SensiController(Input &i);
+    SensiController(InputDevice &i);
 
     void update() override;
-    void startAftertouch(Ball *b, const Vector3 &normal, const float initial_mag);
+    void startAftertouch(Ball *b, const Vector3 &normal,
+                         const float initial_mag);
     void stopAftertouch();
+    void attachToPlayer(Player *p);
+
+    Label label;
+
 private:
     Aftertouch aftertouch;
+    Player *player = nullptr;
 };
 } // namespace senseless_soccer

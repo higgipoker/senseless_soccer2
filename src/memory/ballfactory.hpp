@@ -23,13 +23,7 @@
 namespace senseless_soccer {
 class BallFactory {
 public:
-
-    static void destroy();
-
     // constructs a ball and delivers shared pointer
-    static Ball *makeBall(const std::string &name);
-
-private:
-    static std::vector<Ball*> balls;
+    static std::unique_ptr<Ball> makeBall(const std::string &name);
 };
 } // namespace senseless_soccer

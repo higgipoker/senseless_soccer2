@@ -19,7 +19,7 @@
  ****************************************************************************/
 #pragma once
 #include "../ball/ball.hpp"
-#include <gamelib2/input/controller.hpp>
+#include <gamelib2/input/device.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {

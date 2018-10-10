@@ -86,7 +86,7 @@ void Ball::update(float dt) {
 
     // update widget (sprite)
     if (widget) {
-        Sprite *sprite = static_cast<Sprite *>(widget);
+        auto sprite = static_cast<Sprite *>(widget.get());
         sprite->setPosition(position.x, position.y);
         sprite->animate();
 
@@ -217,7 +217,7 @@ void Ball::perspectivize(float camera_height) {
     float sprite_scale_factor = degs / dimensions;
 
     assert(widget);
-    Sprite *sprite = static_cast<Sprite *>(widget);
+    auto sprite = static_cast<Sprite *>(widget.get());
 
     float sprite_ratio = dimensions / sprite->image_width;
     sprite_scale_factor *= sprite_ratio;

@@ -19,17 +19,19 @@
  ****************************************************************************/
 #pragma once
 
-#include <SFML/Graphics/CircleShape.hpp>
-#include <gamelib2/compass/compass.hpp>
-#include <gamelib2/game/entity.hpp>
-#include <gamelib2/types.hpp>
-#include <gamelib2/input/controller.hpp>
-#include <memory>
+#include "states/stand.hpp"
+#include "states/run.hpp"
 
 #include "../joysticker/sensicontroller.hpp"
 #include "../ball/ball.hpp"
-#include "states/stand.hpp"
-#include "states/run.hpp"
+
+#include <gamelib2/compass/compass.hpp>
+#include <gamelib2/game/entity.hpp>
+#include <gamelib2/types.hpp>
+#include <gamelib2/input/device.hpp>
+
+#include <SFML/Graphics/CircleShape.hpp>
+#include <memory>
 
 using namespace gamelib2;
 namespace senseless_soccer {
@@ -63,6 +65,10 @@ public:
 
     // attach an input
     void attachInput(SensiController *i);
+    void detatchInput();
+
+    // for sorting etc
+    float distance_from_ball = 0;
 
     // shared ball
     static Ball *ball;

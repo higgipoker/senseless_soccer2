@@ -19,12 +19,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/include)
 # --------------------------------------------------
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/lib)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Debug/lib)
 
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 
 # --------------------------------------------------
 # build files
@@ -36,6 +36,7 @@ add_executable(senseless_soccer
   src/memory/ballfactory.cpp
   src/joysticker/sensicontroller.cpp
   src/joysticker/aftertouch.cpp
+  src/team/team.cpp
   src/player/player.cpp
   src/player/states/state.cpp
   src/player/states/stand.cpp
@@ -48,8 +49,8 @@ add_executable(senseless_soccer
 # link libs
 # --------------------------------------------------
 target_link_libraries (senseless_soccer gamelib2)
-target_link_libraries (senseless_soccer sfml-graphics)
-target_link_libraries (senseless_soccer sfml-window)
-target_link_libraries (senseless_soccer sfml-system)
+target_link_libraries (senseless_soccer sfml-graphics-d)
+target_link_libraries (senseless_soccer sfml-window-d)
+target_link_libraries (senseless_soccer sfml-system-d)
 target_link_libraries (senseless_soccer pthread)
 target_link_libraries (senseless_soccer X11)
