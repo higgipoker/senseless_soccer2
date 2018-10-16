@@ -96,8 +96,8 @@ void Player::update(float dt) {
 
         feet.setPosition(sprite->position().x,
                          sprite->position().y + (sprite->image_height / 2) - 4);
-        control_inner.setPosition(feet.getOrigin());
-        control_outer.setPosition(feet.getOrigin());
+        control_inner.setPosition(feet.getPosition());
+        control_outer.setPosition(feet.getPosition());
     }
 
     if (!ball_under_control()) {
@@ -185,6 +185,8 @@ void Player::do_close_control() {
 
     // set new position
     ball->position = ball_pos;
+
+    std::cout << "control" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -221,6 +223,8 @@ void Player::kick(const Vector3 &direction, unsigned int power) {
 
     // temp suspend control and dribble
     shooting = true;
+
+    std::cout << "kick" << std::endl;
 }
 
 // -----------------------------------------------------------------------------

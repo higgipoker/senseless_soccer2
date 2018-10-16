@@ -29,7 +29,7 @@ void Run::start() {
 // -----------------------------------------------------------------------------
 void Run::update(const float _dt) {
 
-    // dribble or close control
+    // close control or dribble
     if (player.changed_direction) {
         // change the running animation
         if (player.widget) {
