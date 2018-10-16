@@ -53,20 +53,21 @@ int main() {
     viewer.addWidget(tile_entity->widget.get());
 
     // test
-    Widget *l = static_cast<Widget *>(&controller.label);
-    tile_entity->widget.get()->addChild(l);
+    auto *l = static_cast<Widget *>(&controller.label);
+    tile_entity->widget->addChild(l);
 
     // players
     std::vector<std::unique_ptr<Player>> players;
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 10; ++i) {
         std::stringstream name;
         name << "player" << i;
         auto player = PlayerFactory::makePlayer(name.str());
-        tile_entity->widget.get()->addChild(player->widget.get());
-        Widget *w = player->widget.get();
-        Sprite *s = static_cast<Sprite *>(w);
-        tile_entity->widget.get()->addChild(s->getShadow());
+        tile_entity->widget->addChild(player->widget.get());
+        auto *w = player->widget.get();
+        auto *s = dynamic_cast<Sprite *>(w);
+        tile_entity->widget->addChild(s->getShadow());
         engine.addEntity(player.get());
+        player->shirt_number = i + 1;
         if (i == 0) {
             player->attachInput(&controller);
             controller.attachToPlayer(player.get());
@@ -78,14 +79,15 @@ int main() {
 
     // ball
     std::unique_ptr<Ball> ball = BallFactory::makeBall("ball");
-    Sprite *ballsprite = static_cast<Sprite *>(ball->widget.get());
-    tile_entity->widget.get()->addChild(ballsprite->getShadow());
-    tile_entity->widget.get()->addChild(ballsprite);
+    auto *ballsprite = dynamic_cast<Sprite *>(ball->widget.get());
+    tile_entity->widget->addChild(ballsprite->getShadow());
+    tile_entity->widget->addChild(ballsprite);
     ball->bounds.setSize(sf::Vector2f(800, 600));
 
     // add entities to engine
     engine.addEntity(ball.get());
     engine.addEntity(tile_entity.get());
+    engine.addEntity(&team1);
 
     // there is a circular relationship between engine <-> viewer
     engine.connectViewer(&viewer);
@@ -96,7 +98,6 @@ int main() {
     viewer.startup();
     float timestep = 0.01f; // optimal for semi-implicit euler
     while (viewer.running) {
-        team1.update(timestep);
         controller.update();
         engine.frame(timestep);
         viewer.frame();

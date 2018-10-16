@@ -20,7 +20,7 @@ Run::Run(Player &context)
 void Run::start() {
     if (player.widget) {
         player.widget->startAnimation(
-          player.run_animation_map[player.facing.direction]);
+          Player::run_animation_map[player.facing.direction]);
     }
 }
 
@@ -34,7 +34,7 @@ void Run::update(const float _dt) {
         // change the running animation
         if (player.widget) {
             player.widget->startAnimation(
-              player.run_animation_map[player.facing.direction]);
+              Player::run_animation_map[player.facing.direction]);
         }
 
         // close control
@@ -42,7 +42,7 @@ void Run::update(const float _dt) {
             player.do_close_control();
         }
 
-    } else if (Collision::collides(player.feet, player.ball->circle)) {
+    } else if (Collision::collides(player.feet, Player::ball->circle)) {
         if (!player.shooting) {
             player.do_dribble();
         }

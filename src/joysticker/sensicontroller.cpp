@@ -35,7 +35,7 @@ SensiController::SensiController(InputDevice &i)
   , label(Files::getWorkingDirectory() + "/fonts/swos.ttf") // todo font factory
   , aftertouch(*this) {
 
-    label.setSize(12);
+    label.setSize(14);
     label.setColor(sf::Color::White);
 
 } // namespace senseless_soccer
@@ -53,7 +53,7 @@ void SensiController::attachToPlayer(Player *p) {
     player = p;
     if (player) {
         player->attachInput(this);
-        label.setText("9");
+        label.setText(p->shirt_number);
     }
 }
 

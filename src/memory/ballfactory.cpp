@@ -46,7 +46,7 @@ std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
     std::unique_ptr<Widget> widget = std::make_unique<Sprite>(ball_file, 4, 2);
 
     // get a pointer to derived class sprite
-    auto sprite = static_cast<Sprite *>(widget.get());
+    auto sprite = dynamic_cast<Sprite *>(widget.get());
 
     sprite->clickable = true;
     ball_animations::fill_animations(sprite);
@@ -63,6 +63,7 @@ std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
 
     // sprite has raw "look at" pointer back to entity
     sprite->connectEntity(ball.get());
+    sprite->startAnimation("roll");
     ball->activate();
     return ball;
 }

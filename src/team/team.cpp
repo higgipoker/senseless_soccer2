@@ -15,26 +15,16 @@ struct {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Team::Team(const std::string in_name)
-  : Entity(in_name) {
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-Team::~Team() {
+Team::Team(std::string in_name)
+  : Entity(std::move(in_name)) {
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Team::update(float dt) {
-    std::sort(players.begin(), players.end(), sort_players);
-    closest_to_ball = players.at(0);
-
-    if (controller) {
-        controller->attachToPlayer(closest_to_ball);
-    }
+    set_key_players();
+    update_controller();
 }
 
 // -----------------------------------------------------------------------------
@@ -44,4 +34,20 @@ void Team::addPlayer(Player *p) {
     players.emplace_back(p);
 }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Team::set_key_players() {
+    std::sort(players.begin(), players.end(), sort_players);
+    key_players.closest_to_ball = players[0];
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Team::update_controller() {
+    if (controller) {
+        controller->attachToPlayer(key_players.closest_to_ball);
+    }
+}
 } // namespace senseless_soccer

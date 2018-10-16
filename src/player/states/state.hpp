@@ -29,7 +29,10 @@ public:
     void changeToNextState() override;
 
     // event handler
-    bool handle_input(ControllerEvent event);
+    virtual bool handle_input(const ControllerEvent &event);
+
+    // when the input changes to this player
+    virtual void on_controller_handover();
 
 protected:
     // pointer back to player for state machine

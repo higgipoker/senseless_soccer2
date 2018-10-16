@@ -12,8 +12,7 @@ public:
     // construct with an entity name
     Ball(std::string in_name, float dt = 0.01f);
 
-    virtual ~Ball() {
-    }
+    virtual ~Ball() = default;
 
     // main update
     void update(float dt) override;

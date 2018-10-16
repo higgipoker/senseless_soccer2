@@ -45,13 +45,14 @@ void State::changeToNextState() {
 // -----------------------------------------------------------------------------
 // changeToNextState
 // -----------------------------------------------------------------------------
-bool State::handle_input(ControllerEvent event) {
+bool State::handle_input(const ControllerEvent &event) {
     switch (event.id) {
     case Fire:
         if (event.status == Pressed) {
         } else if (event.status == Released) {
             if (player.ball_under_control()) {
-                player.kick(event.param);
+                Vector3 direction = player.facing.toVector().normalise();
+                player.kick(direction, event.param);
             }
         }
         break;
@@ -101,6 +102,28 @@ bool State::handle_input(ControllerEvent event) {
     }
 
     return false;
+}
+
+// -----------------------------------------------------------------------------
+// on_input_handover
+// -----------------------------------------------------------------------------
+void State::on_controller_handover() {
+
+    if (player.controller->input.states[Up]) {
+        player.velocity.y = -1;
+    }
+
+    if (player.controller->input.states[Down]) {
+        player.velocity.y = 1;
+    }
+
+    if (player.controller->input.states[Left]) {
+        player.velocity.x = -1;
+    }
+
+    if (player.controller->input.states[Right]) {
+        player.velocity.x = 1;
+    }
 }
 
 } // namespace senseless_soccer

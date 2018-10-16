@@ -21,9 +21,13 @@
 #include "states/run.hpp"
 #include "states/stand.hpp"
 #include "../joysticker/aftertouch.hpp"
-#include <cassert>
+#include "../metrics/metrics.hpp"
+
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/physics/collisions.hpp>
+
+#include <cassert>
+#include <algorithm>
 
 using namespace gamelib2;
 namespace senseless_soccer {
@@ -34,7 +38,7 @@ std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 Ball *Player::ball = nullptr;
 
 // tmp - these will be player attribs
-static const float dribble_radius = 4.f;
+static const float dribble_radius = 2.f;
 static const float control_radius = 8.f;
 
 // -----------------------------------------------------------------------------
@@ -45,7 +49,8 @@ Player::Player(std::string in_name)
   , stand_state(std::make_unique<Stand>(*this))
   , run_state(std::make_unique<Run>(*this)) {
     feet.setRadius(dribble_radius);
-    control.setRadius(control_radius);
+    control_inner.setRadius(control_radius);
+    control_outer.setRadius(control_radius * 1.2f);
     current_state = stand_state.get();
 }
 
@@ -77,7 +82,7 @@ void Player::update(float dt) {
     // update widget (sprite)
     if (widget) {
 
-        auto sprite = static_cast<Sprite *>(widget.get());
+        auto sprite = dynamic_cast<Sprite *>(widget.get());
 
         sprite->setPosition(position.x, position.y);
         sprite->animate();
@@ -91,8 +96,8 @@ void Player::update(float dt) {
 
         feet.setPosition(sprite->position().x,
                          sprite->position().y + (sprite->image_height / 2) - 4);
-        control = feet;
-        control.setRadius(control_radius);
+        control_inner.setPosition(feet.getOrigin());
+        control_outer.setPosition(feet.getOrigin());
     }
 
     if (!ball_under_control()) {
@@ -162,6 +167,8 @@ void Player::do_dribble() {
 
     // apply the kick force to ball
     ball->kick(kick);
+
+    std::cout << "dribble" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -198,10 +205,13 @@ void Player::change_state(const PlayerState &state) {
 // -----------------------------------------------------------------------------
 // kick
 // -----------------------------------------------------------------------------
-void Player::kick(float power) {
+void Player::kick(const Vector3 &direction, unsigned int power) {
+
+    // clamp the power
+    power = std::max(min_pass_power, std::min(power, max_pass_power));
 
     // always kick in direction player is facing
-    Vector3 force = facing.toVector().normalise() * power;
+    Vector3 force = direction * power;
 
     //  apply to ball
     ball->kick(force * 1000);
@@ -214,10 +224,20 @@ void Player::kick(float power) {
 }
 
 // -----------------------------------------------------------------------------
+// short_pass
+// -----------------------------------------------------------------------------
+void Player::short_pass(const Player *receiver) {
+    int distance =
+      static_cast<int>((receiver->position - position).magnitude());
+
+    std::cout << distance << std::endl;
+}
+
+// -----------------------------------------------------------------------------
 // ball_under_control
 // -----------------------------------------------------------------------------
 bool Player::ball_under_control() {
-    return Collision::collides(control, ball->circle);
+    return Collision::collides(control_inner, ball->circle);
 }
 
 // -----------------------------------------------------------------------------
@@ -226,6 +246,7 @@ bool Player::ball_under_control() {
 void Player::attachInput(SensiController *c) {
     controller = c;
     controller->setListener(this);
+    current_state->on_controller_handover();
 }
 
 // -----------------------------------------------------------------------------
@@ -236,14 +257,56 @@ void Player::detatchInput() {
     controller = nullptr;
 }
 
+//  --------------------------------------------------
+//       [PLAYER]
+//
+//          p1
+//          /\
+//         /  \
+//        /    \
+//       /      \
+//     p2--------p3
+//
+//  calc_pass_recipients
+//  --------------------------------------------------
+void Player::calc_short_pass_recipients() {
+
+    // current position plus projected away from feet slightly
+    Vector3 tmp = position;
+    tmp = tmp + facing.toVector() * 20;
+
+    // rotate 35 degrees and project out
+    Vector3 temp1 = facing.toVector();
+    Vector3 t1 = position + (temp1.rotate(35, 0, 0)).normalise() * 450;
+
+    // rotate minus 35 degrees and project out
+    Vector3 temp2 = facing.toVector();
+    Vector3 t2 = position + (temp2.rotate(-35, 0, 0)).normalise() * 450;
+
+    // save 3 points to triangle
+    short_pass_triangle.p1 = Vector3(tmp.x, tmp.y);
+    short_pass_triangle.p2 = Vector3(t1.x, t1.y);
+    short_pass_triangle.p3 = Vector3(t2.x, t2.y);
+}
+
+// -----------------------------------------------------------------------------
+// on_got_possession
+// -----------------------------------------------------------------------------
+void Player::on_got_possession() {
+    in_possession = true;
+}
+
+// -----------------------------------------------------------------------------
+// on_lost_possession
+// -----------------------------------------------------------------------------
+void Player::on_lost_possession() {
+    in_possession = true;
+}
+
 // -----------------------------------------------------------------------------
 // init_animation_map
 // -----------------------------------------------------------------------------
 void Player::Init() {
-
-    // should only be done once
-    assert(stand_animation_map.empty());
-    assert(run_animation_map.empty());
 
     // standing animations
     stand_animation_map.insert(

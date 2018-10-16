@@ -22,6 +22,7 @@
 #include "states/stand.hpp"
 #include "states/run.hpp"
 
+#include "../types.hpp"
 #include "../joysticker/sensicontroller.hpp"
 #include "../ball/ball.hpp"
 
@@ -73,6 +74,12 @@ public:
     // shared ball
     static Ball *ball;
 
+    // shirt number
+    int shirt_number = 0;
+
+    // the triangle defining short pass recipient possibilities
+    Triangle short_pass_triangle;
+
 protected:
     // state machine
     void change_state(const PlayerState &new_state);
@@ -86,8 +93,20 @@ protected:
     // control the ball
     void do_close_control();
 
-    // kick the ball
-    void kick(float power);
+    // kick the ball according to fire length
+    void kick(const Vector3 &direction, unsigned int power);
+
+    // an automatic short pass
+    void short_pass(const Player *receiver);
+
+    // handle when i get possession of the ball
+    void on_got_possession();
+
+    // handle when i lose possession of the ball
+    void on_lost_possession();
+
+    // track if in possession of ball
+    bool in_possession = false;
 
     // track facing direction
     Compass facing;
@@ -102,7 +121,10 @@ protected:
     sf::CircleShape feet;
 
     // for close control detection
-    sf::CircleShape control;
+    sf::CircleShape control_inner;
+
+    // lost control circle
+    sf::CircleShape control_outer;
 
     // attached input
     SensiController *controller = nullptr;
@@ -119,6 +141,20 @@ private:
     std::unique_ptr<Stand> stand_state;
     std::unique_ptr<Run> run_state;
     State *current_state = nullptr;
+
+    // calc environment stuff
+    void calc_short_pass_recipients();
+
+    // define max and min kick powers
+    const unsigned int min_pass_power = 30;
+    const unsigned int max_pass_power = 100;
+
+    // a lookup to define the precision of short pass strengths
+    std::vector<unsigned int> short_pass_strenghts = {
+      1,
+      2,
+      3,
+    };
 
 public:
     // for state machine pattern

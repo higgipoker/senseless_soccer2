@@ -50,12 +50,13 @@ void Stand::changeToNextState() {
 // -----------------------------------------------------------------------------
 void Stand::face_ball() {
     if (player.widget) {
-        if (player.ball) {
+        if (Player::ball) {
 
-            gamelib2::Vector3 to_ball = player.ball->position - player.position;
+            gamelib2::Vector3 to_ball =
+              Player::ball->position - player.position;
             gamelib2::Compass c(to_ball.normalise());
             player.widget->startAnimation(
-              player.stand_animation_map[c.direction]);
+              Player::stand_animation_map[c.direction]);
         }
     }
 }

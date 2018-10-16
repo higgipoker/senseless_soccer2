@@ -31,6 +31,7 @@ add_definitions(-std=c++14)
 # --------------------------------------------------
 add_executable(senseless_soccer
   src/main.cpp
+  src/types.hpp
   src/metrics/metrics.cpp
   src/memory/playerfactory.cpp
   src/memory/ballfactory.cpp

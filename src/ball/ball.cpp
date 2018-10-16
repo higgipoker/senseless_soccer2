@@ -30,7 +30,7 @@ const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
 const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
-static const float AIR_FACTOR = 0.001f;
+static const float AIR_FACTOR = 0.0001f;
 static const float co_friction = 0.99f;
 static const float co_friction_bounce = 0.9f; // bounce fricton
 static const float co_bounciness = 0.8f;
@@ -39,15 +39,12 @@ static const float ball_mass = 200.f; // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
 
-using std::cout;
-using std::endl;
-
 // -----------------------------------------------------------------------------
 // Ball
 // -----------------------------------------------------------------------------
 Ball::Ball(std::string in_name, float dt)
   : Entity(std::move(in_name)) {
-    circle.setRadius(4.0f);
+    circle.setRadius(6.0f);
 
     // gravity is a constant, can set it up here once
 
@@ -86,7 +83,7 @@ void Ball::update(float dt) {
 
     // update widget (sprite)
     if (widget) {
-        auto sprite = static_cast<Sprite *>(widget.get());
+        auto sprite = dynamic_cast<Sprite *>(widget.get());
         sprite->setPosition(position.x, position.y);
         sprite->animate();
 
@@ -193,14 +190,6 @@ void Ball::do_physics(float dt) {
     // reset acceleration ready for next frame
     acceleration.reset();
 
-    if (Floats::greater_than(forces.sidespin.magnitude(), 0)) {
-        cout << forces.sidespin.magnitude() << endl;
-    }
-
-    if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
-        cout << forces.topspin.magnitude() << endl;
-    }
-
     // tmp
     keep_in_bounds();
 }
@@ -216,8 +205,7 @@ void Ball::perspectivize(float camera_height) {
     float degs = DEGREES(angular_diameter);
     float sprite_scale_factor = degs / dimensions;
 
-    assert(widget);
-    auto sprite = static_cast<Sprite *>(widget.get());
+    auto sprite = dynamic_cast<Sprite *>(widget.get());
 
     float sprite_ratio = dimensions / sprite->image_width;
     sprite_scale_factor *= sprite_ratio;
@@ -247,8 +235,6 @@ void Ball::onDragged(const Vector3 &new_position) {
 // kick
 // -----------------------------------------------------------------------------
 void Ball::kick(const Vector3 &force) {
-
-    // this is where the initial force is applied
     forces.sidespin.reset();
     forces.topspin.reset();
     acceleration.reset();

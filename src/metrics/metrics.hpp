@@ -1,38 +1,26 @@
 #pragma once
 
 #include <gamelib2/math/vector.hpp>
+#include <vector>
 
 namespace senseless_soccer {
 
 class Metrics {
- public:
+public:
+    // converts meters to pixels
+    static int MetersToPixels(float meters);
 
-  /**
-   * @brief converts meters to pixels
-   * @param meters meters to convert
-   */
-  static int MetersToPixels(float meters);
+    // converts pixels to meters
+    static float PixelsToMeters(float pixels);
 
-  /**
-   * @brief converts pixels to meters
-   * @param pixels pixels to convert
-   */
-  static float PixelsToMeters(float pixels);
+    // converts yards to meters
+    static float YardsToMeters(float yards);
 
-  /**
-   * @brief converts yards to meters
-   * @param yards yards to convert
-   */
-  static float YardsToMeters(float yards);
+    // converts yards to pixels
+    static int YardsToPixels(float yards);
 
-  /**
-   * @brief converts yards to pixels
-   * @param yards yards to convert
-   */
-  static int YardsToPixels(float yards);
-
-  /// trial and error force to pass ball one meter
-  static constexpr float force_per_meter = 0.1f;
+    // trial and error force to pass ball one meter
+    static constexpr float force_per_meter = 0.1f;
 };
 
-}  // namespace SenselessSoccer
+} // namespace senseless_soccer
