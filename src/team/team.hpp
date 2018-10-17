@@ -23,10 +23,15 @@ public:
     // track important players
     struct {
         Player *closest_to_ball = nullptr;
+        Player *in_possession = nullptr;
         std::vector<Player *> pass_candidates;
     } key_players;
 
-private:
+    // team has to control player in possession (only one!)
+    bool requestPossession(Player *p);
+    void lostPossession(Player *p);
+
+protected:
     // players in this team
     std::vector<Player *> players;
     std::vector<Player *> subs;
@@ -34,6 +39,9 @@ private:
     // update helpers
     void set_key_players();
     void update_controller();
+
+public:
+    friend class Player;
 };
 
 } // namespace senseless_soccer

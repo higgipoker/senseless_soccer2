@@ -17,16 +17,34 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
-#include <gamelib2/math/vector.hpp>
+#include "locomotion.hpp"
+#include "../player.hpp"
 
-using namespace gamelib2;
 namespace senseless_soccer {
 
-typedef struct {
-    Vector3 p1;
-    Vector3 p2;
-    Vector3 p3;
-} Triangle;
+// -----------------------------------------------------------------------------
+// Locomotion
+// -----------------------------------------------------------------------------
+Locomotion::Locomotion(Player *p)
+  : player(p) {
+}
+
+// -----------------------------------------------------------------------------
+// start
+// -----------------------------------------------------------------------------
+void Locomotion::start() {
+}
+
+// -----------------------------------------------------------------------------
+// update
+// -----------------------------------------------------------------------------
+void Locomotion::update(float dt) {
+}
+
+// -----------------------------------------------------------------------------
+// stop
+// -----------------------------------------------------------------------------
+void Locomotion::stop() {
+}
 
 } // namespace senseless_soccer

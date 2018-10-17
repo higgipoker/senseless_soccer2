@@ -57,6 +57,10 @@ bool State::handle_input(const ControllerEvent &event) {
         }
         break;
 
+    case FireTap:
+        player.short_pass();
+        break;
+
     case DPadLeft:
         if (event.status == Pressed) {
             player.velocity.x = -1;

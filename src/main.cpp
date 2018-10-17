@@ -35,7 +35,7 @@ int main() {
     std::string dir = Files::getWorkingDirectory();
 
     // inits static stuff
-    Player::Init();
+    Player::init();
 
     // set up a controller from a keyboard inpout
     XboxController xbox_controller;

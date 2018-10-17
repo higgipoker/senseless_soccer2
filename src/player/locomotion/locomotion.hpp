@@ -18,32 +18,26 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-
-#include "aftertouch.hpp"
-#include <gamelib2/input/device.hpp>
-#include <gamelib2/widgets/label.hpp>
-
+#include <gamelib2/math/vector.hpp>
+#include <string>
 using namespace gamelib2;
 namespace senseless_soccer {
 
-class Ball;
 class Player;
-
-// todo make this an entity!
-class SensiController : public Controller {
+class Locomotion {
 public:
-    SensiController(InputDevice &i);
+    Locomotion(Player *p);
+    virtual ~Locomotion() = default;
+    virtual void start();
+    virtual void update(float _dt);
+    virtual void stop();
+    virtual bool finished() = 0;
+    std::string name;
 
-    void update() override;
-    void startAftertouch(Ball *b, const Vector3 &normal,
-                         const float initial_mag);
-    void stopAftertouch();
-    void attachToPlayer(Player *p);
-
+protected:
     Player *player = nullptr;
-    Label label;
-
-private:
-    Aftertouch aftertouch;
+    bool state_over = false;
+    Vector3 destination;
+    bool destination_reached = false;
 };
 } // namespace senseless_soccer

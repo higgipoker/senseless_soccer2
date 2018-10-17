@@ -13,6 +13,9 @@ public:
     // specific constructor to get player pointer
     State(Player &context);
 
+    // must have virt dest
+    virtual ~State() override = default;
+
     // state started
     void start() override;
 
@@ -29,7 +32,7 @@ public:
     void changeToNextState() override;
 
     // event handler
-    virtual bool handle_input(const ControllerEvent &event);
+    bool handle_input(const ControllerEvent &event) override;
 
     // when the input changes to this player
     virtual void on_controller_handover();

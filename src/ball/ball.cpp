@@ -31,8 +31,8 @@ const float CM_PER_PIXEL = 7.6f;
 
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.0001f;
-static const float co_friction = 0.95f;
-static const float co_friction_bounce = 0.9f; // bounce fricton
+static const float co_friction = 0.99f;
+static const float co_friction_bounce = 0.99f; // bounce fricton
 static const float co_bounciness = 0.8f;
 static const float co_spin_decay = 0.8f; // how much spin decays over time
 static const float ball_mass = 200.f; // used in air resistance calc
@@ -141,7 +141,7 @@ void Ball::do_physics(float dt) {
         // apply bounciness
         velocity.z = -velocity.z * co_bounciness;
 
-        // ball also loses some speed on bounce
+        // ball also loses some speed on bounce (todo this will be spin)
         velocity *= co_friction_bounce;
     }
 

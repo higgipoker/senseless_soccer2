@@ -22,7 +22,6 @@
 #include "states/stand.hpp"
 #include "states/run.hpp"
 
-#include "../types.hpp"
 #include "../joysticker/sensicontroller.hpp"
 #include "../ball/ball.hpp"
 
@@ -30,8 +29,10 @@
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/types.hpp>
 #include <gamelib2/input/device.hpp>
+#include <gamelib2/types.hpp>
 
-#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics.hpp>
+
 #include <memory>
 
 using namespace gamelib2;
@@ -39,6 +40,7 @@ namespace senseless_soccer {
 
 enum class PlayerState { Stand, Run };
 
+class Team;
 class Run;
 class Stand;
 class Player : public Entity, public ControllerListener {
@@ -53,7 +55,7 @@ public:
     void activate() override;
 
     // helper to init the animatio map
-    static void Init();
+    static void init();
 
     // moved manually
     void onDragged(const Vector3 &diff) override;
@@ -66,7 +68,12 @@ public:
 
     // attach an input
     void attachInput(SensiController *i);
+
+    // detatch input
     void detatchInput();
+
+    // set my team
+    void setTeam(Team *t);
 
     // for sorting etc
     float distance_from_ball = 0;
@@ -79,6 +86,9 @@ public:
 
     // the triangle defining short pass recipient possibilities
     Triangle short_pass_triangle;
+
+    // debug display
+    sf::VertexArray debug_short_pass;
 
 protected:
     // state machine
@@ -97,13 +107,16 @@ protected:
     void kick(const Vector3 &direction, unsigned int power);
 
     // an automatic short pass
-    void short_pass(const Player *receiver);
+    void short_pass();
 
     // handle when i get possession of the ball
     void on_got_possession();
 
     // handle when i lose possession of the ball
     void on_lost_possession();
+
+    // work out the best short pass candidate
+    Player *calc_short_pass_receiver();
 
     // track if in possession of ball
     bool in_possession = false;
@@ -142,6 +155,9 @@ private:
     std::unique_ptr<Run> run_state;
     State *current_state = nullptr;
 
+    // current team i play on
+    Team *my_team;
+
     // calc environment stuff
     void calc_short_pass_recipients();
 
@@ -161,6 +177,7 @@ public:
     friend class State;
     friend class Stand;
     friend class Run;
+    friend class Team;
 };
 
 } // namespace senseless_soccer

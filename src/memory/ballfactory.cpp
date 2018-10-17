@@ -47,6 +47,7 @@ std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
 
     // get a pointer to derived class sprite
     auto sprite = dynamic_cast<Sprite *>(widget.get());
+    sprite->z_order = 10;
 
     sprite->clickable = true;
     ball_animations::fill_animations(sprite);

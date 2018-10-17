@@ -107,8 +107,6 @@ void Aftertouch::start(Ball *b, const Vector3 &normal, const float mag) {
 
     //    ball->addSideSpin(sidespin);
     //    ball->addTopSpin(topspin);
-
-    cout << "start aftertouch, " << mag << endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -119,8 +117,6 @@ void Aftertouch::end() {
     ball = nullptr;
     topspin.reset();
     sidespin.reset();
-
-    cout << "end aftertouch" << endl;
 }
 
 // -----------------------------------------------------------------------------

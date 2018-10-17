@@ -20,6 +20,7 @@
 #include "player.hpp"
 #include "states/run.hpp"
 #include "states/stand.hpp"
+#include "../team/team.hpp"
 #include "../joysticker/aftertouch.hpp"
 #include "../metrics/metrics.hpp"
 
@@ -46,6 +47,7 @@ static const float control_radius = 8.f;
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
   : Entity(std::move(in_name))
+  , debug_short_pass(sf::Triangles, 3)
   , stand_state(std::make_unique<Stand>(*this))
   , run_state(std::make_unique<Run>(*this)) {
     feet.setRadius(dribble_radius);
@@ -114,6 +116,20 @@ void Player::update(float dt) {
 
     facing_old = facing;
     distance_from_ball = (ball->position - position).magnitude();
+
+    if (!in_possession) {
+        if (Collision::collides(control_inner, Player::ball->circle)) {
+            on_got_possession();
+        }
+    } else {
+        if (!Collision::collides(control_inner, Player::ball->circle)) {
+            on_lost_possession();
+        }
+    }
+
+    if (in_possession) {
+        calc_short_pass_recipients();
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -167,8 +183,6 @@ void Player::do_dribble() {
 
     // apply the kick force to ball
     ball->kick(kick);
-
-    std::cout << "dribble" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -185,8 +199,6 @@ void Player::do_close_control() {
 
     // set new position
     ball->position = ball_pos;
-
-    std::cout << "control" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -230,11 +242,21 @@ void Player::kick(const Vector3 &direction, unsigned int power) {
 // -----------------------------------------------------------------------------
 // short_pass
 // -----------------------------------------------------------------------------
-void Player::short_pass(const Player *receiver) {
-    int distance =
-      static_cast<int>((receiver->position - position).magnitude());
+void Player::short_pass() {
+    const Player *receiver = calc_short_pass_receiver();
 
-    std::cout << distance << std::endl;
+    if (receiver) {
+        int distance =
+          static_cast<int>((receiver->position - position).magnitude());
+        Vector3 direction = receiver->position - position;
+        Vector3 force = direction * distance * 2;
+        Player::ball->kick(force);
+        std::cout << distance << std::endl;
+    } else {
+        ball->kick(facing.toVector() * 50000);
+    }
+
+    shooting = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -254,14 +276,14 @@ void Player::attachInput(SensiController *c) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// detatchInput
 // -----------------------------------------------------------------------------
 void Player::detatchInput() {
     velocity.reset();
     controller = nullptr;
 }
 
-//  --------------------------------------------------
+//--------------------------------------------------
 //       [PLAYER]
 //
 //          p1
@@ -271,7 +293,7 @@ void Player::detatchInput() {
 //       /      \
 //     p2--------p3
 //
-//  calc_pass_recipients
+//  calc_short_pass_recipients
 //  --------------------------------------------------
 void Player::calc_short_pass_recipients() {
 
@@ -281,36 +303,77 @@ void Player::calc_short_pass_recipients() {
 
     // rotate 35 degrees and project out
     Vector3 temp1 = facing.toVector();
-    Vector3 t1 = position + (temp1.rotate(35, 0, 0)).normalise() * 450;
+    Vector3 t1 = position + (temp1.rotate(35, 0, 0)).normalise() * 300;
 
     // rotate minus 35 degrees and project out
     Vector3 temp2 = facing.toVector();
-    Vector3 t2 = position + (temp2.rotate(-35, 0, 0)).normalise() * 450;
+    Vector3 t2 = position + (temp2.rotate(-35, 0, 0)).normalise() * 300;
 
     // save 3 points to triangle
     short_pass_triangle.p1 = Vector3(tmp.x, tmp.y);
     short_pass_triangle.p2 = Vector3(t1.x, t1.y);
     short_pass_triangle.p3 = Vector3(t2.x, t2.y);
+
+    debug_short_pass[0].position = sf::Vector2f(tmp.x, tmp.y);
+    debug_short_pass[1].position = sf::Vector2f(t1.x, t1.y);
+    debug_short_pass[2].position = sf::Vector2f(t2.x, t2.y);
+    debug_short_pass[0].color = sf::Color(0, 255, 0, 100);
+    debug_short_pass[1].color = sf::Color(0, 255, 0, 100);
+    debug_short_pass[2].color = sf::Color(0, 255, 0, 100);
+
+    widget->primitives.push_back(debug_short_pass);
 }
 
 // -----------------------------------------------------------------------------
 // on_got_possession
 // -----------------------------------------------------------------------------
 void Player::on_got_possession() {
-    in_possession = true;
+    in_possession = my_team->requestPossession(this);
 }
 
 // -----------------------------------------------------------------------------
 // on_lost_possession
 // -----------------------------------------------------------------------------
 void Player::on_lost_possession() {
-    in_possession = true;
+    in_possession = false;
+    my_team->lostPossession(this);
+}
+
+// -----------------------------------------------------------------------------
+// calc_short_pass_receiver
+// -----------------------------------------------------------------------------
+Player *Player::calc_short_pass_receiver() {
+    Player *p = nullptr;
+
+    // get a list of players in my short pass range
+    std::vector<Player *> candidates;
+    for (auto &player : my_team->players) {
+        // is in short pass range
+        if (Collision::collides(player->position, short_pass_triangle)) {
+            candidates.emplace_back(player);
+        }
+    }
+
+    // tmp pick a random one
+    if (!candidates.empty()) {
+        auto i = rand() % candidates.size();
+        p = candidates[i];
+    }
+
+    return p;
+}
+
+// -----------------------------------------------------------------------------
+// setTeam
+// -----------------------------------------------------------------------------
+void Player::setTeam(Team *t) {
+    my_team = t;
 }
 
 // -----------------------------------------------------------------------------
 // init_animation_map
 // -----------------------------------------------------------------------------
-void Player::Init() {
+void Player::init() {
 
     // standing animations
     stand_animation_map.insert(
