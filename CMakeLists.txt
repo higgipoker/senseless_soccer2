@@ -43,7 +43,10 @@ add_executable(senseless_soccer
   src/player/states/run.cpp
   src/ball/ball.cpp
   src/pitch/pitch.cpp
+  src/player/locomotion/locomotionmanager.cpp
   src/player/locomotion/locomotion.cpp
+  src/player/locomotion/seek.cpp
+  src/player/locomotion/pursue.cpp
 )
 
 # --------------------------------------------------

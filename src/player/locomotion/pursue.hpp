@@ -18,28 +18,28 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+#include "locomotion.hpp"
 #include <gamelib2/math/vector.hpp>
-#include <string>
+
 using namespace gamelib2;
 namespace senseless_soccer {
 
 class Player;
-class Locomotion {
+// pursue locomption follows a moving target
+class Pursue : public Locomotion {
 public:
-    Locomotion(Player *p);
-    virtual ~Locomotion() = default;
-    virtual void init(const Vector3 &static_target,
-                      const Vector3 *dynamic_target = nullptr) = 0;
-    virtual void start();
-    virtual void update(float _dt);
-    virtual void stop();
-    virtual bool finished() = 0;
-    std::string name;
+    Pursue(Player *p);
+    virtual ~Pursue() override = default;
+    virtual void start() override;
+    virtual void update(float _dt) override;
+    virtual void stop() override;
+    virtual bool finished() override;
 
-protected:
-    Player *player = nullptr;
-    bool state_over = false;
-    Vector3 destination;
-    bool destination_reached = false;
+    void init(const Vector3 &static_target,
+                          const Vector3 *dynamic_target = nullptr) override;
+
+private:
+    Vector3 *target = nullptr;
 };
+
 } // namespace senseless_soccer

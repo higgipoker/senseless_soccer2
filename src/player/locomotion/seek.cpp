@@ -17,29 +17,15 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
-#include <gamelib2/math/vector.hpp>
-#include <string>
-using namespace gamelib2;
+#include "seek.hpp"
+#include "../player.hpp"
+
 namespace senseless_soccer {
 
-class Player;
-class Locomotion {
-public:
-    Locomotion(Player *p);
-    virtual ~Locomotion() = default;
-    virtual void init(const Vector3 &static_target,
-                      const Vector3 *dynamic_target = nullptr) = 0;
-    virtual void start();
-    virtual void update(float _dt);
-    virtual void stop();
-    virtual bool finished() = 0;
-    std::string name;
+Seek::Seek(Player *player)
+  : Locomotion(player) {
+}
 
-protected:
-    Player *player = nullptr;
-    bool state_over = false;
-    Vector3 destination;
-    bool destination_reached = false;
-};
+void Seek::init(const Vector3 &static_target, const Vector3 *dynamic_target) {
+}
 } // namespace senseless_soccer

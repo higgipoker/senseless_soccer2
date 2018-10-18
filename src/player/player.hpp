@@ -78,7 +78,7 @@ public:
     // for sorting etc
     float distance_from_ball = 0;
 
-    // shared ball
+    // shared ball among all players
     static Ball *ball;
 
     // shirt number

@@ -209,7 +209,6 @@ void Player::change_state(const PlayerState &state) {
     case PlayerState::Stand:
         current_state = stand_state.get();
         break;
-
     case PlayerState::Run:
         current_state = run_state.get();
         break;
