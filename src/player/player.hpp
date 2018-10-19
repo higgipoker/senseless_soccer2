@@ -19,6 +19,7 @@
  ****************************************************************************/
 #pragma once
 
+#include "ai/brain.hpp"
 #include "states/stand.hpp"
 #include "states/run.hpp"
 
@@ -41,8 +42,8 @@ namespace senseless_soccer {
 enum class PlayerState { Stand, Run };
 
 class Team;
-class Run;
-class Stand;
+class Running;
+class Standing;
 class Player : public Entity, public ControllerListener {
 public:
     // construct with an entity name
@@ -74,6 +75,9 @@ public:
 
     // set my team
     void setTeam(Team *t);
+
+    // ai
+    Brain brain;
 
     // for sorting etc
     float distance_from_ball = 0;
@@ -151,8 +155,8 @@ protected:
 
 private:
     // states
-    std::unique_ptr<Stand> stand_state;
-    std::unique_ptr<Run> run_state;
+    std::unique_ptr<Standing> stand_state;
+    std::unique_ptr<Running> run_state;
     State *current_state = nullptr;
 
     // current team i play on
@@ -160,6 +164,7 @@ private:
 
     // calc environment stuff
     void calc_short_pass_recipients();
+    void face_ball();
 
     // define max and min kick powers
     const unsigned int min_pass_power = 30;
@@ -175,8 +180,10 @@ private:
 public:
     // for state machine pattern
     friend class State;
+    friend class Standing;
+    friend class Running;
+    friend class Locomotion;
     friend class Stand;
-    friend class Run;
     friend class Team;
 };
 

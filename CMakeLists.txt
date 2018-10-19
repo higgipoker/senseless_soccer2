@@ -45,8 +45,10 @@ add_executable(senseless_soccer
   src/pitch/pitch.cpp
   src/player/locomotion/locomotionmanager.cpp
   src/player/locomotion/locomotion.cpp
+  src/player/locomotion/stand.cpp
   src/player/locomotion/seek.cpp
   src/player/locomotion/pursue.cpp
+  src/player/ai/brain.cpp
 )
 
 # --------------------------------------------------

@@ -18,30 +18,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "stand.hpp"
-#include "pursue.hpp"
-#include "seek.hpp"
 
+#include "locomotion.hpp"
+#include <gamelib2/math/vector.hpp>
+
+using namespace gamelib2;
 namespace senseless_soccer {
-
-enum class LocomotionState { Stand, Pursue, Seek };
-
 class Player;
-class LocomotionManager {
+class Stand : public Locomotion {
 public:
-    LocomotionManager(Player *player);
-    void update(float dt);
-    void change(const LocomotionState state);
-    void change(const LocomotionState state, const Vector3 &static_target);
-    void change(const LocomotionState state, const Vector3 *dynamic_target);
-    void change(const LocomotionState state, const Vector3 &static_target,
-                const Vector3 *dynamic_target);
-
-private:
-    Stand stand;
-    Pursue pursue;
-    Locomotion *current_locomotion = nullptr;
-
-    void change_state(const LocomotionState state);
+    Stand(Player *player);
+    virtual ~Stand() override = default;
+    virtual void start() override;
+    virtual void update(float _dt) override;
+    virtual void stop() override;
+    virtual bool finished() override;
 };
+
 } // namespace senseless_soccer

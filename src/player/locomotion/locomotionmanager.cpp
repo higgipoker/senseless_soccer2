@@ -26,7 +26,8 @@ namespace senseless_soccer {
 // LocomotionManager
 // -----------------------------------------------------------------------------
 LocomotionManager::LocomotionManager(Player *player)
-  : pursue(player) {
+  : stand(player)
+  , pursue(player) {
 }
 
 // -----------------------------------------------------------------------------
@@ -45,17 +46,63 @@ void LocomotionManager::update(float dt) {
 // -----------------------------------------------------------------------------
 // change
 // -----------------------------------------------------------------------------
+void LocomotionManager::change(const LocomotionState state) {
+
+    change_state(state);
+    current_locomotion->init(Vector3(), nullptr);
+    current_locomotion->start();
+}
+
+// -----------------------------------------------------------------------------
+// change
+// -----------------------------------------------------------------------------
+void LocomotionManager::change(const LocomotionState state,
+                               const Vector3 &static_target) {
+
+    change_state(state);
+    current_locomotion->init(static_target, nullptr);
+    current_locomotion->start();
+}
+
+// -----------------------------------------------------------------------------
+// change
+// -----------------------------------------------------------------------------
+void LocomotionManager::change(const LocomotionState state,
+                               const Vector3 *dynamic_target) {
+
+    change_state(state);
+    current_locomotion->init(Vector3(), dynamic_target);
+    current_locomotion->start();
+}
+
+// -----------------------------------------------------------------------------
+// change
+// -----------------------------------------------------------------------------
 void LocomotionManager::change(const LocomotionState state,
                                const Vector3 &static_target,
                                const Vector3 *dynamic_target) {
+
+    change_state(state);
+    current_locomotion->init(static_target, dynamic_target);
+    current_locomotion->start();
+}
+
+// -----------------------------------------------------------------------------
+// change_state
+// -----------------------------------------------------------------------------
+void LocomotionManager::change_state(const LocomotionState state) {
+    if (current_locomotion) {
+        current_locomotion->stop();
+    }
     switch (state) {
+    case LocomotionState::Stand:
+        current_locomotion = &stand;
+        break;
     case LocomotionState::Pursue:
         current_locomotion = &pursue;
         break;
     case LocomotionState::Seek:
         break;
     }
-    current_locomotion->init(static_target, dynamic_target);
-    current_locomotion->start();
 }
 } // namespace senseless_soccer

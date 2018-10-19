@@ -47,9 +47,10 @@ static const float control_radius = 8.f;
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
   : Entity(std::move(in_name))
+  , brain(this)
   , debug_short_pass(sf::Triangles, 3)
-  , stand_state(std::make_unique<Stand>(*this))
-  , run_state(std::make_unique<Run>(*this)) {
+  , stand_state(std::make_unique<Standing>(*this))
+  , run_state(std::make_unique<Running>(*this)) {
     feet.setRadius(dribble_radius);
     control_inner.setRadius(control_radius);
     control_outer.setRadius(control_radius * 1.2f);
@@ -69,6 +70,11 @@ void Player::activate() {
 // -----------------------------------------------------------------------------
 void Player::update(float dt) {
     Entity::update(dt);
+
+    // cpu controlled locomotion
+    if (!controller) {
+        brain.update(dt);
+    }
 
     // movement
     do_physics(dt);
@@ -219,7 +225,6 @@ void Player::change_state(const PlayerState &state) {
 // kick
 // -----------------------------------------------------------------------------
 void Player::kick(const Vector3 &direction, unsigned int power) {
-
     // clamp the power
     power = std::max(min_pass_power, std::min(power, max_pass_power));
 
@@ -234,15 +239,13 @@ void Player::kick(const Vector3 &direction, unsigned int power) {
 
     // temp suspend control and dribble
     shooting = true;
-
-    std::cout << "kick" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
 // short_pass
 // -----------------------------------------------------------------------------
 void Player::short_pass() {
-    const Player *receiver = calc_short_pass_receiver();
+    Player *receiver = calc_short_pass_receiver();
 
     if (receiver) {
         int distance =
@@ -251,6 +254,7 @@ void Player::short_pass() {
         Vector3 force = direction * distance * 2;
         Player::ball->kick(force);
         std::cout << distance << std::endl;
+        receiver->brain.message("receive");
     } else {
         ball->kick(facing.toVector() * 50000);
     }
@@ -367,6 +371,19 @@ Player *Player::calc_short_pass_receiver() {
 // -----------------------------------------------------------------------------
 void Player::setTeam(Team *t) {
     my_team = t;
+}
+
+// -----------------------------------------------------------------------------
+// face_ball
+// -----------------------------------------------------------------------------
+void Player::face_ball() {
+    if (widget) {
+        if (Player::ball) {
+            gamelib2::Vector3 to_ball = Player::ball->position - position;
+            gamelib2::Compass c(to_ball.normalise());
+            widget->startAnimation(Player::stand_animation_map[c.direction]);
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------

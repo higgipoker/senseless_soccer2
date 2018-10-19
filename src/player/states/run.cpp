@@ -10,14 +10,14 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // Run
 // -----------------------------------------------------------------------------
-Run::Run(Player &context)
+Running::Running(Player &context)
   : State(context) {
 }
 
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
-void Run::start() {
+void Running::start() {
     if (player.widget) {
         player.widget->startAnimation(
           Player::run_animation_map[player.facing.direction]);
@@ -27,8 +27,7 @@ void Run::start() {
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Run::update(const float _dt) {
-
+void Running::update(const float dt) {
     // close control or dribble
     if (player.changed_direction) {
         // change the running animation
@@ -52,20 +51,20 @@ void Run::update(const float _dt) {
 // -----------------------------------------------------------------------------
 // end
 // -----------------------------------------------------------------------------
-void Run::end() {
+void Running::end() {
 }
 
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
-bool Run::finished() {
+bool Running::finished() {
     return (Floats::equal(player.velocity.magnitude2d(), 0));
 }
 
 // -----------------------------------------------------------------------------
 // changeToNextState
 // -----------------------------------------------------------------------------
-void Run::changeToNextState() {
+void Running::changeToNextState() {
     player.change_state(PlayerState::Stand);
 }
 

@@ -7,16 +7,16 @@
 
 namespace senseless_soccer {
 
-class Run : public State {
+class Running : public State {
 public:
     // specific constructor to get player pointer
-    Run(Player &context);
+    Running(Player &context);
 
     // state started
     void start() override;
 
     // main update
-    void update(const float _dt) override;
+    void update(const float dt) override;
 
     // state over
     void end() override;

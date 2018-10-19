@@ -20,14 +20,16 @@
 #pragma once
 #include "locomotion.hpp"
 
-namespace senseless_soccer{
+namespace senseless_soccer {
 class Player;
 // seek behaviour goes directly to a fixed point and stops
-class Seek : public Locomotion
-{
+class Seek : public Locomotion {
 public:
-  Seek(Player *player);
-  void init(const Vector3 &static_target,
-                        const Vector3 *dynamic_target = nullptr) override;
+    Seek(Player *player);
+    virtual ~Seek() override = default;
+    virtual void start() override;
+    virtual void update(float _dt) override;
+    virtual void stop() override;
+    virtual bool finished() override;
 };
-}
+} // namespace senseless_soccer

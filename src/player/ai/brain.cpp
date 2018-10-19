@@ -17,31 +17,35 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
-#include "stand.hpp"
-#include "pursue.hpp"
-#include "seek.hpp"
+#include "brain.hpp"
+#include "../player.hpp"
 
 namespace senseless_soccer {
 
-enum class LocomotionState { Stand, Pursue, Seek };
+// -----------------------------------------------------------------------------
+// Brain
+// -----------------------------------------------------------------------------
+Brain::Brain(Player *p)
+  : player(p)
+  , locomotion(player) {
+    locomotion.change(LocomotionState::Stand);
+}
 
-class Player;
-class LocomotionManager {
-public:
-    LocomotionManager(Player *player);
-    void update(float dt);
-    void change(const LocomotionState state);
-    void change(const LocomotionState state, const Vector3 &static_target);
-    void change(const LocomotionState state, const Vector3 *dynamic_target);
-    void change(const LocomotionState state, const Vector3 &static_target,
-                const Vector3 *dynamic_target);
+// -----------------------------------------------------------------------------
+// update
+// -----------------------------------------------------------------------------
+void Brain::update(float dt) {
+    locomotion.update(dt);
+}
 
-private:
-    Stand stand;
-    Pursue pursue;
-    Locomotion *current_locomotion = nullptr;
-
-    void change_state(const LocomotionState state);
-};
+// -----------------------------------------------------------------------------
+// handleMessage
+// -----------------------------------------------------------------------------
+void Brain::message(const std::string &msg) {
+    if (msg.compare("receive")) {
+        locomotion.change(LocomotionState::Pursue, Player::ball->position);
+    } else if (msg.compare("dribble")) {
+        locomotion.change(LocomotionState::Stand);
+    }
+}
 } // namespace senseless_soccer

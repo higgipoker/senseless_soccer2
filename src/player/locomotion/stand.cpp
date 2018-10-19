@@ -17,47 +17,43 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "pursue.hpp"
+#include "stand.hpp"
 #include "../player.hpp"
-
+#include <iostream>
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
-// Pursue
+// Stand
 // -----------------------------------------------------------------------------
-Pursue::Pursue(Player *p)
-  : Locomotion(p) {
+Stand::Stand(Player *player)
+  : Locomotion(player) {
 }
 
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
-void Pursue::start() {
+void Stand::start() {
 }
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Pursue::update(float dt) {
-    Vector3 destination = *dynamic_target;
-    destination.z = 0;
-
-    // this will be normalised within player logic
-    player->velocity = destination - player->position;
+void Stand::update(float _dt) {
+    std::cout << "Stand" << std::endl;
+    player->face_ball();
 }
 
 // -----------------------------------------------------------------------------
 // stop
 // -----------------------------------------------------------------------------
-void Pursue::stop() {
-    destination_reached = true;
+void Stand::stop() {
 }
 
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
-bool Pursue::finished() {
-    return destination_reached;
+bool Stand::finished() {
+    return false;
 }
 
 } // namespace senseless_soccer

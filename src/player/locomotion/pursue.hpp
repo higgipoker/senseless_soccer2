@@ -31,15 +31,9 @@ public:
     Pursue(Player *p);
     virtual ~Pursue() override = default;
     virtual void start() override;
-    virtual void update(float _dt) override;
+    virtual void update(float dt) override;
     virtual void stop() override;
     virtual bool finished() override;
-
-    void init(const Vector3 &static_target,
-                          const Vector3 *dynamic_target = nullptr) override;
-
-private:
-    Vector3 *target = nullptr;
 };
 
 } // namespace senseless_soccer

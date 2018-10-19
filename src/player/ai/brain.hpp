@@ -18,30 +18,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "stand.hpp"
-#include "pursue.hpp"
-#include "seek.hpp"
+
+#include "../locomotion/locomotionmanager.hpp"
 
 namespace senseless_soccer {
 
-enum class LocomotionState { Stand, Pursue, Seek };
-
 class Player;
-class LocomotionManager {
+class Brain {
 public:
-    LocomotionManager(Player *player);
+    Brain(Player *p);
     void update(float dt);
-    void change(const LocomotionState state);
-    void change(const LocomotionState state, const Vector3 &static_target);
-    void change(const LocomotionState state, const Vector3 *dynamic_target);
-    void change(const LocomotionState state, const Vector3 &static_target,
-                const Vector3 *dynamic_target);
+    void message(const std::string &msg);
 
 private:
-    Stand stand;
-    Pursue pursue;
-    Locomotion *current_locomotion = nullptr;
-
-    void change_state(const LocomotionState state);
+    Player *player;
+    LocomotionManager locomotion;
 };
+
 } // namespace senseless_soccer
