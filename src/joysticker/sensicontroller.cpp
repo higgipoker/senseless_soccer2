@@ -67,8 +67,9 @@ void SensiController::update() {
     // attached to a player?
     if (player) {
         auto rect = player->widget->bounds();
-        label.setCenter(rect.left + rect.width / 2,
-                        rect.top + rect.width / 2 - rect.height / 2 - 4);
+        label.setCenter(static_cast<unsigned int>(rect.left + rect.width / 2),
+                        static_cast<unsigned int>(rect.top + rect.width / 2 -
+                                                  rect.height / 2 - 4));
     }
 }
 

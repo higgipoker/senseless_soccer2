@@ -39,8 +39,8 @@ add_executable(senseless_soccer
   src/team/team.cpp
   src/player/player.cpp
   src/player/states/state.cpp
-  src/player/states/stand.cpp
-  src/player/states/run.cpp
+  src/player/states/standing.cpp
+  src/player/states/running.cpp
   src/ball/ball.cpp
   src/pitch/pitch.cpp
   src/player/locomotion/locomotionmanager.cpp
@@ -49,6 +49,9 @@ add_executable(senseless_soccer
   src/player/locomotion/seek.cpp
   src/player/locomotion/pursue.cpp
   src/player/ai/brain.cpp
+  src/player/ai/brainstate.cpp
+  src/player/ai/attack/dribble.cpp
+  src/player/ai/attack/receivepass.cpp
 )
 
 # --------------------------------------------------

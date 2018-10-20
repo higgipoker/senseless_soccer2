@@ -21,6 +21,7 @@
 #include "../player.hpp"
 #include <iostream>
 namespace senseless_soccer {
+namespace locomotion {
 
 // -----------------------------------------------------------------------------
 // Stand
@@ -55,5 +56,5 @@ void Stand::stop() {
 bool Stand::finished() {
     return false;
 }
-
+} // namespace  locomotion
 } // namespace senseless_soccer

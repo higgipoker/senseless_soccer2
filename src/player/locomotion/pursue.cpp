@@ -21,12 +21,20 @@
 #include "../player.hpp"
 
 namespace senseless_soccer {
+namespace locomotion {
 
 // -----------------------------------------------------------------------------
 // Pursue
 // -----------------------------------------------------------------------------
 Pursue::Pursue(Player *p)
   : Locomotion(p) {
+}
+
+// -----------------------------------------------------------------------------
+// init
+// -----------------------------------------------------------------------------
+void Pursue::init(Vector3 *t) {
+    target = t;
 }
 
 // -----------------------------------------------------------------------------
@@ -39,11 +47,10 @@ void Pursue::start() {
 // update
 // -----------------------------------------------------------------------------
 void Pursue::update(float dt) {
-    Vector3 destination = *dynamic_target;
-    destination.z = 0;
+    target->z = 0;
 
     // this will be normalised within player logic
-    player->velocity = destination - player->position;
+    player->velocity = *target - player->position;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,4 +67,5 @@ bool Pursue::finished() {
     return destination_reached;
 }
 
+} // namespace locomotion
 } // namespace senseless_soccer

@@ -21,6 +21,7 @@
 #include "../player.hpp"
 
 namespace senseless_soccer {
+namespace locomotion {
 
 // -----------------------------------------------------------------------------
 // Locomotion
@@ -47,12 +48,5 @@ void Locomotion::update(float dt) {
 void Locomotion::stop() {
 }
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void Locomotion::init(const Vector3 &sta_target, const Vector3 *dyn_target) {
-    static_target = sta_target;
-    dynamic_target = dyn_target;
-}
-
+} // namespace locomotion
 } // namespace senseless_soccer

@@ -18,28 +18,23 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "stand.hpp"
-#include "pursue.hpp"
-#include "seek.hpp"
+
+#include "../brainstate.hpp"
 
 namespace senseless_soccer {
-class Player;
-namespace locomotion {
-enum class LocomotionState { Stand, Pursue, Seek };
-class LocomotionManager {
+namespace ai {
+
+class ReceivePass : public BrainState {
 public:
-    LocomotionManager(Player *player);
-    void update(float dt);
+	ReceivePass(Brain &b);
+	virtual ~ReceivePass() override =default;
 
-    void startStand();
-    void startPursue(Vector3 *target);
-    void startSeek(const Vector3 &target);
-
-private:
-    Stand stand;
-    Pursue pursue;
-    Seek seek;
-    Locomotion *current_locomotion = &stand;
+	void start() override;
+	void stop() override;
+	bool finished() override;
+	void update(float dt) override;
+	void changeToNextState() override;
 };
-} // namespace locomotion
+
+} // namespace ai
 } // namespace senseless_soccer

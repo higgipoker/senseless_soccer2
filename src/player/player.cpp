@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "player.hpp"
-#include "states/run.hpp"
-#include "states/stand.hpp"
+#include "states/running.hpp"
+#include "states/standing.hpp"
 #include "../team/team.hpp"
 #include "../joysticker/aftertouch.hpp"
 #include "../metrics/metrics.hpp"

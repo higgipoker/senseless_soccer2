@@ -22,14 +22,12 @@
 #include <string>
 using namespace gamelib2;
 namespace senseless_soccer {
-
 class Player;
+namespace locomotion {
 class Locomotion {
 public:
     Locomotion(Player *p);
     virtual ~Locomotion() = default;
-    void init(const Vector3 &static_target,
-              const Vector3 *dynamic_target = nullptr);
     virtual void start();
     virtual void update(float _dt);
     virtual void stop();
@@ -40,8 +38,7 @@ protected:
     Player *player = nullptr;
     bool state_over = false;
     Vector3 destination;
-    Vector3 static_target;
-    const Vector3 *dynamic_target = nullptr;
     bool destination_reached = false;
 };
+} // namespace locomotion
 } // namespace senseless_soccer

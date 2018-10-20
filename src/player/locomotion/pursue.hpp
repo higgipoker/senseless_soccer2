@@ -23,8 +23,8 @@
 
 using namespace gamelib2;
 namespace senseless_soccer {
-
 class Player;
+namespace locomotion {
 // pursue locomption follows a moving target
 class Pursue : public Locomotion {
 public:
@@ -34,6 +34,11 @@ public:
     virtual void update(float dt) override;
     virtual void stop() override;
     virtual bool finished() override;
-};
 
+    void init(Vector3 *t);
+
+private:
+    Vector3 *target = nullptr;
+};
+} // namespace locomotion
 } // namespace senseless_soccer

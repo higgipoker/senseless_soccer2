@@ -21,6 +21,7 @@
 #include "../player.hpp"
 
 namespace senseless_soccer {
+namespace locomotion {
 
 // -----------------------------------------------------------------------------
 // Seek
@@ -29,6 +30,12 @@ Seek::Seek(Player *player)
   : Locomotion(player) {
 }
 
+// -----------------------------------------------------------------------------
+// init
+// -----------------------------------------------------------------------------
+void Seek::init(const Vector3 &t) {
+    target = t;
+}
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
@@ -54,4 +61,5 @@ void Seek::stop() {
 bool Seek::finished() {
     return false;
 }
+} // namespace locomotion
 } // namespace senseless_soccer

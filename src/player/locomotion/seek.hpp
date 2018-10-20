@@ -22,6 +22,7 @@
 
 namespace senseless_soccer {
 class Player;
+namespace locomotion {
 // seek behaviour goes directly to a fixed point and stops
 class Seek : public Locomotion {
 public:
@@ -31,5 +32,11 @@ public:
     virtual void update(float _dt) override;
     virtual void stop() override;
     virtual bool finished() override;
+
+    void init(const Vector3 &t);
+
+private:
+    Vector3 target;
 };
+} // namespace locomotion
 } // namespace senseless_soccer

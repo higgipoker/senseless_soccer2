@@ -19,20 +19,32 @@
  ****************************************************************************/
 #pragma once
 
+#include "brainstate.hpp"
+#include "attack/dribble.hpp"
+#include "attack/receivepass.hpp"
 #include "../locomotion/locomotionmanager.hpp"
 
 namespace senseless_soccer {
-
 class Player;
+namespace ai {
+
+enum class State { BrainDribble, BrainPass, BrainReceive };
+
 class Brain {
 public:
     Brain(Player *p);
     void update(float dt);
     void message(const std::string &msg);
+    void changeState(const State state);
 
 private:
     Player *player;
-    LocomotionManager locomotion;
-};
 
+    Dribble dribble;
+    ReceivePass receive_pass;
+    BrainState *current_state = &dribble;
+
+    locomotion::LocomotionManager locomotion;
+};
+} // namespace ai
 } // namespace senseless_soccer

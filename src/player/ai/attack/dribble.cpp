@@ -17,62 +17,46 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "brain.hpp"
-#include "../player.hpp"
-
+#include "dribble.hpp"
 namespace senseless_soccer {
 namespace ai {
 
 // -----------------------------------------------------------------------------
-// Brain
+//
 // -----------------------------------------------------------------------------
-Brain::Brain(Player *p)
-  : player(p)
-  , dribble(*this)
-  , receive_pass(*this)
-  , locomotion(player) {
-    locomotion.startStand();
-}
-
-// -----------------------------------------------------------------------------
-// update
-// -----------------------------------------------------------------------------
-void Brain::update(float dt) {
-    current_state->update(dt);
-    if (current_state->finished()) {
-        current_state->stop();
-        current_state->changeToNextState();
-        current_state->start();
-    }
-
-    locomotion.update(dt);
-}
-
-// -----------------------------------------------------------------------------
-// handleMessage
-// -----------------------------------------------------------------------------
-void Brain::message(const std::string &msg) {
-    if (msg == "receive") {
-        locomotion.startPursue(&Player::ball->position);
-    } else if (msg == "dribble") {
-        locomotion.startStand();
-    }
+Dribble::Dribble(Brain &b)
+  : BrainState(b) {
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Brain::changeState(const State state) {
-    switch (state) {
-    case State::BrainDribble:
-        break;
+void Dribble::start() {
+}
 
-    case State::BrainPass:
-        break;
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Dribble::stop() {
+}
 
-    case State::BrainReceive:
-        break;
-    }
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Dribble::finished() {
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Dribble::update(float dt) {
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Dribble::changeToNextState() {
 }
 } // namespace ai
 } // namespace senseless_soccer

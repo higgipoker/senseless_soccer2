@@ -19,10 +19,10 @@
  ****************************************************************************/
 #pragma once
 
+#include "states/state.hpp"
+#include "states/standing.hpp"
+#include "states/running.hpp"
 #include "ai/brain.hpp"
-#include "states/stand.hpp"
-#include "states/run.hpp"
-
 #include "../joysticker/sensicontroller.hpp"
 #include "../ball/ball.hpp"
 
@@ -42,8 +42,6 @@ namespace senseless_soccer {
 enum class PlayerState { Stand, Run };
 
 class Team;
-class Running;
-class Standing;
 class Player : public Entity, public ControllerListener {
 public:
     // construct with an entity name
@@ -77,7 +75,7 @@ public:
     void setTeam(Team *t);
 
     // ai
-    Brain brain;
+    ai::Brain brain;
 
     // for sorting etc
     float distance_from_ball = 0;
@@ -160,7 +158,7 @@ private:
     State *current_state = nullptr;
 
     // current team i play on
-    Team *my_team;
+    Team *my_team = nullptr;
 
     // calc environment stuff
     void calc_short_pass_recipients();
@@ -183,7 +181,7 @@ public:
     friend class Standing;
     friend class Running;
     friend class Locomotion;
-    friend class Stand;
+    friend class locomotion::Stand;
     friend class Team;
 };
 

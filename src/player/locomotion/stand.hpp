@@ -25,6 +25,7 @@
 using namespace gamelib2;
 namespace senseless_soccer {
 class Player;
+namespace locomotion {
 class Stand : public Locomotion {
 public:
     Stand(Player *player);
@@ -34,5 +35,5 @@ public:
     virtual void stop() override;
     virtual bool finished() override;
 };
-
+} // namespace locomotion
 } // namespace senseless_soccer

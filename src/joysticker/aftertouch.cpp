@@ -66,47 +66,6 @@ void Aftertouch::start(Ball *b, const Vector3 &normal, const float mag) {
     ball->addTopSpin(topspin);
     topspin.reset();
     sidespin.reset();
-
-    // set the initial force on the ball depending on the dpad at start
-    //    if (dpad.equals(forward)) {
-    //        // a flat kick
-    //        topspin.z = 1000; // the flattest possible kick
-    //    } else if (dpad.equals(back)) {
-    //        topspin.z = -1000; // the lobbiest possible kick
-    //    }
-
-    //     else if (dpad.equals(left_diagonal)) {
-    //        // a flat kick with left curl
-    //        topspin.z += LIFT_FORWARD;
-    //        sidespin += (left * MODIFIER_FULL);
-
-    //    } else if (dpad.equals(right_diagonal)) {
-    //        // a flat kick with right curl
-    //        topspin.z += LIFT_FORWARD;
-    //        sidespin += (right * MODIFIER_FULL);
-    //    } else if (dpad.equals(back)) {
-    //        // a lobbed kick
-    //        topspin.z -= LIFT_FORWARD;
-    //    } else if (dpad.equals(left_diagonal_reversed)) {
-    //        // a lobbed kick with left curl
-    //        topspin.z -= LIFT_FORWARD;
-    //        sidespin += (left * MODIFIER_FULL);
-    //    } else if (dpad.equals(right_diagonal_reversed)) {
-    //        // a lobbed kick with right curl
-    //        topspin.z -= LIFT_FORWARD;
-    //        sidespin += (right * MODIFIER_FULL);
-    //    } else if (dpad.equals(left)) {
-    //        // a normal kick with left curl
-    //        sidespin += (left * MODIFIER_FULL);
-    //    } else if (dpad.equals(right)) {
-    //        // a normal kick with right curl
-    //        sidespin += (right * MODIFIER_FULL);
-    //    } else {
-    //        // a normal kick (dpad in neutral position)
-    //    }
-
-    //    ball->addSideSpin(sidespin);
-    //    ball->addTopSpin(topspin);
 }
 
 // -----------------------------------------------------------------------------
