@@ -23,6 +23,7 @@
 #include	"states/standing.hpp"
 #include	"states/running.hpp"
 #include	"states/sliding.hpp"
+#include	"states/jumping.hpp"
 #include	"ai/brain.hpp"
 #include	"../joysticker/sensicontroller.hpp"
 #include	"../ball/ball.hpp"
@@ -40,7 +41,7 @@
 using	namespace	gamelib2;
 namespace	senseless_soccer	{
 
-enum	class	PlayerState	{	Stand,	Run,	Slide	};
+enum	class	PlayerState	{	Stand,	Run,	Slide,	Jump	};
 
 class	Team;
 class	Player	:	public	Entity,	public	ControllerListener	{
@@ -97,6 +98,9 @@ public:
 				sf::VertexArray	debug_short_pass;
 
 protected:
+				// add perspective to the ball
+				void	perspectivize(float	camera_height)	override;
+
 				// state machine
 				void	change_state(const	PlayerState	&new_state);
 
@@ -117,6 +121,9 @@ protected:
 
 				// slide for a slide tackile
 				void	slide();
+
+				// jump for a header
+				void	jump();
 
 				// handle when i get possession of the ball
 				void	on_got_possession();
@@ -156,6 +163,7 @@ protected:
 
 				// tmp solution?
 				bool	sliding	=	false;
+				bool	jumping	=	false;
 
 				// map animations based on direction
 				static	std::map<Direction,	std::string>	stand_animation_map;
@@ -167,6 +175,7 @@ private:
 				std::unique_ptr<Standing>	stand_state;
 				std::unique_ptr<Running>	run_state;
 				std::unique_ptr<Sliding>	slide_state;
+				std::unique_ptr<Jumping>	jump_state;
 				State	*current_state	=	nullptr;
 
 				// current team i play on
@@ -193,6 +202,7 @@ public:
 				friend	class	Standing;
 				friend	class	Running;
 				friend	class	Sliding;
+				friend	class	Jumping;
 				friend	class	Locomotion;
 				friend	class	locomotion::Stand;
 				friend	class	Team;

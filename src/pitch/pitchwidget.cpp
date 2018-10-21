@@ -17,43 +17,53 @@
 	*    misrepresented as being the original software.
 	* 3. This notice may not be removed or altered from any source distribution.
 	****************************************************************************/
-#include	"slide.hpp"
-#include	"../player.hpp"
-#include	<iostream>
+#include	"pitchwidget.hpp"
+#include	"pitch.hpp"
+#include	<SFML/Graphics.hpp>
+
 namespace	senseless_soccer	{
-namespace	locomotion	{
 
 // -----------------------------------------------------------------------------
-// Slide
+//	PitchWidget
 // -----------------------------------------------------------------------------
-Slide::Slide(Player	&player)
-  :	Locomotion(player)	{
+PitchWidget::PitchWidget(const	std::string	&in_file)
+  :	TiledScrollingBackground(in_file)	{
 }
 
 // -----------------------------------------------------------------------------
-// start
+//	render
 // -----------------------------------------------------------------------------
-void	Slide::start()	{
-}
+void	PitchWidget::render(sf::RenderTarget	&target)	{
+				// render the tiled background
+				TiledScrollingBackground::render(target);
 
-// -----------------------------------------------------------------------------
-// update
-// -----------------------------------------------------------------------------
-void	Slide::update(float	_dt)	{
-}
+				// draw the pitch lines
+				int	offset	=	250;
+				Pitch	&pitch	=	static_cast<Pitch	&>(*entity);
+				float	line_width	=	2.5f;
 
-// -----------------------------------------------------------------------------
-// stop
-// -----------------------------------------------------------------------------
-void	Slide::stop()	{
-				player.velocity.reset();
-}
+				// north horizontal
+				sf::RectangleShape	line(
+				  sf::Vector2f(pitch.dimensions.bounds.width,	line_width));
+				line.move(offset,	offset);
+				target.draw(line);
 
-// -----------------------------------------------------------------------------
-// finished
-// -----------------------------------------------------------------------------
-bool	Slide::finished()	{
-				return	player.widget->currentAnimation()->finished();
+				// east vertical
+				line.move(pitch.dimensions.bounds.width,	0);
+				line.setSize(sf::Vector2f(pitch.dimensions.bounds.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// south horizontal
+				line.move(0,	pitch.dimensions.bounds.height);
+				line.setSize(sf::Vector2f(pitch.dimensions.bounds.width,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// west vertical
+				line.move(-pitch.dimensions.bounds.width,	0);
+				line.setSize(sf::Vector2f(pitch.dimensions.bounds.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
 }
-}	// namespace  locomotion
 }	// namespace senseless_soccer

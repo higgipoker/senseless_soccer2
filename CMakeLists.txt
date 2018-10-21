@@ -42,8 +42,10 @@ add_executable(senseless_soccer
 		src/player/states/standing.cpp
 		src/player/states/running.cpp
 		src/player/states/sliding.cpp
+		src/player/states/jumping.cpp
 		src/ball/ball.cpp
 		src/pitch/pitch.cpp
+		src/pitch/pitchwidget.cpp
 		src/player/locomotion/locomotionmanager.cpp
 		src/player/locomotion/locomotion.cpp
 		src/player/locomotion/stand.cpp

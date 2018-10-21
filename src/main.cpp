@@ -20,6 +20,7 @@
 
 #include	"memory/ballfactory.hpp"
 #include	"pitch/pitch.hpp"
+#include	"pitch/pitchwidget.hpp"
 #include	"player/player.hpp"
 #include	"memory/playerfactory.hpp"
 #include	"team/team.hpp"
@@ -44,17 +45,18 @@ int	main()	{
 				team1.controller	=	&controller;
 
 				// scrolling background
-				std::unique_ptr<Entity>	tile_entity	=	std::make_unique<Pitch>("background");
-				std::unique_ptr<Widget>	tiledbg	=
-				  std::make_unique<TiledScrollingBackground>(dir	+	"/gfx/grass_dry.png");
-				tiledbg->z_order	=	-10;
-				tiledbg->connectEntity(tile_entity.get());
-				tile_entity->connectWidget(std::move(tiledbg));
-				viewer.addWidget(tile_entity->widget.get());
+				std::unique_ptr<Entity>	pitch_entity	=
+				  std::make_unique<Pitch>("background");
+				std::unique_ptr<Widget>	pitch_widget	=
+				  std::make_unique<PitchWidget>(dir	+	"/gfx/grass_dry.png");
+				pitch_widget->z_order	=	-10;
+				pitch_widget->connectEntity(pitch_entity.get());
+				pitch_entity->connectWidget(std::move(pitch_widget));
+				viewer.addWidget(pitch_entity->widget.get());
 
 				// test
 				auto	*l	=	static_cast<Widget	*>(&controller.label);
-				tile_entity->widget->addChild(l);
+				pitch_entity->widget->addChild(l);
 
 				// players
 				std::vector<std::unique_ptr<Player>>	players;
@@ -62,10 +64,10 @@ int	main()	{
 				    std::stringstream	name;
 								name	<<	"player"	<<	i;
 								auto	player	=	PlayerFactory::makePlayer(name.str());
-								tile_entity->widget->addChild(player->widget.get());
+								pitch_entity->widget->addChild(player->widget.get());
 								auto	*w	=	player->widget.get();
 								auto	*s	=	dynamic_cast<Sprite	*>(w);
-								tile_entity->widget->addChild(s->getShadow());
+								pitch_entity->widget->addChild(s->getShadow());
 								engine.addEntity(player.get());
 								player->shirt_number	=	i	+	1;
 								if	(i	==	0)	{
@@ -80,13 +82,13 @@ int	main()	{
 				// ball
 				std::unique_ptr<Ball>	ball	=	BallFactory::makeBall("ball");
 				auto	*ballsprite	=	dynamic_cast<Sprite	*>(ball->widget.get());
-				tile_entity->widget->addChild(ballsprite->getShadow());
-				tile_entity->widget->addChild(ballsprite);
-				ball->bounds.setSize(sf::Vector2f(800,	600));
+				pitch_entity->widget->addChild(ballsprite->getShadow());
+				pitch_entity->widget->addChild(ballsprite);
+				ball->bounds.setSize(sf::Vector2f(1900,	2600));
 
 				// add entities to engine
 				engine.addEntity(ball.get());
-				engine.addEntity(tile_entity.get());
+				engine.addEntity(pitch_entity.get());
 				engine.addEntity(&team1);
 
 				// there is a circular relationship between engine <-> viewer
@@ -96,7 +98,7 @@ int	main()	{
 				Player::ball	=	ball.get();
 
 				// test
-				for	(int	i	=	0;	i	<	sf::Joystick::Count;	++i)	{
+				for	(unsigned	int	i	=	0;	i	<	sf::Joystick::Count;	++i)	{
 				    if	(sf::Joystick::isConnected(i))	{
 								    sf::Joystick::Identification	id	=
 												  sf::Joystick::getIdentification(i);
@@ -104,6 +106,11 @@ int	main()	{
 												          <<	std::endl;
 								}
 				}
+
+				// camera
+				engine.camera.init(800,	600);
+				engine.camera.setWorldRect(sf::Rect<int>(0,	0,	1900,	2600));
+				engine.camera.follow(ball.get());
 
 				viewer.startup();
 				float	timestep	=	0.01f;	// optimal for semi-implicit euler

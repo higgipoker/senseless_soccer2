@@ -6,10 +6,10 @@
 
 namespace	senseless_soccer	{
 
-class	Standing	:	public	State	{
+class	Jumping	:	public	State	{
 public:
 				// specific constructor to get player pointer
-				Standing(Player	&context);
+				Jumping(Player	&context);
 
 				// state started
 				void	start()	override;
@@ -25,6 +25,20 @@ public:
 
 				// change to next state
 				void	changeToNextState()	override;
+
+				// handle input
+				void	handle_input(const	ControllerEvent	&event)	override;
+
+private:
+				// how quickly the player gets up after the slide
+				unsigned	int	recover_frames	=	60;
+
+				// in the recovery (getting up) phase
+				bool	getting_up	=	false;
+
+				// tmp
+				float max_height = 8;
+				bool going_up = true;
 };
 
 }	// namespace senseless_soccer

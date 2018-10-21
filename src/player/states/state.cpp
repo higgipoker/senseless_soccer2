@@ -43,9 +43,9 @@ void	State::changeToNextState()	{
 }
 
 // -----------------------------------------------------------------------------
-// changeToNextState
+// handle_input
 // -----------------------------------------------------------------------------
-bool	State::handle_input(const	ControllerEvent	&event)	{
+void	State::handle_input(const	ControllerEvent	&event)	{
 				switch	(event.id)	{
 								case	Fire:
 												if	(event.status	==	Pressed)	{
@@ -54,7 +54,11 @@ bool	State::handle_input(const	ControllerEvent	&event)	{
 																    Vector3	direction	=	player.facing.toVector().normalise();
 																				player.kick(direction,	event.param);
 																}	else	{
-																    player.slide();
+																    if	(Floats::greater_than(Player::ball->position.z,	5))	{
+																				    player.jump();
+																				}	else	{
+																				    player.slide();
+																				}
 																}
 												}
 												break;
@@ -63,7 +67,11 @@ bool	State::handle_input(const	ControllerEvent	&event)	{
 												if	(player.ball_under_control())	{
 												    player.short_pass();
 												}	else	{
-												    player.slide();
+												    if	(Floats::greater_than(Player::ball->position.z,	5))	{
+																    player.jump();
+																}	else	{
+																    player.slide();
+																}
 												}
 												break;
 
@@ -110,8 +118,6 @@ bool	State::handle_input(const	ControllerEvent	&event)	{
 								case	NoEvent:
 												break;
 				}
-
-				return	false;
 }
 
 // -----------------------------------------------------------------------------

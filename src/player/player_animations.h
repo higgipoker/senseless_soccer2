@@ -129,7 +129,7 @@ static	std::vector<unsigned	int>	slide_east()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(24);
 				v.push_back(25);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(26);
 				return	v;
 }
@@ -137,7 +137,7 @@ static	std::vector<unsigned	int>	slide_southeast()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(27);
 				v.push_back(28);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(29);
 				return	v;
 }
@@ -145,7 +145,7 @@ static	std::vector<unsigned	int>	slide_south()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(30);
 				v.push_back(31);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(32);
 				return	v;
 }
@@ -153,7 +153,7 @@ static	std::vector<unsigned	int>	slide_southwest()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(33);
 				v.push_back(34);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(35);
 				return	v;
 }
@@ -161,7 +161,7 @@ static	std::vector<unsigned	int>	slide_west()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(36);
 				v.push_back(37);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(38);
 				return	v;
 }
@@ -169,7 +169,7 @@ static	std::vector<unsigned	int>	slide_northwest()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(39);
 				v.push_back(40);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(41);
 				return	v;
 }
@@ -178,7 +178,7 @@ static	std::vector<unsigned	int>	slide_north()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(42);
 				v.push_back(43);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(44);
 				return	v;
 }
@@ -186,7 +186,7 @@ static	std::vector<unsigned	int>	slide_northeast()	{
 				std::vector<unsigned	int>	v;
 				v.push_back(45);
 				v.push_back(46);
-				for	(int	i	=	0;	i	<	10;	++i)
+				for	(int	i	=	0;	i	<	2;	++i)
 								v.push_back(47);
 				return	v;
 }

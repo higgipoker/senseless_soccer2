@@ -1,17 +1,25 @@
-#pragma once
-#include <gamelib2/game/entity.hpp>
-namespace senseless_soccer {
+#pragma	once
+#include	<gamelib2/game/entity.hpp>
+#include	<SFML/Graphics.hpp>
+namespace	senseless_soccer	{
 
-class Pitch : public gamelib2::Entity {
+typedef	struct	{
+				sf::Rect<float>	bounds;
+
+}	PitchDimensions;
+
+class	Pitch	:	public	gamelib2::Entity	{
 public:
-    // construct with an entity name
-    Pitch(std::string in_name);
-    virtual ~Pitch();
+				// construct with an entity name
+				Pitch(std::string	in_name);
+				virtual	~Pitch();
 
-    // the entity was manually moved
-    void onDragged(const gamelib2::Vector3 &new_position) override;
+				// the entity was manually moved
+				void	onDragged(const	gamelib2::Vector3	&new_position)	override;
+
+				PitchDimensions	dimensions;
 
 protected:
 };
 
-} // namespace senseless_soccer
+}	// namespace senseless_soccer

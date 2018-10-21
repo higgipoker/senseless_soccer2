@@ -58,7 +58,8 @@ void	Running::end()	{
 // finished
 // -----------------------------------------------------------------------------
 bool	Running::finished()	{
-				return	(Floats::equal(player.velocity.magnitude2d(),	0)	||	player.sliding);
+				return	(Floats::equal(player.velocity.magnitude2d(),	0)	||	player.jumping	||
+				        player.sliding);
 }
 
 // -----------------------------------------------------------------------------
@@ -67,6 +68,8 @@ bool	Running::finished()	{
 void	Running::changeToNextState()	{
 				if	(player.sliding)	{
 				    player.change_state(PlayerState::Slide);
+				}	else	if	(player.jumping)	{
+				    player.change_state(PlayerState::Jump);
 				}	else	{
 				    player.change_state(PlayerState::Stand);
 				}

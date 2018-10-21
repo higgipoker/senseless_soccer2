@@ -52,7 +52,8 @@ Player::Player(std::string	in_name)
   ,	debug_short_pass(sf::Triangles,	3)
   ,	stand_state(std::make_unique<Standing>(*this))
   ,	run_state(std::make_unique<Running>(*this))
-  ,	slide_state(std::make_unique<Sliding>(*this))	{
+  ,	slide_state(std::make_unique<Sliding>(*this))
+  ,	jump_state(std::make_unique<Jumping>(*this))	{
 				feet.setRadius(dribble_radius);
 				control_inner.setRadius(control_radius);
 				control_outer.setRadius(control_radius	*	1.2f);
@@ -110,6 +111,8 @@ void	Player::update(float	dt)	{
 								control_outer.setPosition(feet.getPosition());
 				}
 
+				perspectivize(CAMERA_HEIGHT);
+
 				if	(!ball_under_control())	{
 				    shooting	=	false;
 				}
@@ -154,7 +157,13 @@ void	Player::do_physics(float	dt)	{
 				// basic euler motion
 				velocity	+=	acceleration	*	dt;
 				position	+=	velocity	*	dt	*	speed;
+
+				if	(Floats::less_than(position.z,	0))	{
+				    position.z	=	0;
+				}
 				acceleration.reset();
+
+				std::cout	<<	position.z	<<	std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -220,9 +229,11 @@ void	Player::change_state(const	PlayerState	&state)	{
 								case	PlayerState::Run:
 												current_state	=	run_state.get();
 												break;
-
 								case	PlayerState::Slide:
 												current_state	=	slide_state.get();
+												break;
+								case	PlayerState::Jump:
+												current_state	=	jump_state.get();
 												break;
 				}
 }
@@ -273,6 +284,13 @@ void	Player::short_pass()	{
 // -----------------------------------------------------------------------------
 void	Player::slide()	{
 				sliding	=	true;
+}
+
+// -----------------------------------------------------------------------------
+// jump
+// -----------------------------------------------------------------------------
+void	Player::jump()	{
+				jumping	=	true;
 }
 
 // -----------------------------------------------------------------------------
@@ -395,8 +413,38 @@ void	Player::face_ball()	{
 								    gamelib2::Vector3	to_ball	=	Player::ball->position	-	position;
 												gamelib2::Compass	c(to_ball.normalise());
 												widget->startAnimation(Player::stand_animation_map[c.direction]);
+												facing	=	to_ball.normalise();
 								}
 				}
+}
+
+// -----------------------------------------------------------------------------
+// perspectivize
+// -----------------------------------------------------------------------------
+void	Player::perspectivize(float	camera_height)	{
+				// size depending on distance from camera
+				float	dimensions	=	48;	// need to standardize heights /	pngs
+				float	dist_from_camera	=	camera_height	-	position.z;
+				float	angular_diameter	=	2	*	(atanf(dimensions	/	(2	*	dist_from_camera)));
+				float	degs	=	DEGREES(angular_diameter);
+				float	sprite_scale_factor	=	degs	/	dimensions;
+
+				auto	sprite	=	dynamic_cast<Sprite	*>(widget.get());
+
+				float	sprite_ratio	=	dimensions	/	sprite->image_width;
+				sprite_scale_factor	*=	sprite_ratio;
+				sprite->scale(sprite_scale_factor,	sprite_scale_factor);
+
+				// y offset due to height
+				float	z_cm	=	position.z	*	CM_PER_PIXEL;
+
+				if	(Floats::greater_than(z_cm,	0))	{
+				    // tmp hard code offset = 0.133px per cm
+				    float	y_offset	=	Y_OFFSET_DUE_TO_HEIGHT	*	z_cm;
+								sprite->move(0,	-y_offset);
+				}
+
+				// update the shadow
 }
 
 // -----------------------------------------------------------------------------
