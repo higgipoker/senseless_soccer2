@@ -5,6 +5,7 @@ namespace	senseless_soccer	{
 
 typedef	struct	{
 				sf::Rect<float>	bounds;
+				int	center_circle_radius;
 
 }	PitchDimensions;
 

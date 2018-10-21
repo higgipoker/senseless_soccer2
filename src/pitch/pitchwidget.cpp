@@ -26,8 +26,8 @@ namespace	senseless_soccer	{
 // -----------------------------------------------------------------------------
 //	PitchWidget
 // -----------------------------------------------------------------------------
-PitchWidget::PitchWidget(const	std::string	&in_file)
-  :	TiledScrollingBackground(in_file)	{
+PitchWidget::PitchWidget(const	std::string	&in_file,	Camera	&c)
+  :	TiledScrollingBackground(in_file,	c)	{
 }
 
 // -----------------------------------------------------------------------------
@@ -65,5 +65,24 @@ void	PitchWidget::render(sf::RenderTarget	&target)	{
 				line.setSize(sf::Vector2f(pitch.dimensions.bounds.height,	line_width));
 				line.rotate(90);
 				target.draw(line);
+
+				// center line
+				line.move(0,	-pitch.dimensions.bounds.height	/	2);
+				line.setSize(sf::Vector2f(pitch.dimensions.bounds.width,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// center circle
+				sf::CircleShape	circle(pitch.dimensions.center_circle_radius);
+				circle.setFillColor(sf::Color(0,	0,	0,	0));
+				circle.setOutlineThickness(2.5);
+				circle.setOutlineColor(sf::Color(255,	255,	255,	255));
+				circle.setPosition(offset	+	pitch.dimensions.bounds.width	/	2	-
+				                     pitch.dimensions.center_circle_radius,
+				                   offset	+	pitch.dimensions.bounds.height	/	2	-
+				                     pitch.dimensions.center_circle_radius);
+				target.draw(circle);
+
+				Widget::render(target);
 }
 }	// namespace senseless_soccer

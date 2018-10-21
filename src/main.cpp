@@ -48,7 +48,7 @@ int	main()	{
 				std::unique_ptr<Entity>	pitch_entity	=
 				  std::make_unique<Pitch>("background");
 				std::unique_ptr<Widget>	pitch_widget	=
-				  std::make_unique<PitchWidget>(dir	+	"/gfx/grass_dry.png");
+				  std::make_unique<PitchWidget>(dir	+	"/gfx/grass_dry.png",	engine.camera);
 				pitch_widget->z_order	=	-10;
 				pitch_widget->connectEntity(pitch_entity.get());
 				pitch_entity->connectWidget(std::move(pitch_widget));

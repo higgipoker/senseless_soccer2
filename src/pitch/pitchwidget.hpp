@@ -19,12 +19,14 @@
 	****************************************************************************/
 #pragma	once
 #include <gamelib2/widgets/tiledscrollingbackground.hpp>
+#include <gamelib2/camera/camera.hpp>
 
 using namespace gamelib2;
 namespace	senseless_soccer	{
 class	PitchWidget : public TiledScrollingBackground	{
 public:
-				PitchWidget(const std::string &in_file);
+				PitchWidget(const std::string &in_file, Camera &c);
 				void render(sf::RenderTarget &target) override;
+
 };
 }	// namespace senseless_soccer

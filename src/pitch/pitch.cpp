@@ -15,6 +15,7 @@ Pitch::Pitch(std::string	in_name)
 				dimensions.bounds.top	=	10;
 				dimensions.bounds.width	=	Metrics::MetersToPixels(69);
 				dimensions.bounds.height	=	Metrics::MetersToPixels(105);
+				dimensions.center_circle_radius	=	Metrics::MetersToPixels(9.15f);
 }
 
 // -----------------------------------------------------------------------------
