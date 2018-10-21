@@ -24,7 +24,13 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Debug/lib)
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std=c++14)
+add_definitions(-std=c++17)
+add_definitions(-fsanitize=address)
+
+# --------------------------------------------------
+# linker flags
+# --------------------------------------------------
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 # --------------------------------------------------
 # build files
@@ -62,9 +68,11 @@ add_executable(senseless_soccer
 # --------------------------------------------------
 # link libs
 # --------------------------------------------------
+target_link_libraries (senseless_soccer asan)
 target_link_libraries (senseless_soccer gamelib2)
 target_link_libraries (senseless_soccer sfml-graphics-d)
 target_link_libraries (senseless_soccer sfml-window-d)
 target_link_libraries (senseless_soccer sfml-system-d)
 target_link_libraries (senseless_soccer pthread)
 target_link_libraries (senseless_soccer X11)
+

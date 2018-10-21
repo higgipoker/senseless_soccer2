@@ -388,8 +388,7 @@ Player	*Player::calc_short_pass_receiver()	{
 
 				// tmp pick a random one
 				if	(!candidates.empty())	{
-				    auto	i	=	rand()	%	candidates.size();
-								p	=	candidates[i];
+				    p	=	candidates[0];
 				}
 
 				return	p;

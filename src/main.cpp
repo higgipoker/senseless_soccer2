@@ -60,7 +60,7 @@ int	main()	{
 
 				// players
 				std::vector<std::unique_ptr<Player>>	players;
-				for	(int	i	=	0;	i	<	1;	++i)	{
+				for	(int	i	=	0;	i	<	13;	++i)	{
 				    std::stringstream	name;
 								name	<<	"player"	<<	i;
 								auto	player	=	PlayerFactory::makePlayer(name.str());

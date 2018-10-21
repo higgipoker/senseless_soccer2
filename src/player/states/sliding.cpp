@@ -53,7 +53,10 @@ void	Sliding::end()	{
 				player.velocity.reset();
 				recover_frames	=	60;
 				getting_up	=	false;
-				on_controller_handover();
+
+				if	(player.controller)	{
+				    on_controller_handover();
+				}
 }
 
 // -----------------------------------------------------------------------------

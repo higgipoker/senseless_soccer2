@@ -58,7 +58,10 @@ void	Jumping::end()	{
 				player.position.z	=	0;
 				player.acceleration.z	=	0;
 				player.speed	=	150;
-				on_controller_handover();
+
+				if	(player.controller)	{
+				    on_controller_handover();
+				}
 }
 
 // -----------------------------------------------------------------------------
