@@ -18,22 +18,19 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-
+#include "brainstate.hpp"
 namespace senseless_soccer {
 namespace ai {
 class Brain;
-class BrainState {
+class Idle : public BrainState{
 public:
-	BrainState(Brain &b);
-	virtual ~BrainState() = default;
-	virtual void start() = 0;
-	virtual void stop() = 0;
-	virtual bool finished() = 0;
-	virtual void update(float dt) = 0;
-	virtual void changeToNextState() = 0;
-
-protected:
-	Brain &brain;
+	Idle(Brain &b);
+	virtual ~Idle() override = default;
+	virtual void start() override;
+	virtual void stop() override;
+	virtual bool finished() override;
+	virtual void update(float dt) override;
+	virtual void changeToNextState() override;
 };
 } // namespace ai
 } // namespace senseless_soccer

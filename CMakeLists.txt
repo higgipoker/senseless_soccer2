@@ -30,28 +30,31 @@ add_definitions(-std=c++14)
 # build files
 # --------------------------------------------------
 add_executable(senseless_soccer
-  src/main.cpp
-  src/metrics/metrics.cpp
-  src/memory/playerfactory.cpp
-  src/memory/ballfactory.cpp
-  src/joysticker/sensicontroller.cpp
-  src/joysticker/aftertouch.cpp
-  src/team/team.cpp
-  src/player/player.cpp
-  src/player/states/state.cpp
-  src/player/states/standing.cpp
-  src/player/states/running.cpp
-  src/ball/ball.cpp
-  src/pitch/pitch.cpp
-  src/player/locomotion/locomotionmanager.cpp
-  src/player/locomotion/locomotion.cpp
-  src/player/locomotion/stand.cpp
-  src/player/locomotion/seek.cpp
-  src/player/locomotion/pursue.cpp
-  src/player/ai/brain.cpp
-  src/player/ai/brainstate.cpp
-  src/player/ai/attack/dribble.cpp
-  src/player/ai/attack/receivepass.cpp
+				src/main.cpp
+		src/metrics/metrics.cpp
+		src/memory/playerfactory.cpp
+		src/memory/ballfactory.cpp
+		src/joysticker/sensicontroller.cpp
+		src/joysticker/aftertouch.cpp
+		src/team/team.cpp
+		src/player/player.cpp
+		src/player/states/state.cpp
+		src/player/states/standing.cpp
+		src/player/states/running.cpp
+		src/player/states/sliding.cpp
+		src/ball/ball.cpp
+		src/pitch/pitch.cpp
+		src/player/locomotion/locomotionmanager.cpp
+		src/player/locomotion/locomotion.cpp
+		src/player/locomotion/stand.cpp
+		src/player/locomotion/seek.cpp
+		src/player/locomotion/pursue.cpp
+		src/player/locomotion/slide.cpp
+		src/player/ai/brain.cpp
+		src/player/ai/brainstate.cpp
+		src/player/ai/idle.cpp
+		src/player/ai/attack/dribble.cpp
+		src/player/ai/attack/receivepass.cpp
 )
 
 # --------------------------------------------------

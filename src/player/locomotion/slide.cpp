@@ -17,32 +17,42 @@
 	*    misrepresented as being the original software.
 	* 3. This notice may not be removed or altered from any source distribution.
 	****************************************************************************/
-#pragma	once
-#include	"stand.hpp"
-#include	"pursue.hpp"
-#include	"seek.hpp"
 #include	"slide.hpp"
-
+#include	"../player.hpp"
+#include	<iostream>
 namespace	senseless_soccer	{
-class	Player;
 namespace	locomotion	{
-enum	class	LocomotionState	{	Stand,	Pursue,	Seek,	Slide	};
-class	LocomotionManager	{
-public:
-				LocomotionManager(Player	&player);
-				void	update(float	dt);
 
-				void	startStand();
-				void	startPursue(Vector3	*target);
-				void	startSeek(const	Vector3	&target);
-				void	startSlide();
+// -----------------------------------------------------------------------------
+// Slide
+// -----------------------------------------------------------------------------
+Slide::Slide(Player	&player)
+  :	Locomotion(player)	{
+}
 
-private:
-				Stand	stand;
-				Pursue	pursue;
-				Seek	seek;
-				Slide	slide;
-				Locomotion	*current_locomotion	=	&stand;
-};
-}	// namespace locomotion
+// -----------------------------------------------------------------------------
+// start
+// -----------------------------------------------------------------------------
+void	Slide::start()	{
+}
+
+// -----------------------------------------------------------------------------
+// update
+// -----------------------------------------------------------------------------
+void	Slide::update(float	_dt)	{
+}
+
+// -----------------------------------------------------------------------------
+// stop
+// -----------------------------------------------------------------------------
+void	Slide::stop()	{
+}
+
+// -----------------------------------------------------------------------------
+// finished
+// -----------------------------------------------------------------------------
+bool	Slide::finished()	{
+				return	player.widget->currentAnimation()->finished();
+}
+}	// namespace  locomotion
 }	// namespace senseless_soccer

@@ -1,75 +1,50 @@
+#include	"sliding.hpp"
 #include	"running.hpp"
-#include	"standing.hpp"
 #include	"../player.hpp"
-#include	<gamelib2/compass/compass.hpp>
-#include	<gamelib2/physics/collisions.hpp>
 
-using	namespace	gamelib2;
 namespace	senseless_soccer	{
 
 // -----------------------------------------------------------------------------
-// Run
+// Stand
 // -----------------------------------------------------------------------------
-Running::Running(Player	&context)
+Sliding::Sliding(Player	&context)
   :	State(context)	{
 }
 
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
-void	Running::start()	{
+void	Sliding::start()	{
 				if	(player.widget)	{
 				    player.widget->startAnimation(
-								  Player::run_animation_map[player.facing.direction]);
+								  Player::slide_animation_map[player.facing.direction]);
 				}
 }
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void	Running::update(const	float	dt)	{
-				// close control or dribble
-				if	(player.changed_direction)	{
-				    // change the running animation
-				    if	(player.widget)	{
-								    player.widget->startAnimation(
-												  Player::run_animation_map[player.facing.direction]);
-								}
-
-								// close control
-								if	(player.ball_under_control())	{
-								    player.do_close_control();
-								}
-
-				}	else	if	(Collision::collides(player.feet,	Player::ball->circle))	{
-				    if	(!player.shooting)	{
-								    player.do_dribble();
-								}
-				}
+void	Sliding::update(const	float	_dt)	{
 }
 
 // -----------------------------------------------------------------------------
 // end
 // -----------------------------------------------------------------------------
-void	Running::end()	{
+void	Sliding::end()	{
 }
 
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
-bool	Running::finished()	{
-				return	(Floats::equal(player.velocity.magnitude2d(),	0)	||	player.sliding);
+bool	Sliding::finished()	{
+				return	player.widget->currentAnimation()->finished();
 }
 
 // -----------------------------------------------------------------------------
 // changeToNextState
 // -----------------------------------------------------------------------------
-void	Running::changeToNextState()	{
-				if	(player.sliding)	{
-				    player.change_state(PlayerState::Slide);
-				}	else	{
-				    player.change_state(PlayerState::Stand);
-				}
+void	Sliding::changeToNextState()	{
+				player.sliding	=	false;
+				player.change_state(PlayerState::Stand);
 }
-
 }	// namespace senseless_soccer
