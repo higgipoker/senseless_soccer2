@@ -47,8 +47,8 @@ int	main()	{
 				// scrolling background
 				std::unique_ptr<Entity>	pitch_entity	=
 				  std::make_unique<Pitch>("background");
-				std::unique_ptr<Widget>	pitch_widget	=
-				  std::make_unique<PitchWidget>(dir	+	"/gfx/grass_dry.png",	engine.camera);
+				std::unique_ptr<Widget>	pitch_widget	=	std::make_unique<PitchWidget>(
+				  dir	+	"/gfx/grass_horizontal.png",	engine.camera);
 				pitch_widget->z_order	=	-10;
 				pitch_widget->connectEntity(pitch_entity.get());
 				pitch_entity->connectWidget(std::move(pitch_widget));
@@ -84,7 +84,6 @@ int	main()	{
 				auto	*ballsprite	=	dynamic_cast<Sprite	*>(ball->widget.get());
 				pitch_entity->widget->addChild(ballsprite->getShadow());
 				pitch_entity->widget->addChild(ballsprite);
-				ball->bounds.setSize(sf::Vector2f(1900,	2600));
 
 				// add entities to engine
 				engine.addEntity(ball.get());
@@ -111,6 +110,7 @@ int	main()	{
 				engine.camera.init(800,	600);
 				engine.camera.setWorldRect(sf::Rect<int>(0,	0,	1900,	2600));
 				engine.camera.follow(ball.get());
+				ball->bounds.setSize(sf::Vector2f(1900,	2600));
 
 				viewer.startup();
 				float	timestep	=	0.01f;	// optimal for semi-implicit euler

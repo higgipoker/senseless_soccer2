@@ -19,6 +19,8 @@
 	****************************************************************************/
 #include	"pitchwidget.hpp"
 #include	"pitch.hpp"
+#include	"../metrics/metrics.hpp"
+#include	<gamelib2/graphics/primitives.hpp>
 #include	<SFML/Graphics.hpp>
 
 namespace	senseless_soccer	{
@@ -38,14 +40,14 @@ void	PitchWidget::render(sf::RenderTarget	&target)	{
 				TiledScrollingBackground::render(target);
 
 				// draw the pitch lines
-				int	offset	=	250;
+				// todo gather into one draw list
 				Pitch	&pitch	=	static_cast<Pitch	&>(*entity);
 				float	line_width	=	2.5f;
 
 				// north horizontal
 				sf::RectangleShape	line(
 				  sf::Vector2f(pitch.dimensions.bounds.width,	line_width));
-				line.move(offset,	offset);
+				line.setPosition(pitch.dimensions.bounds.left,	pitch.dimensions.bounds.top);
 				target.draw(line);
 
 				// east vertical
@@ -74,14 +76,115 @@ void	PitchWidget::render(sf::RenderTarget	&target)	{
 
 				// center circle
 				sf::CircleShape	circle(pitch.dimensions.center_circle_radius);
+				circle.setPointCount(50);
 				circle.setFillColor(sf::Color(0,	0,	0,	0));
 				circle.setOutlineThickness(2.5);
 				circle.setOutlineColor(sf::Color(255,	255,	255,	255));
-				circle.setPosition(offset	+	pitch.dimensions.bounds.width	/	2	-
-				                     pitch.dimensions.center_circle_radius,
-				                   offset	+	pitch.dimensions.bounds.height	/	2	-
-				                     pitch.dimensions.center_circle_radius);
+				circle.setPosition(
+				  pitch.dimensions.center.left	-	pitch.dimensions.center_circle_radius,
+				  pitch.dimensions.center.top	-	pitch.dimensions.center_circle_radius);
 				target.draw(circle);
+
+				// north 6 yard box
+				// east vertical
+				line.setPosition(sf::Vector2f(pitch.dimensions.north_6.left	+
+				                                pitch.dimensions.north_6.width,
+				                              pitch.dimensions.north_6.top));
+				line.setSize(sf::Vector2f(pitch.dimensions.north_6.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// south horizontal
+				line.move(-(pitch.dimensions.north_6.width),
+				          pitch.dimensions.north_6.height);
+				line.setSize(sf::Vector2f(pitch.dimensions.north_6.width,	line_width));
+				line.rotate(-90);
+				target.draw(line);
+
+				// west vertical
+				line.setSize(sf::Vector2f(pitch.dimensions.north_6.height,	line_width));
+				line.rotate(-90);
+				target.draw(line);
+
+				// north 18 yard box
+				// east vertical
+				line.setRotation(0);
+				line.setPosition(sf::Vector2f(pitch.dimensions.north_18.left	+
+				                                pitch.dimensions.north_18.width,
+				                              pitch.dimensions.north_18.top));
+				line.setSize(sf::Vector2f(pitch.dimensions.north_18.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// south horizontal
+				line.move(-(pitch.dimensions.north_18.width),
+				          pitch.dimensions.north_18.height);
+				line.setSize(sf::Vector2f(pitch.dimensions.north_18.width,	line_width));
+				line.rotate(-90);
+				target.draw(line);
+
+				// west vertical
+				line.setSize(sf::Vector2f(pitch.dimensions.north_18.height,	line_width));
+				line.rotate(-90);
+				target.draw(line);
+
+				// south 6 yard box
+				// east vertical
+				line.setRotation(0);
+				line.setPosition(sf::Vector2f(pitch.dimensions.south_6.left	+
+				                                pitch.dimensions.south_6.width,
+				                              pitch.dimensions.south_6.top));
+				line.setSize(sf::Vector2f(pitch.dimensions.south_6.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// south horizontal
+				line.move(-(pitch.dimensions.south_6.width),	0);
+				line.setSize(sf::Vector2f(pitch.dimensions.south_6.width,	line_width));
+				line.rotate(-90);
+				target.draw(line);
+
+				// west vertical
+				line.setSize(sf::Vector2f(pitch.dimensions.south_6.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// south 18 yard box
+				// east vertical
+				line.setRotation(0);
+				line.setPosition(sf::Vector2f(pitch.dimensions.south_18.left	+
+				                                pitch.dimensions.south_18.width,
+				                              pitch.dimensions.south_18.top));
+				line.setSize(sf::Vector2f(pitch.dimensions.south_18.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				// south horizontal
+				line.move(-(pitch.dimensions.south_18.width),	0);
+				line.setSize(sf::Vector2f(pitch.dimensions.south_18.width,	line_width));
+				line.rotate(-90);
+				target.draw(line);
+
+				// west vertical
+				line.setSize(sf::Vector2f(pitch.dimensions.south_18.height,	line_width));
+				line.rotate(90);
+				target.draw(line);
+
+				//
+				// arc north
+				//
+				Primitives::arc(
+				  target,	pitch.dimensions.bounds.left	+	pitch.dimensions.bounds.width	/	2,
+				  pitch.dimensions.north_18.top	+	pitch.dimensions.north_18.height	-	99,
+				  Metrics::MetersToPixels(9.15f),	33,	148,	100,	3);
+
+				//
+				// arc south
+				//
+				Primitives::arc(
+				  target,	pitch.dimensions.bounds.left	+	pitch.dimensions.bounds.width	/	2,
+				  pitch.dimensions.south_18.top	+	99,	Metrics::MetersToPixels(9.15f),	213,
+				  329,	100,	3);
 
 				Widget::render(target);
 }
