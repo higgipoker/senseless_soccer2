@@ -162,8 +162,6 @@ void	Player::do_physics(float	dt)	{
 				    position.z	=	0;
 				}
 				acceleration.reset();
-
-				std::cout	<<	position.z	<<	std::endl;
 }
 
 // -----------------------------------------------------------------------------

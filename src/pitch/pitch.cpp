@@ -47,6 +47,17 @@ Pitch::Pitch(std::string	in_name)
 				  dimensions.bounds.left	+	(dimensions.bounds.width	/	2);
 				dimensions.center.top	=
 				  dimensions.bounds.top	+	(dimensions.bounds.height	/	2);
+
+				// goals
+				dimensions.goal_north.width	=	Metrics::MetersToPixels(7.32f);
+				dimensions.goal_north.height	=	Metrics::MetersToPixels(2.44f);
+				dimensions.goal_north.left	=
+				  (dimensions.bounds.left	+	dimensions.bounds.width	/	2)	-
+				  (dimensions.goal_north.width	/	2)	+	76;
+				dimensions.goal_north.top	=	dimensions.bounds.top;
+
+				dimensions.goal_south	=	dimensions.goal_north;
+				dimensions.goal_south.top	+=	dimensions.bounds.height;
 }
 
 // -----------------------------------------------------------------------------

@@ -30,6 +30,12 @@ namespace	senseless_soccer	{
 // -----------------------------------------------------------------------------
 PitchWidget::PitchWidget(const	std::string	&in_file,	Camera	&c)
   :	TiledScrollingBackground(in_file,	c)	{
+
+				addChild(goal_north.get());
+				goal_north->z_order	=	100;
+
+				addChild(goal_south.get());
+				goal_south->z_order	=	100;
 }
 
 // -----------------------------------------------------------------------------
@@ -185,6 +191,14 @@ void	PitchWidget::render(sf::RenderTarget	&target)	{
 				  target,	pitch.dimensions.bounds.left	+	pitch.dimensions.bounds.width	/	2,
 				  pitch.dimensions.south_18.top	+	99,	Metrics::MetersToPixels(9.15f),	213,
 				  329,	100,	3);
+
+				// goals
+				goal_north->setPosition(pitch.dimensions.goal_north.left,
+				                        pitch.dimensions.goal_north.top	-
+				                          goal_north->bounds().height	/	2);
+
+				goal_south->setPosition(pitch.dimensions.goal_south.left,
+				                        pitch.dimensions.goal_south.top	+	32);
 
 				Widget::render(target);
 }

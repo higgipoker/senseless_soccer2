@@ -4,16 +4,19 @@
 namespace	senseless_soccer	{
 
 typedef	struct	{
+
+				// pitch lines
 				sf::FloatRect	bounds;
 				int	center_circle_radius;
-
 				sf::FloatRect	north_6;
 				sf::FloatRect	north_18;
-
 				sf::FloatRect	south_6;
 				sf::FloatRect	south_18;
-
 				sf::FloatRect	center;
+
+				//	goals
+				sf::FloatRect	goal_north;
+				sf::FloatRect	goal_south;
 
 }	PitchDimensions;
 

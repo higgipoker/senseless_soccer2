@@ -18,15 +18,24 @@
 	* 3. This notice may not be removed or altered from any source distribution.
 	****************************************************************************/
 #pragma	once
-#include <gamelib2/widgets/tiledscrollingbackground.hpp>
-#include <gamelib2/camera/camera.hpp>
+#include	<gamelib2/widgets/tiledscrollingbackground.hpp>
+#include	<gamelib2/camera/camera.hpp>
+#include	<gamelib2/utils/files.hpp>
+#include	<gamelib2/widgets/sprite.hpp>
 
-using namespace gamelib2;
+using	namespace	gamelib2;
 namespace	senseless_soccer	{
-class	PitchWidget : public TiledScrollingBackground	{
+class	PitchWidget	:	public	TiledScrollingBackground	{
 public:
-				PitchWidget(const std::string &in_file, Camera &c);
-				void render(sf::RenderTarget &target) override;
+				PitchWidget(const	std::string	&in_file,	Camera	&c);
+				void	render(sf::RenderTarget	&target)	override;
 
+private:
+				std::unique_ptr<Widget>	goal_north	=	std::make_unique<Sprite>(
+				  Files::getWorkingDirectory()	+	"/gfx/goal_top_new.png",	1,	1);
+
+				std::unique_ptr<Widget>	goal_south	=	std::make_unique<Sprite>(
+				  Files::getWorkingDirectory()	+	"/gfx/goal_bottom_new_persepective.png",	1,
+				  1);
 };
 }	// namespace senseless_soccer
