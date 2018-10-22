@@ -1,3 +1,4 @@
+#include "debug/debug.hpp"
 #include "memory/ballfactory.hpp"
 #include "memory/playerfactory.hpp"
 #include "pitch/pitch.hpp"
@@ -33,6 +34,7 @@ using namespace senseless_soccer;
 
 sf::Clock ui_clock;
 int main() {
+  Debug debug;
   Viewer viewer;
   Engine engine;
 
@@ -121,9 +123,7 @@ int main() {
     // debug ui
     // --------------------
     ImGui::SFML::Update(viewer.getWindow(), ui_clock.restart());
-    ImGui::Begin("Hello, world!");
-    ImGui::Button("Look at this pretty button");
-    ImGui::End();
+    debug.showPlayerMenu();
 
     controller.update();
     engine.frame(timestep);
