@@ -17,42 +17,14 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
+#ifndef DEBUG_HPP
+#define DEBUG_HPP
 
-#include "../locomotion/locomotionmanager.hpp"
-#include "attack/dribble.hpp"
-#include "attack/receivepass.hpp"
-#include "brainstate.hpp"
-#include "idle.hpp"
 
-namespace senseless_soccer {
-class Player;
-namespace ai {
-
-enum class State { BrainIdle, BrainDribble, BrainPass, BrainReceive };
-
-class Brain {
-   public:
-    Brain(Player &p);
-    void update(float dt);
-    void message(const std::string &msg);
-    void changeState(const State state);
-
-   private:
-    Player &player;
-
-	Idle idle;
-	Dribble dribble;
-	ReceivePass receive_pass;
-	BrainState *current_state = &dribble;
-
-	locomotion::LocomotionManager locomotion;
-
-   public:
-    // state machine pattern
-    friend class Idle;
-    friend class ReceivePass;
-    friend class Retrieve;
+class Debug
+{
+public:
+    Debug();
 };
-}  // namespace ai
-}  // namespace senseless_soccer
+
+#endif // DEBUG_HPP

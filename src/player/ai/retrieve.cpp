@@ -17,7 +17,7 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "idle.hpp"
+#include "retrieve.hpp"
 #include "../player.hpp"
 #include "brain.hpp"
 
@@ -27,34 +27,34 @@ namespace ai {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Idle::Idle(Brain &b) : BrainState(b) {}
+Retrieve::Retrieve(Brain &b) : BrainState(b) {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Idle::start() {
-	// go backt to standing
-	brain.locomotion.startStand();
+void Retrieve::start() {
+  // go backt to standing
+  brain.locomotion.startPursue(&Player::ball->position);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Idle::stop() {}
+void Retrieve::stop() {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool Idle::finished() { return false; }
+bool Retrieve::finished() { return brain.player.ball_under_control(); }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Idle::update(float dt) {}
+void Retrieve::update(float dt) {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Idle::changeToNextState() {}
-}  // namespace ai
-}  // namespace senseless_soccer
+void Retrieve::changeToNextState() {}
+} // namespace ai
+} // namespace senseless_soccer

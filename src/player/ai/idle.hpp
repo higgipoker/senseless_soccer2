@@ -20,17 +20,17 @@
 #pragma once
 #include "brainstate.hpp"
 namespace senseless_soccer {
-namespace ai {
 class Brain;
-class Idle : public BrainState{
-public:
-	Idle(Brain &b);
-	virtual ~Idle() override = default;
-	virtual void start() override;
-	virtual void stop() override;
-	virtual bool finished() override;
-	virtual void update(float dt) override;
-	virtual void changeToNextState() override;
+namespace ai {
+class Idle : public BrainState {
+   public:
+    Idle(Brain &b);
+    virtual ~Idle() override = default;
+    virtual void start() override;
+    virtual void stop() override;
+    virtual bool finished() override;
+    virtual void update(float dt) override;
+    virtual void changeToNextState() override;
 };
-} // namespace ai
-} // namespace senseless_soccer
+}  // namespace ai
+}  // namespace senseless_soccer
