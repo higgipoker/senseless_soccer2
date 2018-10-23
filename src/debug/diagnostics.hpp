@@ -20,14 +20,19 @@
 #pragma once
 
 #include "../player/player.hpp"
+#include <gamelib2/debug/diagnostic.hpp>
 
 namespace senseless_soccer {
 
-class Debug {
+class Diagnostic : public gamelib2::Diagnostic {
 public:
-    void showPlayerMenu();
+  void update() override;
+  void selectEntity(Entity *entity) override;
+  void deSelect() override;
+  void showPlayerMenu();
+
 private:
-    float t=0;
+  Player *selected_player = nullptr;
 };
 
 } // namespace senseless_soccer
