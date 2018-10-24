@@ -27,20 +27,24 @@ namespace ai {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Retrieve::Retrieve(Brain &b) : BrainState(b) {}
+Retrieve::Retrieve(Brain &b) : BrainState(b, "retrieve") {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Retrieve::start() {
+  std::cout << "start retrieve" << std::endl;
   // go backt to standing
-  brain.locomotion.startPursue(&Player::ball->position);
+  brain.locomotion.startPursue(Player::ball);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::stop() {}
+void Retrieve::stop() {
+  std::cout << "stop retrieve" << std::endl;
+  brain.locomotion.startStand();
+}
 
 // -----------------------------------------------------------------------------
 //
@@ -55,6 +59,6 @@ void Retrieve::update(float dt) {}
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::changeToNextState() {}
+void Retrieve::changeToNextState() { brain.changeState(State::BrainIdle); }
 } // namespace ai
 } // namespace senseless_soccer

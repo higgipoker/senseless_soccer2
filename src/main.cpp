@@ -51,7 +51,7 @@ int main() {
   // set up a controller from a keyboard inpout
   XboxController xbox_controller;
   Keyboard keyboard;
-  SensiController controller(xbox_controller);
+  SensiController controller(keyboard);
   team1.controller = &controller;
 
   // scrolling background
@@ -69,7 +69,7 @@ int main() {
 
   // players
   std::vector<std::unique_ptr<Player>> players;
-  for (int i = 0; i < 13; ++i) {
+  for (int i = 0; i < 2; ++i) {
     std::stringstream name;
     name << "player" << i;
     auto player = PlayerFactory::makePlayer(name.str());

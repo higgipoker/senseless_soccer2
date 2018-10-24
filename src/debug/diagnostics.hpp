@@ -33,6 +33,11 @@ public:
 
 private:
   Player *selected_player = nullptr;
+  void process_animation_list(std::vector<const char *> &out_list,
+                              int &out_active_index);
+
+  void process_brainstate_list(std::vector<const char *> &out_list,
+                               int &out_active_index);
 };
 
 } // namespace senseless_soccer

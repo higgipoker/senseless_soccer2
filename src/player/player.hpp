@@ -96,6 +96,9 @@ public:
   // suspend input temporarily
   bool input_suspended = false;
 
+  // attached input
+  SensiController *controller = nullptr;
+
   // debug display
   sf::VertexArray debug_short_pass;
 
@@ -156,9 +159,6 @@ protected:
 
   // lost control circle
   sf::CircleShape control_outer;
-
-  // attached input
-  SensiController *controller = nullptr;
 
   // don't control and shoot at the same time
   bool shooting = false;

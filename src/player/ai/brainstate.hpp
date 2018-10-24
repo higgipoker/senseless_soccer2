@@ -18,22 +18,24 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-
+#include <string>
 namespace senseless_soccer {
 namespace ai {
 class Brain;
 class BrainState {
 public:
-	BrainState(Brain &b);
-	virtual ~BrainState() = default;
-	virtual void start() = 0;
-	virtual void stop() = 0;
-	virtual bool finished() = 0;
-	virtual void update(float dt) = 0;
-	virtual void changeToNextState() = 0;
+  BrainState(Brain &b, std::string n);
+  virtual ~BrainState() = default;
+  virtual void start() = 0;
+  virtual void stop() = 0;
+  virtual bool finished() = 0;
+  virtual void update(float dt) = 0;
+  virtual void changeToNextState() = 0;
+
+  std::string name;
 
 protected:
-	Brain &brain;
+  Brain &brain;
 };
 } // namespace ai
 } // namespace senseless_soccer

@@ -27,14 +27,14 @@ namespace ai {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Idle::Idle(Brain &b) : BrainState(b) {}
+Idle::Idle(Brain &b) : BrainState(b, "idle") {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Idle::start() {
-	// go backt to standing
-	brain.locomotion.startStand();
+  // go backt to standing
+  brain.locomotion.startStand();
 }
 
 // -----------------------------------------------------------------------------
@@ -56,5 +56,5 @@ void Idle::update(float dt) {}
 //
 // -----------------------------------------------------------------------------
 void Idle::changeToNextState() {}
-}  // namespace ai
-}  // namespace senseless_soccer
+} // namespace ai
+} // namespace senseless_soccer

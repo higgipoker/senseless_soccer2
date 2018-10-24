@@ -21,8 +21,7 @@
 
 namespace senseless_soccer {
 namespace ai {
-BrainState::BrainState(Brain &b)
-  : brain(b) {
-}
+BrainState::BrainState(Brain &b, std::string n)
+    : brain(b), name(std::move(n)) {}
 } // namespace ai
 } // namespace senseless_soccer

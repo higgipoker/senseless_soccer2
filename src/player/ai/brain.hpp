@@ -24,35 +24,52 @@
 #include "attack/receivepass.hpp"
 #include "brainstate.hpp"
 #include "idle.hpp"
+#include "retrieve.hpp"
+
+#include <map>
 
 namespace senseless_soccer {
 class Player;
 namespace ai {
 
-enum class State { BrainIdle, BrainDribble, BrainPass, BrainReceive };
+// list of brainstates
+enum class State {
+  BrainIdle,
+  BrainDribble,
+  BrainPass,
+  BrainReceive,
+  BrainRetrieve
+};
 
 class Brain {
-   public:
-    Brain(Player &p);
-    void update(float dt);
-    void message(const std::string &msg);
-    void changeState(const State state);
+public:
+  Brain(Player &p);
+  void update(float dt);
+  void message(const std::string &msg);
+  void changeState(const State state);
+  void onControllerAttached();
 
-   private:
-    Player &player;
+  locomotion::LocomotionManager locomotion;
 
-	Idle idle;
-	Dribble dribble;
-	ReceivePass receive_pass;
-	BrainState *current_state = &dribble;
+  // distnostic map
+  static std::map<std::string, State> state_map;
+  static std::map<State, std::string> reverse_state_map;
+  std::string currentState();
 
-	locomotion::LocomotionManager locomotion;
+private:
+  Player &player;
 
-   public:
-    // state machine pattern
-    friend class Idle;
-    friend class ReceivePass;
-    friend class Retrieve;
+  Idle idle;
+  Dribble dribble;
+  ReceivePass receive_pass;
+  Retrieve retrieve;
+  BrainState *current_state = &idle;
+
+public:
+  // state machine pattern
+  friend class Idle;
+  friend class ReceivePass;
+  friend class Retrieve;
 };
-}  // namespace ai
-}  // namespace senseless_soccer
+} // namespace ai
+} // namespace senseless_soccer

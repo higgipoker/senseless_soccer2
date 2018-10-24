@@ -65,6 +65,7 @@ Player::Player(std::string in_name)
 void Player::activate() {
   // init state machine
   change_state(PlayerState::Stand);
+  current_state->start();
 }
 
 // -----------------------------------------------------------------------------
@@ -264,7 +265,6 @@ void Player::short_pass() {
     Vector3 direction = receiver->position - position;
     Vector3 force = direction * distance * 1.4f;
     Player::ball->kick(force);
-    std::cout << distance << std::endl;
     receiver->brain.message("receive");
   } else {
     ball->kick(facing.toVector() * 25000);
@@ -296,6 +296,7 @@ bool Player::ball_under_control() {
 void Player::attachInput(SensiController *c) {
   controller = c;
   controller->setListener(this);
+  velocity.reset();
   current_state->on_controller_handover();
 }
 
@@ -400,6 +401,9 @@ void Player::face_ball() {
       gamelib2::Compass c(to_ball.normalise());
       widget->startAnimation(Player::stand_animation_map[c.direction]);
       facing = to_ball.normalise();
+    } else {
+      widget->startAnimation(
+          Player::stand_animation_map[gamelib2::Direction::SOUTH]);
     }
   }
 }
