@@ -7,14 +7,14 @@ typedef struct {
 
   // pitch lines
   sf::FloatRect bounds;
-  int center_circle_radius;
   sf::FloatRect north_6;
   sf::FloatRect north_18;
   sf::FloatRect south_6;
   sf::FloatRect south_18;
   sf::FloatRect center;
+  int center_circle_radius;
 
-  //	goals
+  // goals
   sf::FloatRect goal_north;
   sf::FloatRect goal_south;
 
@@ -30,6 +30,9 @@ public:
   void onDragged(const gamelib2::Vector3 &new_position) override;
 
   PitchDimensions dimensions;
+  // goals graphical
+  sf::FloatRect goal_north_gfx;
+  sf::FloatRect goal_south_gfx;
 
 protected:
 };

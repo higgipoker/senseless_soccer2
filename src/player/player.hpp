@@ -22,6 +22,7 @@
 #include "../ball/ball.hpp"
 #include "../joysticker/sensicontroller.hpp"
 #include "../pitch/pitch.hpp"
+#include "ai/attack/pass.hpp"
 #include "ai/brain.hpp"
 #include "states/jumping.hpp"
 #include "states/running.hpp"
@@ -131,6 +132,9 @@ protected:
   // an automatic short pass
   void short_pass();
 
+  // shoot at goal
+  void shoot();
+
   // slide for a slide tackile
   void slide();
 
@@ -209,6 +213,8 @@ public:
   friend class Running;
   friend class Sliding;
   friend class Jumping;
+  friend class ai::Pass;
+  friend class ai::Shoot;
   friend class Locomotion;
   friend class locomotion::Stand;
   friend class Team;

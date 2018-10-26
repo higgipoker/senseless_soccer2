@@ -29,6 +29,7 @@ std::map<std::string, State> Brain::state_map = {
     std::make_pair("pass", State::BrainPass),
     std::make_pair("receivePass", State::BrainReceive),
     std::make_pair("retrieve", State::BrainRetrieve),
+    std::make_pair("shoot", State::BrainShoot),
 };
 
 std::map<State, std::string> Brain::reverse_state_map = {
@@ -37,13 +38,14 @@ std::map<State, std::string> Brain::reverse_state_map = {
     std::make_pair(State::BrainPass, "pass"),
     std::make_pair(State::BrainReceive, "receivePass"),
     std::make_pair(State::BrainRetrieve, "retrieve"),
+    std::make_pair(State::BrainShoot, "shoot"),
 };
 // -----------------------------------------------------------------------------
 // Brain
 // -----------------------------------------------------------------------------
 Brain::Brain(Player &p)
-    : player(p), idle(*this), dribble(*this), receive_pass(*this),
-      retrieve(*this), locomotion(p) {
+    : player(p), idle(*this), dribble(*this), receive_pass(*this), pass(*this),
+      shoot(*this), retrieve(*this), locomotion(p) {
   locomotion.startStand();
 }
 
@@ -88,6 +90,10 @@ void Brain::changeState(const State state) {
     current_state = &dribble;
     break;
   case State::BrainPass:
+    current_state = &pass;
+    break;
+  case State::BrainShoot:
+    current_state = &shoot;
     break;
   case State::BrainReceive:
     current_state = &receive_pass;

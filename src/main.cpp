@@ -64,6 +64,10 @@ int main() {
   pitch_entity->connectWidget(std::move(pitch_widget));
   viewer.addWidget(pitch_entity->widget.get());
 
+  auto pitch = dynamic_cast<Pitch *>(pitch_entity.get());
+  team2.attacking_goal = pitch->dimensions.goal_north;
+  team2.defending_goal = pitch->dimensions.goal_south;
+
   // test
   auto *l = static_cast<Widget *>(&controller.label);
   pitch_entity->widget->addChild(l);
@@ -87,6 +91,8 @@ int main() {
   // ball
   std::unique_ptr<Ball> ball = BallFactory::makeBall("ball");
   auto *ballsprite = dynamic_cast<Sprite *>(ball->widget.get());
+  ball->position.x = 300;
+  ball->position.y = 300;
   pitch_entity->widget->addChild(ballsprite->getShadow());
   pitch_entity->widget->addChild(ballsprite);
 

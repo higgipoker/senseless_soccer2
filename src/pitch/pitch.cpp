@@ -49,16 +49,28 @@ Pitch::Pitch(std::string in_name)
   dimensions.center.top =
       dimensions.bounds.top + (dimensions.bounds.height / 2);
 
-  // goals
-  dimensions.goal_north.width = Metrics::MetersToPixels(7.32f);
-  dimensions.goal_north.height = Metrics::MetersToPixels(2.44f);
-  dimensions.goal_north.left =
-      (dimensions.bounds.left + dimensions.bounds.width / 2) -
-      (dimensions.goal_north.width / 2) + 76;
-  dimensions.goal_north.top = dimensions.bounds.top;
+  // goals (for actual goal detection)
+  dimensions.goal_north.left = dimensions.bounds.left +
+                               dimensions.bounds.width / 2 -
+                               Metrics::MetersToPixels(3.66);
+  dimensions.goal_north.top =
+      dimensions.bounds.top - Metrics::MetersToPixels(2);
+  dimensions.goal_north.width = Metrics::MetersToPixels(7.32);
+  dimensions.goal_north.height = Metrics::MetersToPixels(2); // depth of goal
 
   dimensions.goal_south = dimensions.goal_north;
-  dimensions.goal_south.top += dimensions.bounds.height;
+  dimensions.goal_south.top +=
+      dimensions.bounds.height + Metrics::MetersToPixels(2);
+
+  // goals gfx (for positiong sprites)
+  goal_north_gfx.width = Metrics::MetersToPixels(7.32f);
+  goal_north_gfx.height = Metrics::MetersToPixels(2.44f);
+  goal_north_gfx.left = (dimensions.bounds.left + dimensions.bounds.width / 2) -
+                        (goal_north_gfx.width / 2) + 76;
+  goal_north_gfx.top = dimensions.bounds.top;
+
+  goal_south_gfx = goal_north_gfx;
+  goal_south_gfx.top += dimensions.bounds.height;
 }
 
 // -----------------------------------------------------------------------------

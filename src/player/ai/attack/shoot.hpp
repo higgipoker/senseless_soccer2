@@ -19,65 +19,22 @@
  ****************************************************************************/
 #pragma once
 
-#include "../locomotion/locomotionmanager.hpp"
-#include "attack/dribble.hpp"
-#include "attack/pass.hpp"
-#include "attack/receivepass.hpp"
-#include "attack/shoot.hpp"
-#include "brainstate.hpp"
-#include "idle.hpp"
-#include "retrieve.hpp"
-
-#include <map>
+#include "../brainstate.hpp"
 
 namespace senseless_soccer {
-class Player;
 namespace ai {
 
-// list of brainstates
-enum class State {
-  BrainIdle,
-  BrainDribble,
-  BrainPass,
-  BrainShoot,
-  BrainReceive,
-  BrainRetrieve
+class Shoot : public BrainState {
+public:
+    Shoot(Brain &b);
+    virtual ~Shoot() override =default;
+
+    void start() override;
+    void stop() override;
+    bool finished() override;
+    void update(float dt) override;
+    void changeToNextState() override;
 };
 
-class Brain {
-public:
-  Brain(Player &p);
-  void update(float dt);
-  void message(const std::string &msg);
-  void changeState(const State state);
-  void onControllerAttached();
-
-  locomotion::LocomotionManager locomotion;
-
-  // distnostic map
-  static std::map<std::string, State> state_map;
-  static std::map<State, std::string> reverse_state_map;
-  std::string currentState();
-
-private:
-  Player &player;
-
-  Idle idle;
-  Dribble dribble;
-  Pass pass;
-  ReceivePass receive_pass;
-  Retrieve retrieve;
-  Shoot shoot;
-  BrainState *current_state = &idle;
-
-public:
-  // state machine pattern
-  friend class Idle;
-  friend class Pass;
-  friend class Shoot;
-  friend class ReceivePass;
-  friend class Retrieve;
-  friend class Dribble;
-};
 } // namespace ai
 } // namespace senseless_soccer

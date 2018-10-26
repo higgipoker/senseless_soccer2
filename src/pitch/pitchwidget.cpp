@@ -194,13 +194,26 @@ void PitchWidget::render(sf::RenderTarget &target) {
       329, 100, 3);
 
   // goals
-  goal_north->setPosition(pitch.dimensions.goal_north.left,
-                          pitch.dimensions.goal_north.top -
+  goal_north->setPosition(pitch.goal_north_gfx.left,
+                          pitch.goal_north_gfx.top -
                               goal_north->bounds().height / 2);
 
-  goal_south->setPosition(pitch.dimensions.goal_south.left,
-                          pitch.dimensions.goal_south.top + 32);
+  goal_south->setPosition(pitch.goal_south_gfx.left,
+                          pitch.goal_south_gfx.top + 32);
 
+  // debug goal areas
+  sf::RectangleShape n(sf::Vector2f(pitch.dimensions.goal_north.width,
+                                    pitch.dimensions.goal_north.height));
+  n.setPosition(pitch.dimensions.goal_north.left,
+                pitch.dimensions.goal_north.top);
+
+  sf::RectangleShape n2(sf::Vector2f(pitch.dimensions.goal_south.width,
+                                     pitch.dimensions.goal_south.height));
+  n2.setPosition(pitch.dimensions.goal_south.left,
+                 pitch.dimensions.goal_south.top);
+  this->shapes.clear();
+  this->shapes.emplace_back(&n);
+  // this->shapes.emplace_back(&n2);
   Widget::render(target);
 }
 } // namespace senseless_soccer

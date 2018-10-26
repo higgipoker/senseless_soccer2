@@ -245,12 +245,15 @@ void Player::kick(const Vector3 &direction, unsigned int power) {
 
   // always kick in direction player is facing
   Vector3 force = direction * power;
+  force.z = force.magnitude() * 0.08f;
 
   //  apply to ball
   ball->kick(force * 1000);
 
   //  start aftertouch and apply initial extra force to ball depending on dpad
-  controller->startAftertouch(ball, force.normalise(), force.magnitude());
+  if (controller) {
+    controller->startAftertouch(ball, force.normalise(), force.magnitude());
+  }
 
   // temp suspend control and dribble
   shooting = true;
@@ -274,6 +277,19 @@ void Player::short_pass() {
   }
 
   shooting = true;
+}
+
+// -----------------------------------------------------------------------------
+// shoot
+// -----------------------------------------------------------------------------
+void Player::shoot() {
+  // for now just aim at center of goal
+  Vector3 to_goal =
+      Vector3(my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
+              my_team->attacking_goal.top +
+                  my_team->attacking_goal.height / 2) -
+      position;
+  kick(to_goal.normalise(), 60);
 }
 
 // -----------------------------------------------------------------------------
@@ -325,29 +341,28 @@ void Player::detatchInput() {
 //  --------------------------------------------------
 void Player::calc_short_pass_recipients() {
   // current position plus projected away from feet slightly
-  Vector3 tmp = position;
-  tmp = tmp + facing.toVector() * 50;
+  Vector3 t1 = position + facing.toVector() * 10;
 
-  // rotate 35 degrees and project out
+  // rotate x degrees and project out
   Vector3 temp1 = facing.toVector();
-  Vector3 t1 = position + (temp1.rotate(40, 0, 0)).normalise() * 350;
+  Vector3 t2 = position + (temp1.rotate(40, 0, 0)).normalise() * 350;
 
-  // rotate minus 35 degrees and project out
+  // rotate minus x degrees and project out
   Vector3 temp2 = facing.toVector();
-  Vector3 t2 = position + (temp2.rotate(-40, 0, 0)).normalise() * 350;
+  Vector3 t3 = position + (temp2.rotate(-40, 0, 0)).normalise() * 350;
 
   // save 3 points to triangle
-  short_pass_triangle.p1 = Vector3(tmp.x, tmp.y);
-  short_pass_triangle.p2 = Vector3(t1.x, t1.y);
-  short_pass_triangle.p3 = Vector3(t2.x, t2.y);
+  short_pass_triangle.p1 = Vector3(t1.x, t1.y);
+  short_pass_triangle.p2 = Vector3(t2.x, t2.y);
+  short_pass_triangle.p3 = Vector3(t3.x, t3.y);
 
-  debug_short_pass[0].position = sf::Vector2f(tmp.x, tmp.y);
-  debug_short_pass[1].position = sf::Vector2f(t1.x, t1.y);
-  debug_short_pass[2].position = sf::Vector2f(t2.x, t2.y);
+  // diagnostics
+  debug_short_pass[0].position = sf::Vector2f(t1.x, t1.y);
+  debug_short_pass[1].position = sf::Vector2f(t2.x, t2.y);
+  debug_short_pass[2].position = sf::Vector2f(t3.x, t3.y);
   debug_short_pass[0].color = sf::Color(0, 255, 0, 100);
   debug_short_pass[1].color = sf::Color(0, 255, 0, 100);
   debug_short_pass[2].color = sf::Color(0, 255, 0, 100);
-
   widget->primitives.emplace_back(debug_short_pass);
 }
 
