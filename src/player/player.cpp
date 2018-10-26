@@ -38,6 +38,7 @@ std::map<gamelib2::Direction, std::string> Player::run_animation_map;
 std::map<gamelib2::Direction, std::string> Player::slide_animation_map;
 
 Ball *Player::ball = nullptr;
+Pitch *Player::pitch = nullptr;
 
 // tmp - these will be player attribs
 static const float dribble_radius = 2.f;
@@ -104,10 +105,12 @@ void Player::update(float dt) {
       shadow->setPosition(sprite->position().x, sprite->position().y);
     }
 
-    feet.setPosition(sprite->position().x,
-                     sprite->position().y + (sprite->image_height / 2) - 4);
+    feet.setPosition(position.x, position.y);
     control_inner.setPosition(feet.getPosition());
     control_outer.setPosition(feet.getPosition());
+
+    widget->shapes.clear();
+    widget->shapes.emplace_back(&feet);
   }
 
   perspectivize(CAMERA_HEIGHT);
@@ -345,7 +348,7 @@ void Player::calc_short_pass_recipients() {
   debug_short_pass[1].color = sf::Color(0, 255, 0, 100);
   debug_short_pass[2].color = sf::Color(0, 255, 0, 100);
 
-  widget->primitives.push_back(debug_short_pass);
+  widget->primitives.emplace_back(debug_short_pass);
 }
 
 // -----------------------------------------------------------------------------

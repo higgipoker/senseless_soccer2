@@ -18,6 +18,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+#include "head.hpp"
 #include "pursue.hpp"
 #include "seek.hpp"
 #include "slide.hpp"
@@ -28,7 +29,7 @@
 namespace senseless_soccer {
 class Player;
 namespace locomotion {
-enum class LocomotionState { Stand, Pursue, Seek, Slide };
+enum class LocomotionState { Stand, Pursue, Seek, Head, Slide };
 class LocomotionManager {
 public:
   LocomotionManager(Player &player);
@@ -37,6 +38,7 @@ public:
   void startStand();
   void startPursue(Entity *target);
   void startSeek(const Vector3 &target);
+  void startHead(const Vector3 &direction);
   void startSlide();
 
   void cancel();
@@ -51,6 +53,7 @@ private:
   Pursue pursue;
   Seek seek;
   Slide slide;
+  Head head;
   Locomotion *current_locomotion = &stand;
 };
 } // namespace locomotion

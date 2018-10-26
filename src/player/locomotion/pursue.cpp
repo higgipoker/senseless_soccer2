@@ -62,8 +62,11 @@ void Pursue::stop() {
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
-bool Pursue::finished() { return destination_reached; }
+bool Pursue::finished() { return false; }
 
+// -----------------------------------------------------------------------------
+// finished
+// -----------------------------------------------------------------------------
 std::string Pursue::diagnosticParamaters() {
   std::stringstream s;
   s << "target: " << target->name;

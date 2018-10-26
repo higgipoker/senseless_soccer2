@@ -27,6 +27,7 @@ std::map<std::string, LocomotionState> LocomotionManager::loco_map = {
     std::make_pair("stand", LocomotionState::Stand),
     std::make_pair("pursue", LocomotionState::Pursue),
     std::make_pair("seek", LocomotionState::Seek),
+    std::make_pair("head", LocomotionState::Head),
     std::make_pair("slide", LocomotionState::Slide),
 };
 
@@ -34,6 +35,7 @@ std::map<LocomotionState, std::string> LocomotionManager::reverse_loco_map = {
     std::make_pair(LocomotionState::Stand, "stand"),
     std::make_pair(LocomotionState::Pursue, "pursue"),
     std::make_pair(LocomotionState::Seek, "seek"),
+    std::make_pair(LocomotionState::Head, "head"),
     std::make_pair(LocomotionState::Slide, "slide"),
 };
 
@@ -41,7 +43,8 @@ std::map<LocomotionState, std::string> LocomotionManager::reverse_loco_map = {
 // LocomotionManager
 // -----------------------------------------------------------------------------
 LocomotionManager::LocomotionManager(Player &player)
-    : stand(player), pursue(player), seek(player), slide(player) {}
+    : stand(player), pursue(player), seek(player), slide(player), head(player) {
+}
 
 // -----------------------------------------------------------------------------
 // update
@@ -82,6 +85,16 @@ void LocomotionManager::startSeek(const Vector3 &target) {
   current_locomotion->stop();
   seek.init(target);
   current_locomotion = &seek;
+  current_locomotion->start();
+}
+
+// -----------------------------------------------------------------------------
+// startHead
+// -----------------------------------------------------------------------------
+void LocomotionManager::startHead(const Vector3 &direction) {
+  current_locomotion->stop();
+  head.init(direction);
+  current_locomotion = &head;
   current_locomotion->start();
 }
 

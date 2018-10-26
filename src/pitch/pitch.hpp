@@ -1,37 +1,37 @@
-#pragma	once
-#include	<gamelib2/game/entity.hpp>
-#include	<SFML/Graphics.hpp>
-namespace	senseless_soccer	{
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <gamelib2/game/entity.hpp>
+namespace senseless_soccer {
 
-typedef	struct	{
+typedef struct {
 
-				// pitch lines
-				sf::FloatRect	bounds;
-				int	center_circle_radius;
-				sf::FloatRect	north_6;
-				sf::FloatRect	north_18;
-				sf::FloatRect	south_6;
-				sf::FloatRect	south_18;
-				sf::FloatRect	center;
+  // pitch lines
+  sf::FloatRect bounds;
+  int center_circle_radius;
+  sf::FloatRect north_6;
+  sf::FloatRect north_18;
+  sf::FloatRect south_6;
+  sf::FloatRect south_18;
+  sf::FloatRect center;
 
-				//	goals
-				sf::FloatRect	goal_north;
-				sf::FloatRect	goal_south;
+  //	goals
+  sf::FloatRect goal_north;
+  sf::FloatRect goal_south;
 
-}	PitchDimensions;
+} PitchDimensions;
 
-class	Pitch	:	public	gamelib2::Entity	{
+class Pitch : public gamelib2::Entity {
 public:
-				// construct with an entity name
-				Pitch(std::string	in_name);
-				virtual	~Pitch();
+  // construct with an entity name
+  Pitch(std::string in_name);
+  virtual ~Pitch();
 
-				// the entity was manually moved
-				void	onDragged(const	gamelib2::Vector3	&new_position)	override;
+  // the entity was manually moved
+  void onDragged(const gamelib2::Vector3 &new_position) override;
 
-				PitchDimensions	dimensions;
+  PitchDimensions dimensions;
 
 protected:
 };
 
-}	// namespace senseless_soccer
+} // namespace senseless_soccer

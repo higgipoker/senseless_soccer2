@@ -37,6 +37,8 @@ void Team::addPlayer(Player *p) {
 //
 // -----------------------------------------------------------------------------
 void Team::set_key_players() {
+  if (players.empty())
+    return;
   std::sort(players.begin(), players.end(), sort_players);
   size_t i = 0;
   do {
@@ -50,6 +52,8 @@ void Team::set_key_players() {
 // -----------------------------------------------------------------------------
 void Team::update_controller() {
   if (controller == nullptr)
+    return;
+  if (players.empty())
     return;
 
   Player *player = nullptr;

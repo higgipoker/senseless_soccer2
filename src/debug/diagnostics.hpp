@@ -23,11 +23,12 @@
 #include <gamelib2/debug/diagnostic.hpp>
 
 namespace senseless_soccer {
-
 class Diagnostic : public gamelib2::Diagnostic {
 public:
+  Diagnostic(Viewer &v);
+  ~Diagnostic() = default;
   void update() override;
-  void selectEntity(Entity *entity) override;
+  void selectEntity(Entity *e) override;
   void deSelect() override;
   void showPlayerMenu();
 

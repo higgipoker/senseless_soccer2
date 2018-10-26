@@ -27,12 +27,12 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib)
 # compiler flags
 # --------------------------------------------------
 add_definitions(-std=c++17)
-add_definitions(-fsanitize=address)
+#add_definitions(-fsanitize=address)
 
 # --------------------------------------------------
 # linker flags
 # --------------------------------------------------
-SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+#SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 # --------------------------------------------------
 # build files
@@ -58,6 +58,7 @@ add_executable(senseless_soccer
     src/player/locomotion/locomotion.cpp
     src/player/locomotion/stand.cpp
     src/player/locomotion/seek.cpp
+    src/player/locomotion/head.cpp
     src/player/locomotion/pursue.cpp
     src/player/locomotion/slide.cpp
     src/player/ai/brain.cpp
@@ -70,6 +71,7 @@ add_executable(senseless_soccer
     src/imgui/imgui.cpp
     src/imgui/imgui_draw.cpp
     src/imgui/imgui_widgets.cpp
+    src/imgui/imgui_demo.cpp
     src/imgui/imgui-SFML.cpp
 )
 

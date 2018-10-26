@@ -259,22 +259,23 @@ void Ball::rebound(Vector3 &wall, const Vector3 dampen) {
 // keep_in_bounds
 // -----------------------------------------------------------------------------
 void Ball::keep_in_bounds() {
+  Vector3 damp(0.8f, 0.8f, 0.8f);
   if (position.x - circle.getRadius() < bounds.getPosition().x) {
     Vector3 wall(1, 0);
-    rebound(wall);
+    rebound(wall, damp);
   } else if (position.x + circle.getRadius() >
              bounds.getPosition().x + bounds.getSize().x) {
     Vector3 wall(1, 0);
-    rebound(wall);
+    rebound(wall, damp);
 
   } else if (position.y - circle.getRadius() < bounds.getPosition().y) {
     Vector3 wall(0, 1);
-    rebound(wall);
+    rebound(wall, damp);
 
   } else if (position.y + circle.getRadius() >
              bounds.getPosition().y + bounds.getSize().y) {
     Vector3 wall(0, 1);
-    rebound(wall);
+    rebound(wall, damp);
   }
 }
 

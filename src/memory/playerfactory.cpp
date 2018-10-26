@@ -28,38 +28,39 @@ namespace senseless_soccer {
 // makePlayer
 // -----------------------------------------------------------------------------
 std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
-    // for gfx
-    static const std::string dir = gamelib2::Files::getWorkingDirectory();
-    static const std::string player_file = dir + "/gfx/player/player.png";
-    static const std::string shadow_file =
-      dir + "/gfx/player/player_shadow.png";
+  // for gfx
+  static const std::string dir = gamelib2::Files::getWorkingDirectory();
+  static const std::string player_file = dir + "/gfx/player/player.png";
+  static const std::string shadow_file = dir + "/gfx/player/player_shadow.png";
 
-    // make the entity
-    auto player = std::make_unique<Player>(name);
+  // make the entity
+  auto player = std::make_unique<Player>(name);
 
-    // make a sprite for the player
-    auto widget = std::make_unique<Sprite>(player_file, 6, 24);
+  // make a sprite for the player
+  auto widget = std::make_unique<Sprite>(player_file, 6, 24);
 
-    // get a pointer to derived class sprite
-    auto sprite = static_cast<Sprite *>(widget.get());
+  // get a pointer to derived class sprite
+  auto sprite = static_cast<Sprite *>(widget.get());
 
-    sprite->clickable = true;
-    player_animations::fill_animations(sprite);
+  sprite->clickable = true;
+  sprite->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
+  player_animations::fill_animations(sprite);
 
-    // make a shadow for the sprite
-    auto shadow = std::make_unique<Sprite>(shadow_file, 6, 24);
-    shadow->z_order = -1;
+  // make a shadow for the sprite
+  auto shadow = std::make_unique<Sprite>(shadow_file, 6, 24);
+  shadow->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
+  shadow->z_order = -1;
 
-    // sprite owns the shadow
-    sprite->connectShadow(std::move(shadow));
+  // sprite owns the shadow
+  sprite->connectShadow(std::move(shadow));
 
-    // entity owns the sprite
-    player->connectWidget(std::move(widget));
+  // entity owns the sprite
+  player->connectWidget(std::move(widget));
 
-    // sprite refers back to owning enity with weak pointer
-    sprite->connectEntity(player.get());
-    player->activate();
-    return player;
+  // sprite refers back to owning enity with weak pointer
+  sprite->connectEntity(player.get());
+  player->activate();
+  return player;
 }
 
 } // namespace senseless_soccer

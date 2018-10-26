@@ -21,6 +21,7 @@
 
 #include "../ball/ball.hpp"
 #include "../joysticker/sensicontroller.hpp"
+#include "../pitch/pitch.hpp"
 #include "ai/brain.hpp"
 #include "states/jumping.hpp"
 #include "states/running.hpp"
@@ -87,6 +88,9 @@ public:
   // shared ball among all players
   static Ball *ball;
 
+  // players need to know about the pitch
+  static Pitch *pitch;
+
   // shirt number
   int shirt_number = 0;
 
@@ -101,6 +105,9 @@ public:
 
   // debug display
   sf::VertexArray debug_short_pass;
+
+  // track facing direction
+  Compass facing;
 
 protected:
   // add perspective to the ball
@@ -141,9 +148,6 @@ protected:
 
   // track if in possession of ball
   bool in_possession = false;
-
-  // track facing direction
-  Compass facing;
 
   // save last direction
   Compass facing_old;

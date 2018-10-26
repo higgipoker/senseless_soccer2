@@ -70,6 +70,7 @@ public:
   friend class Idle;
   friend class ReceivePass;
   friend class Retrieve;
+  friend class Dribble;
 };
 } // namespace ai
 } // namespace senseless_soccer

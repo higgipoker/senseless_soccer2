@@ -17,48 +17,39 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "retrieve.hpp"
+#include "head.hpp"
 #include "../player.hpp"
-#include "brain.hpp"
 
 namespace senseless_soccer {
-namespace ai {
+namespace locomotion {
 
 // -----------------------------------------------------------------------------
-//
+// Head
 // -----------------------------------------------------------------------------
-Retrieve::Retrieve(Brain &b) : BrainState(b, "retrieve") {}
+Head::Head(Player &player) : Locomotion(player, "Head") {}
 
 // -----------------------------------------------------------------------------
-//
+// init
 // -----------------------------------------------------------------------------
-void Retrieve::start() {
-  std::cout << "start retrieve" << std::endl;
-  // go backt to standing
-  brain.locomotion.startPursue(Player::ball);
-}
+void Head::init(const Vector3 &t) { direction = t; }
+// -----------------------------------------------------------------------------
+// start
+// -----------------------------------------------------------------------------
+void Head::start() { player.velocity = direction; }
 
 // -----------------------------------------------------------------------------
-//
+// update
 // -----------------------------------------------------------------------------
-void Retrieve::stop() {
-  std::cout << "stop retrieve" << std::endl;
-  brain.locomotion.startStand();
-}
+void Head::update(float _dt) {}
 
 // -----------------------------------------------------------------------------
-//
+// stop
 // -----------------------------------------------------------------------------
-bool Retrieve::finished() { return brain.player.ball_under_control(); }
+void Head::stop() { player.velocity.reset(); }
 
 // -----------------------------------------------------------------------------
-//
+// finished
 // -----------------------------------------------------------------------------
-void Retrieve::update(float dt) {}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void Retrieve::changeToNextState() { brain.changeState(State::BrainDribble); }
-} // namespace ai
+bool Head::finished() { return false; }
+} // namespace locomotion
 } // namespace senseless_soccer

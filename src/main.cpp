@@ -38,10 +38,11 @@ int main() {
   Viewer viewer;
   Engine engine;
 
-  senseless_soccer::Diagnostic debug;
+  senseless_soccer::Diagnostic debug(viewer);
   viewer.connectDiagnostics(debug);
 
   Team team1("team1");
+  Team team2("team2");
 
   std::string dir = Files::getWorkingDirectory();
 
@@ -79,12 +80,7 @@ int main() {
     pitch_entity->widget->addChild(s->getShadow());
     engine.addEntity(player.get());
     player->shirt_number = i + 1;
-    if (i == 0) {
-      player->attachInput(&controller);
-      controller.attachToPlayer(player.get());
-    }
-
-    team1.addPlayer(player.get());
+    team2.addPlayer(player.get());
     players.emplace_back(std::move(player));
   }
 
@@ -98,13 +94,14 @@ int main() {
   engine.addEntity(ball.get());
   engine.addEntity(pitch_entity.get());
   engine.addEntity(&team1);
+  engine.addEntity(&team2);
 
   // there is a circular relationship between engine <-> viewer
   engine.connectViewer(&viewer);
   viewer.connectEngine(&engine);
 
   Player::ball = ball.get();
-
+  Player::pitch = dynamic_cast<Pitch *>(pitch_entity.get());
   // test
   for (unsigned int i = 0; i < sf::Joystick::Count; ++i) {
     if (sf::Joystick::isConnected(i)) {

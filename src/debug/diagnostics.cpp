@@ -30,21 +30,30 @@
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+Diagnostic::Diagnostic(Viewer &v) : gamelib2::Diagnostic(v) {}
+
+// -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Diagnostic::update() {
-  if (selected_player) {
-    showPlayerMenu();
+  if (on) {
+    gamelib2::Diagnostic::update();
+    if (selected_player) {
+      showPlayerMenu();
+    }
   }
 }
 
 // -----------------------------------------------------------------------------
 // selectEntity
 // -----------------------------------------------------------------------------
-void Diagnostic::selectEntity(Entity *entity) {
-  if (entity->type == "player") {
-    if (selected_player != entity) {
-      selected_player = dynamic_cast<Player *>(entity);
+void Diagnostic::selectEntity(Entity *e) {
+  gamelib2::Diagnostic::selectEntity(e);
+  if (e->type == "player") {
+    if (selected_player != e) {
+      selected_player = dynamic_cast<Player *>(e);
     }
   } else {
     selected_player = nullptr;

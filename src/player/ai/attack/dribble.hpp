@@ -25,14 +25,21 @@ namespace senseless_soccer {
 namespace ai {
 class Dribble : public BrainState {
 public:
-    Dribble(Brain &b);
-    virtual ~Dribble() override = default;
+  Dribble(Brain &b);
+  virtual ~Dribble() override = default;
 
-    void start() override;
-    void stop() override;
-    bool finished() override;
-    void update(float dt) override;
-    void changeToNextState() override;
+  void start() override;
+  void stop() override;
+  bool finished() override;
+  void update(float dt) override;
+  void changeToNextState() override;
+
+protected:
+  void change_direction(int angle = 45);
+  void stay_in_pitch(float dt);
+
+  // tmp
+  int ticks = 0;
 };
 } // namespace ai
 } // namespace senseless_soccer
