@@ -24,6 +24,7 @@
 #include "../pitch/pitch.hpp"
 #include "ai/attack/pass.hpp"
 #include "ai/brain.hpp"
+#include "ai/defend/slide.hpp"
 #include "states/jumping.hpp"
 #include "states/running.hpp"
 #include "states/sliding.hpp"
@@ -79,6 +80,9 @@ public:
 
   // get current state name
   std::string stateName();
+
+  // trigger a state manuall
+  void triggerState(const PlayerState state);
 
   // ai
   ai::Brain brain;
@@ -215,6 +219,8 @@ public:
   friend class Jumping;
   friend class ai::Pass;
   friend class ai::Shoot;
+  friend class ai::Slide;
+  friend class ai::Jump;
   friend class Locomotion;
   friend class locomotion::Stand;
   friend class Team;

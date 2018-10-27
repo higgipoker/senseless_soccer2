@@ -25,7 +25,9 @@
 #include "attack/receivepass.hpp"
 #include "attack/shoot.hpp"
 #include "brainstate.hpp"
+#include "defend/slide.hpp"
 #include "idle.hpp"
+#include "jump.hpp"
 #include "retrieve.hpp"
 
 #include <map>
@@ -41,7 +43,9 @@ enum class State {
   BrainPass,
   BrainShoot,
   BrainReceive,
-  BrainRetrieve
+  BrainRetrieve,
+  BrainSlide,
+  BrainJump,
 };
 
 class Brain {
@@ -61,6 +65,7 @@ public:
 
 private:
   Player &player;
+  State next_state = State::BrainIdle;
 
   Idle idle;
   Dribble dribble;
@@ -68,6 +73,8 @@ private:
   ReceivePass receive_pass;
   Retrieve retrieve;
   Shoot shoot;
+  Slide slide;
+  Jump jump;
   BrainState *current_state = &idle;
 
 public:
@@ -78,6 +85,8 @@ public:
   friend class ReceivePass;
   friend class Retrieve;
   friend class Dribble;
+  friend class Slide;
+  friend class Jump;
 };
 } // namespace ai
 } // namespace senseless_soccer

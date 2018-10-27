@@ -58,9 +58,5 @@ bool ReceivePass::finished() { return brain.player.ball_under_control(); }
 // -----------------------------------------------------------------------------
 void ReceivePass::update(float dt) {}
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void ReceivePass::changeToNextState() { brain.changeState(State::BrainIdle); }
 } // namespace ai
 } // namespace senseless_soccer

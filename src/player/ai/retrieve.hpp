@@ -31,7 +31,6 @@ public:
   void stop() override;
   bool finished() override;
   void update(float dt) override;
-  void changeToNextState() override;
 };
 } // namespace ai
 } // namespace senseless_soccer

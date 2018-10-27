@@ -74,17 +74,18 @@ int main() {
 
   // players
   std::vector<std::unique_ptr<Player>> players;
-  for (int i = 0; i < 2; ++i) {
+  for (int i = 0; i < 1; ++i) {
     std::stringstream name;
     name << "player" << i;
     auto player = PlayerFactory::makePlayer(name.str());
-    pitch_entity->widget->addChild(player->widget.get());
-    auto *w = player->widget.get();
-    auto *s = dynamic_cast<Sprite *>(w);
-    pitch_entity->widget->addChild(s->getShadow());
+    auto *sprite = dynamic_cast<Sprite *>(player->widget.get());
+    pitch_entity->widget->addChild(sprite);
+    pitch_entity->widget->addChild(sprite->getShadow());
     engine.addEntity(player.get());
     player->shirt_number = i + 1;
     team2.addPlayer(player.get());
+
+    // need to move out of loop scope or smart pointer will be destroyed
     players.emplace_back(std::move(player));
   }
 

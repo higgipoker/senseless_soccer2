@@ -17,7 +17,7 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "retrieve.hpp"
+#include "jump.hpp"
 #include "../player.hpp"
 #include "brain.hpp"
 
@@ -27,34 +27,32 @@ namespace ai {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Retrieve::Retrieve(Brain &b) : BrainState(b, "retrieve") {}
+Jump::Jump(Brain &b) : BrainState(b, "jump") {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::start() {
-  std::cout << "start retrieve" << std::endl;
-  // go backt to standing
-  brain.locomotion.startPursue(Player::ball);
+void Jump::start() {
+  brain.next_state = State::BrainIdle;
+  brain.player.triggerState(PlayerState::Jump);
+  brain.player.jumping = true;
+  brain.locomotion.cancel();
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::stop() {
-  std::cout << "stop retrieve" << std::endl;
-  brain.locomotion.startStand();
-}
+void Jump::stop() {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool Retrieve::finished() { return brain.player.ball_under_control(); }
+bool Jump::finished() { return !brain.player.jumping; }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::update(float dt) {}
+void Jump::update(float dt) {}
 
 } // namespace ai
 } // namespace senseless_soccer

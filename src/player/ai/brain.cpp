@@ -23,6 +23,7 @@
 namespace senseless_soccer {
 namespace ai {
 
+// debug
 std::map<std::string, State> Brain::state_map = {
     std::make_pair("idle", State::BrainIdle),
     std::make_pair("dribble", State::BrainDribble),
@@ -30,8 +31,11 @@ std::map<std::string, State> Brain::state_map = {
     std::make_pair("receivePass", State::BrainReceive),
     std::make_pair("retrieve", State::BrainRetrieve),
     std::make_pair("shoot", State::BrainShoot),
+    std::make_pair("slide", State::BrainSlide),
+    std::make_pair("jump", State::BrainJump),
 };
 
+// debug
 std::map<State, std::string> Brain::reverse_state_map = {
     std::make_pair(State::BrainIdle, "idle"),
     std::make_pair(State::BrainDribble, "dribble"),
@@ -39,13 +43,15 @@ std::map<State, std::string> Brain::reverse_state_map = {
     std::make_pair(State::BrainReceive, "receivePass"),
     std::make_pair(State::BrainRetrieve, "retrieve"),
     std::make_pair(State::BrainShoot, "shoot"),
+    std::make_pair(State::BrainJump, "jump"),
 };
+
 // -----------------------------------------------------------------------------
 // Brain
 // -----------------------------------------------------------------------------
 Brain::Brain(Player &p)
     : player(p), idle(*this), dribble(*this), receive_pass(*this), pass(*this),
-      shoot(*this), retrieve(*this), locomotion(p) {
+      shoot(*this), retrieve(*this), slide(*this), jump(*this), locomotion(p) {
   locomotion.startStand();
 }
 
@@ -53,13 +59,16 @@ Brain::Brain(Player &p)
 // update
 // -----------------------------------------------------------------------------
 void Brain::update(float dt) {
+
+  // update brain state machine
   current_state->update(dt);
   if (current_state->finished()) {
     current_state->stop();
-    current_state->changeToNextState();
+    changeState(next_state);
     current_state->start();
   }
 
+  // player locomotion
   locomotion.update(dt);
 }
 
@@ -81,7 +90,10 @@ void Brain::changeState(const State state) {
 
   std::cout << "change state to " << reverse_state_map[state] << std::endl;
 
+  // stop ----------------------------------------
   current_state->stop();
+
+  // change --------------------------------------
   switch (state) {
   case State::BrainIdle:
     current_state = &idle;
@@ -101,7 +113,15 @@ void Brain::changeState(const State state) {
   case State::BrainRetrieve:
     current_state = &retrieve;
     break;
+  case State::BrainSlide:
+    current_state = &slide;
+    break;
+  case State::BrainJump:
+    current_state = &jump;
+    break;
   }
+
+  // start ---------------------------------------
   current_state->start();
 }
 

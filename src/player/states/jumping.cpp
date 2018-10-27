@@ -15,10 +15,13 @@ Jumping::Jumping(Player &context) : State(context, "jumping") {}
 // start
 // -----------------------------------------------------------------------------
 void Jumping::start() {
-  // do not end immediately!
+  // hack do not end immediately!
   player.position.z = 1;
 
-  player.speed = 300;
+  if (Floats::equal(player.velocity.magnitude(), 0)) {
+    player.velocity = player.facing.toVector();
+  }
+  player.speed = 200;
 }
 
 // -----------------------------------------------------------------------------

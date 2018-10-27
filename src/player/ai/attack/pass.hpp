@@ -26,14 +26,13 @@ namespace ai {
 
 class Pass : public BrainState {
 public:
-    Pass(Brain &b);
-    virtual ~Pass() override =default;
+  Pass(Brain &b);
+  virtual ~Pass() override = default;
 
-    void start() override;
-    void stop() override;
-    bool finished() override;
-    void update(float dt) override;
-    void changeToNextState() override;
+  void start() override;
+  void stop() override;
+  bool finished() override;
+  void update(float dt) override;
 };
 
 } // namespace ai

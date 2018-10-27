@@ -65,10 +65,12 @@ add_executable(senseless_soccer
     src/player/ai/brainstate.cpp
     src/player/ai/idle.cpp
     src/player/ai/retrieve.cpp
+    src/player/ai/jump.cpp
     src/player/ai/attack/dribble.cpp
     src/player/ai/attack/pass.cpp
     src/player/ai/attack/receivepass.cpp
     src/player/ai/attack/shoot.cpp
+    src/player/ai/defend/slide.cpp
     src/debug/diagnostics.cpp
     src/imgui/imgui.cpp
     src/imgui/imgui_draw.cpp

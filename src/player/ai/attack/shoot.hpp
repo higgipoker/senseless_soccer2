@@ -26,14 +26,13 @@ namespace ai {
 
 class Shoot : public BrainState {
 public:
-    Shoot(Brain &b);
-    virtual ~Shoot() override =default;
+  Shoot(Brain &b);
+  virtual ~Shoot() override = default;
 
-    void start() override;
-    void stop() override;
-    bool finished() override;
-    void update(float dt) override;
-    void changeToNextState() override;
+  void start() override;
+  void stop() override;
+  bool finished() override;
+  void update(float dt) override;
 };
 
 } // namespace ai

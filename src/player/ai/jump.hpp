@@ -18,27 +18,18 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-
-#include "../brainstate.hpp"
-
+#include "brainstate.hpp"
 namespace senseless_soccer {
+class Brain;
 namespace ai {
-class Dribble : public BrainState {
+class Jump : public BrainState {
 public:
-  Dribble(Brain &b);
-  virtual ~Dribble() override = default;
-
-  void start() override;
-  void stop() override;
-  bool finished() override;
-  void update(float dt) override;
-
-protected:
-  void change_direction(int angle = 45);
-  void stay_in_pitch(float dt);
-
-  // tmp
-  int ticks = 0;
+  Jump(Brain &b);
+  virtual ~Jump() override = default;
+  virtual void start() override;
+  virtual void stop() override;
+  virtual bool finished() override;
+  virtual void update(float dt) override;
 };
 } // namespace ai
 } // namespace senseless_soccer

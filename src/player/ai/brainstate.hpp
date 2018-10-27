@@ -30,7 +30,6 @@ public:
   virtual void stop() = 0;
   virtual bool finished() = 0;
   virtual void update(float dt) = 0;
-  virtual void changeToNextState() = 0;
 
   std::string name;
 

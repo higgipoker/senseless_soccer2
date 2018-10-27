@@ -17,9 +17,9 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "retrieve.hpp"
-#include "../player.hpp"
-#include "brain.hpp"
+#include "slide.hpp"
+#include "../../player.hpp"
+#include "../brain.hpp"
 
 namespace senseless_soccer {
 namespace ai {
@@ -27,34 +27,31 @@ namespace ai {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Retrieve::Retrieve(Brain &b) : BrainState(b, "retrieve") {}
+Slide::Slide(Brain &b) : BrainState(b, "slide") {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::start() {
-  std::cout << "start retrieve" << std::endl;
-  // go backt to standing
-  brain.locomotion.startPursue(Player::ball);
+void Slide::start() {
+  brain.next_state = State::BrainIdle;
+  brain.player.triggerState(PlayerState::Slide);
+  brain.player.sliding = true;
+  brain.locomotion.startSlide();
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::stop() {
-  std::cout << "stop retrieve" << std::endl;
-  brain.locomotion.startStand();
-}
+void Slide::stop() {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool Retrieve::finished() { return brain.player.ball_under_control(); }
+bool Slide::finished() { return !brain.player.sliding; }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Retrieve::update(float dt) {}
-
+void Slide::update(float dt) {}
 } // namespace ai
 } // namespace senseless_soccer
