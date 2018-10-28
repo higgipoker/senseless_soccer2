@@ -27,8 +27,8 @@ namespace senseless_soccer {
 
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.0001f;
-static const float co_friction = 0.99f;
-static const float co_friction_bounce = 0.99f; // bounce fricton
+static const float co_friction = 0.991f;
+static const float co_friction_bounce = 1.0f; // bounce fricton
 static const float co_bounciness = 0.8f;
 static const float co_spin_decay = 0.8f; // how much spin decays over time
 static const float ball_mass = 200.f;    // used in air resistance calc
@@ -83,12 +83,6 @@ void Ball::update(float dt) {
 
     // sync shadow with sprite
     Sprite *shadow = sprite->getShadow();
-    if (shadow) {
-      shadow->setPosition(sprite->position().x + SHADOW_OFFSET,
-                          sprite->position().y + SHADOW_OFFSET);
-      shadow->scale(sprite->scale(), sprite->scale());
-    }
-
     perspectivize(CAMERA_HEIGHT);
   }
   circle.setPosition(position.x, position.y);
@@ -234,6 +228,7 @@ void Ball::kick(const Vector3 &force) {
   acceleration.reset();
   velocity.reset();
   acceleration = force;
+  // acceleration = acceleration.normalise() * acceleration.magnitude();
 }
 
 // -----------------------------------------------------------------------------
@@ -251,15 +246,16 @@ void Ball::addTopSpin(const Vector3 &s) { forces.topspin += s; }
 // -----------------------------------------------------------------------------
 void Ball::rebound(Vector3 &wall, const Vector3 dampen) {
   wall = wall.normalise();
-  velocity = velocity.reflect(wall);
   velocity *= dampen;
+  velocity = velocity.reflect(wall);
+  position += velocity * 0.01; // tmp fixes sticky walls
 }
 
 // -----------------------------------------------------------------------------
 // keep_in_bounds
 // -----------------------------------------------------------------------------
 void Ball::keep_in_bounds() {
-  Vector3 damp(0.8f, 0.8f, 0.8f);
+  Vector3 damp(0.8f, 0.8f, 0.0f);
   if (position.x - circle.getRadius() < bounds.getPosition().x) {
     Vector3 wall(1, 0);
     rebound(wall, damp);

@@ -7,8 +7,7 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // Pitch
 // -----------------------------------------------------------------------------
-Pitch::Pitch(std::string in_name)
-    : gamelib2::Entity("pitch", std::move(in_name)) {
+Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
 
   // det up a default pitch size
   dimensions.bounds.left = 250;

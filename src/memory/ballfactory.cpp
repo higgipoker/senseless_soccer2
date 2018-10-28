@@ -32,41 +32,42 @@ namespace senseless_soccer {
 // makePlayer
 // -----------------------------------------------------------------------------
 std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
-    // for gfx
-    static const std::string working_dir =
-      gamelib2::Files::getWorkingDirectory();
-    static const std::string ball_file = working_dir + "/gfx/ball_new.png";
-    static const std::string ball_shadow_file =
+  // for gfx
+  static const std::string working_dir = gamelib2::Files::getWorkingDirectory();
+  static const std::string ball_file = working_dir + "/gfx/ball_new.png";
+  static const std::string ball_shadow_file =
       working_dir + "/gfx/ball_shadow.png";
 
-    // make the entity
-    std::unique_ptr<Ball> ball = std::make_unique<Ball>(name);
+  // make the entity
+  std::unique_ptr<Ball> ball = std::make_unique<Ball>(name);
 
-    // make a sprite for the player
-    std::unique_ptr<Widget> widget = std::make_unique<Sprite>(ball_file, 4, 2);
+  // make a sprite for the player
+  std::unique_ptr<Widget> widget = std::make_unique<Sprite>(ball_file, 4, 2);
 
-    // get a pointer to derived class sprite
-    auto sprite = dynamic_cast<Sprite *>(widget.get());
-    sprite->z_order = 10;
+  // get a pointer to derived class sprite
+  auto sprite = dynamic_cast<Sprite *>(widget.get());
+  sprite->z_order = 10;
 
-    sprite->clickable = true;
-    ball_animations::fill_animations(sprite);
+  sprite->clickable = true;
+  ball_animations::fill_animations(sprite);
 
-    // make a shadow for the sprite
-    auto shadow = std::make_unique<Sprite>(ball_shadow_file, 1, 1);
-    shadow->z_order = -1;
+  // make a shadow for the sprite
+  auto shadow = std::make_unique<Sprite>(ball_shadow_file, 1, 1);
+  shadow->z_order = -1;
 
-    // entity owns the sprite
-    ball->connectWidget(std::move(widget));
+  // entity owns the sprite
+  ball->connectWidget(std::move(widget));
 
-    // sprite owns the shadow
-    sprite->connectShadow(std::move(shadow));
+  // sprite owns the shadow
+  sprite->connectShadow(std::move(shadow));
 
-    // sprite has raw "look at" pointer back to entity
-    sprite->connectEntity(ball.get());
-    sprite->startAnimation("roll");
-    ball->activate();
-    return ball;
+  // sprite has raw "look at" pointer back to entity
+  sprite->connectEntity(ball.get());
+  sprite->startAnimation("roll");
+  ball->activate();
+
+  // move semantics is implicit here
+  return ball;
 }
 
 } // namespace senseless_soccer

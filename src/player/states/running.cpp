@@ -26,6 +26,7 @@ void Running::start() {
 // update
 // -----------------------------------------------------------------------------
 void Running::update(const float dt) {
+  State::update(dt);
   // close control or dribble
   if (player.changed_direction) {
     // change the running animation

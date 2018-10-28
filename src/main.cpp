@@ -1,26 +1,17 @@
 #include "debug/diagnostics.hpp"
+#include "match/match.hpp"
 #include "memory/ballfactory.hpp"
 #include "memory/playerfactory.hpp"
 #include "pitch/pitch.hpp"
 #include "pitch/pitchwidget.hpp"
-#include "player/player.hpp"
 #include "team/team.hpp"
 
 #include <gamelib2/engine/engine.hpp>
 #include <gamelib2/game/entity.hpp>
-#include <gamelib2/graphics/autotexture.hpp>
-#include <gamelib2/input/device.hpp>
 #include <gamelib2/input/keyboard.hpp>
 #include <gamelib2/input/xbox_gamepad.hpp>
-#include <gamelib2/math/vector.hpp>
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/viewer/viewer.hpp>
-#include <gamelib2/widgets/sprite.hpp>
-#include <gamelib2/widgets/spriteanimation.hpp>
-#include <gamelib2/widgets/tiledscrollingbackground.hpp>
-
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window.hpp>
 
 #include <imgui-SFML.h>
 #include <imgui.h>
@@ -31,20 +22,22 @@
 
 using namespace gamelib2;
 using namespace senseless_soccer;
+using namespace match;
 
-sf::Clock ui_clock;
 int main() {
 
+  // main game objects
   Viewer viewer;
   Engine engine;
-
-  senseless_soccer::Diagnostic debug(viewer);
-  viewer.connectDiagnostics(debug);
-
+  Match match;
+  Pitch pitch;
   Team team1("team1");
   Team team2("team2");
+  match.init(&team1, &team2);
 
-  std::string dir = Files::getWorkingDirectory();
+  // a debug hud
+  senseless_soccer::Diagnostic debug(viewer);
+  viewer.connectDiagnostics(debug);
 
   // inits static stuff
   Player::init();
@@ -56,21 +49,21 @@ int main() {
   team1.controller = &controller;
 
   // scrolling background
-  std::unique_ptr<Entity> pitch_entity = std::make_unique<Pitch>("background");
-  std::unique_ptr<Widget> pitch_widget = std::make_unique<PitchWidget>(
-      dir + "/gfx/grass_horizontal.png", engine.camera);
+  std::unique_ptr<PitchWidget> pitch_widget = std::make_unique<PitchWidget>(
+      Files::getWorkingDirectory() + "/gfx/grass_horizontal.png",
+      engine.camera);
   pitch_widget->z_order = -10;
-  pitch_widget->connectEntity(pitch_entity.get());
-  pitch_entity->connectWidget(std::move(pitch_widget));
-  viewer.addWidget(pitch_entity->widget.get());
+  pitch_widget->connectEntity(&pitch);
+  pitch.connectWidget(std::move(pitch_widget));
+  viewer.addWidget(pitch.widget.get());
 
-  auto pitch = dynamic_cast<Pitch *>(pitch_entity.get());
-  team2.attacking_goal = pitch->dimensions.goal_north;
-  team2.defending_goal = pitch->dimensions.goal_south;
+  // auto pitch = dynamic_cast<Pitch *>(pitch_entity);
+  team2.attacking_goal = pitch.dimensions.goal_north;
+  team2.defending_goal = pitch.dimensions.goal_south;
 
   // test
   auto *l = static_cast<Widget *>(&controller.label);
-  pitch_entity->widget->addChild(l);
+  pitch.widget->addChild(l);
 
   // players
   std::vector<std::unique_ptr<Player>> players;
@@ -78,12 +71,13 @@ int main() {
     std::stringstream name;
     name << "player" << i;
     auto player = PlayerFactory::makePlayer(name.str());
+    player->setPosition(300, 300);
     auto *sprite = dynamic_cast<Sprite *>(player->widget.get());
-    pitch_entity->widget->addChild(sprite);
-    pitch_entity->widget->addChild(sprite->getShadow());
+    pitch.widget->addChild(sprite);
+    pitch.widget->addChild(sprite->getShadow());
     engine.addEntity(player.get());
     player->shirt_number = i + 1;
-    team2.addPlayer(player.get());
+    team1.addPlayer(player.get());
 
     // need to move out of loop scope or smart pointer will be destroyed
     players.emplace_back(std::move(player));
@@ -94,21 +88,22 @@ int main() {
   auto *ballsprite = dynamic_cast<Sprite *>(ball->widget.get());
   ball->position.x = 300;
   ball->position.y = 300;
-  pitch_entity->widget->addChild(ballsprite->getShadow());
-  pitch_entity->widget->addChild(ballsprite);
+  pitch.widget->addChild(ballsprite->getShadow());
+  pitch.widget->addChild(ballsprite);
 
   // add entities to engine
-  engine.addEntity(ball.get());
-  engine.addEntity(pitch_entity.get());
+  engine.addEntity(&match);
   engine.addEntity(&team1);
   engine.addEntity(&team2);
+  engine.addEntity(&pitch);
+  engine.addEntity(ball.get());
 
-  // there is a circular relationship between engine <-> viewer
+  // there is a circular relationship engine <-> viewer
   engine.connectViewer(&viewer);
   viewer.connectEngine(&engine);
 
   Player::ball = ball.get();
-  Player::pitch = dynamic_cast<Pitch *>(pitch_entity.get());
+  Player::pitch = &pitch;
   // test
   for (unsigned int i = 0; i < sf::Joystick::Count; ++i) {
     if (sf::Joystick::isConnected(i)) {
@@ -126,12 +121,8 @@ int main() {
   viewer.startup();
   float timestep = 0.01f; // optimal for semi-implicit euler
   while (viewer.running) {
-    // --------------------
     // debug ui
-    // --------------------
-    ImGui::SFML::Update(viewer.getWindow(), ui_clock.restart());
     debug.update();
-
     controller.update();
     engine.frame(timestep);
     viewer.frame();

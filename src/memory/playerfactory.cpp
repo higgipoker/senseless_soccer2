@@ -23,12 +23,11 @@
 #include <gamelib2/widgets/sprite.hpp>
 
 namespace senseless_soccer {
-
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
 std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
-  // for gfx
+  // gfx files
   static const std::string dir = gamelib2::Files::getWorkingDirectory();
   static const std::string player_file = dir + "/gfx/player/player.png";
   static const std::string shadow_file = dir + "/gfx/player/player_shadow.png";
@@ -36,11 +35,20 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   // make the entity
   auto player = std::make_unique<Player>(name);
 
-  // make a sprite for the player
+  // make the sprite
   auto widget = std::make_unique<Sprite>(player_file, 6, 24);
 
   // get a pointer to derived class sprite
   auto sprite = static_cast<Sprite *>(widget.get());
+
+  // test some paletting
+  std::vector<std::pair<sf::Color, sf::Color>> palette = {
+      std::make_pair(sf::Color(135, 0, 0), sf::Color(0, 0, 135)),
+      std::make_pair(sf::Color(175, 0, 0), sf::Color(0, 0, 175)),
+      std::make_pair(sf::Color(215, 0, 0), sf::Color(0, 0, 215)),
+      std::make_pair(sf::Color(255, 0, 0), sf::Color(0, 0, 255)),
+  };
+  sprite->swapColors(palette);
 
   sprite->clickable = true;
   sprite->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
@@ -57,9 +65,11 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   // entity owns the sprite
   player->connectWidget(std::move(widget));
 
-  // sprite refers back to owning enity with weak pointer
+  // widget refers back to owning enity with weak/raw pointer
   sprite->connectEntity(player.get());
   player->activate();
+
+  // move semantics is implicit here
   return player;
 }
 

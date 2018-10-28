@@ -18,28 +18,25 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-
-#include "../player/player.hpp"
-#include <gamelib2/debug/diagnostic.hpp>
+#include "../team/team.hpp"
+#include <gamelib2/game/entity.hpp>
+#include <memory>
 
 namespace senseless_soccer {
-class Diagnostic : public gamelib2::Diagnostic {
+namespace match {
+class Match : public gamelib2::Entity {
 public:
-  Diagnostic(Viewer &v);
-  ~Diagnostic() = default;
-  void update() override;
-  void selectEntity(Entity *e) override;
-  void deSelect() override;
-  void showPlayerMenu();
-  void onClose() override;
+  Match();
+  void init(Team *t1, Team *t2);
+  void update(float dt);
+  Team *team1;
+  Team *team2;
 
-protected:
-  Player *selected_player = nullptr;
-  void process_animation_list(std::vector<const char *> &out_list,
-                              int &out_active_index);
+private:
 
-  void process_brainstate_list(std::vector<const char *> &out_list,
-                               int &out_active_index);
+
+public:
+  friend class Play;
 };
-
+} // namespace match
 } // namespace senseless_soccer

@@ -19,9 +19,6 @@
  ****************************************************************************/
 #pragma once
 
-#include "../ball/ball.hpp"
-#include "../joysticker/sensicontroller.hpp"
-#include "../pitch/pitch.hpp"
 #include "ai/attack/pass.hpp"
 #include "ai/brain.hpp"
 #include "ai/defend/slide.hpp"
@@ -30,6 +27,11 @@
 #include "states/sliding.hpp"
 #include "states/standing.hpp"
 #include "states/state.hpp"
+
+#include "../ball/ball.hpp"
+#include "../joysticker/sensicontroller.hpp"
+#include "../pitch/pitch.hpp"
+#include "../team/team.hpp"
 
 #include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>

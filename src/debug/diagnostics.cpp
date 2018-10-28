@@ -21,6 +21,7 @@
 #include "../player/ai/brain.hpp"
 #include "../player/locomotion/locomotionmanager.hpp"
 
+#include <gamelib2/viewer/viewer.hpp>
 #include <gamelib2/widgets/widget.hpp>
 
 #include <imgui-SFML.h>
@@ -40,9 +41,27 @@ Diagnostic::Diagnostic(Viewer &v) : gamelib2::Diagnostic(v) {}
 void Diagnostic::update() {
   if (on) {
     gamelib2::Diagnostic::update();
+    // dimensions
+    panel_dimensions.width = last_panel_dimensions.width;
+    panel_dimensions.height =
+        viewer.getWindow().getSize().y - last_panel_dimensions.height;
+    panel_dimensions.left =
+        viewer.getWindow().getSize().x - panel_dimensions.width;
+    panel_dimensions.top =
+        last_panel_dimensions.top + last_panel_dimensions.height;
+
+    ImGui::SetNextWindowSize(
+        sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
+    ImGui::SetNextWindowPos(
+        sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
+
+    // entity window
+    ImGui::Begin(selected_entity->name.c_str());
     if (selected_player) {
       showPlayerMenu();
     }
+    last_panel_dimensions = panel_dimensions;
+    ImGui::End();
   }
 }
 
@@ -70,9 +89,7 @@ void Diagnostic::deSelect() { selected_player = nullptr; }
 // -----------------------------------------------------------------------------
 void Diagnostic::showPlayerMenu() {
 
-  // player window
-  ImGui::Begin(selected_player->name.c_str());
-
+  // player widgets
   ImGuiStyle &style = ImGui::GetStyle();
   //  ImGui::DragFloat("Global Alpha", &style.Alpha, 0.005f, 0.20f, 1.0f,
   //  "%.2f");
@@ -139,7 +156,6 @@ void Diagnostic::showPlayerMenu() {
     }
   }
   style.Alpha = 1.0f;
-  ImGui::End();
 
   // speed
   // veclcity
@@ -182,4 +198,9 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
     idx++;
   }
 }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Diagnostic::onClose() { ImGui::SFML::Render(viewer.getWindow()); }
 } // namespace senseless_soccer

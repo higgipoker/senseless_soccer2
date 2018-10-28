@@ -9,7 +9,7 @@ enum class TeamState { Defend, Attack };
 class Player;
 class Team : public Entity {
 public:
-  Team(std::__cxx11::string in_name);
+  Team(std::string in_name);
 
   // uodate each game frame
   void update(float dt) override;
@@ -48,6 +48,7 @@ protected:
 
 public:
   friend class Player;
+  friend class State;
 };
 
 } // namespace senseless_soccer

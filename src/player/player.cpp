@@ -18,11 +18,13 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "player.hpp"
+
+#include "states/running.hpp"
+#include "states/standing.hpp"
+
 #include "../joysticker/aftertouch.hpp"
 #include "../metrics/metrics.hpp"
 #include "../team/team.hpp"
-#include "states/running.hpp"
-#include "states/standing.hpp"
 
 #include <gamelib2/math/vector.hpp>
 #include <gamelib2/physics/collisions.hpp>
@@ -67,6 +69,7 @@ void Player::activate() {
   // init state machine
   change_state(PlayerState::Stand);
   current_state->start();
+  speed = 200;
 }
 
 // -----------------------------------------------------------------------------
@@ -84,11 +87,13 @@ void Player::update(float dt) {
   do_physics(dt);
 
   // direction tracking
-  facing.fromVector(velocity);
-  if (facing != facing_old) {
-    changed_direction = true;
-  } else {
-    changed_direction = false;
+  if (velocity.magnitude()) {
+    facing.fromVector(velocity);
+    if (facing != facing_old) {
+      changed_direction = true;
+    } else {
+      changed_direction = false;
+    }
   }
 
   // update widget (sprite)
@@ -189,13 +194,7 @@ void Player::do_dribble() {
 
   // calc force needed for kick
   float force_needed = speed * 200.0f;
-  Vector3 kick = facing_old.toVector() * force_needed;
-
-  // normalize for diagonals
-  if (kick.magnitude() > force_needed) {
-    kick /= kick.magnitude();
-    kick *= force_needed;
-  }
+  Vector3 kick = facing_old.toVector().normalise() * force_needed;
 
   // apply the kick force to ball
   ball->kick(kick);
@@ -245,7 +244,7 @@ void Player::kick(const Vector3 &direction, unsigned int power) {
 
   // always kick in direction player is facing
   Vector3 force = direction * power;
-  force.z = force.magnitude() * 0.08f;
+  force.z = force.magnitude() * 0.02f;
 
   //  apply to ball
   ball->kick(force * 1000);
@@ -418,10 +417,11 @@ void Player::face_ball() {
       gamelib2::Vector3 to_ball = Player::ball->position - position;
       gamelib2::Compass c(to_ball.normalise());
       widget->startAnimation(Player::stand_animation_map[c.direction]);
-      facing = to_ball.normalise();
+      facing.fromVector(to_ball.normalise());
     } else {
       widget->startAnimation(
           Player::stand_animation_map[gamelib2::Direction::SOUTH]);
+      facing = gamelib2::Direction::SOUTH;
     }
   }
 }

@@ -23,7 +23,7 @@ typedef struct {
 class Pitch : public gamelib2::Entity {
 public:
   // construct with an entity name
-  Pitch(std::string in_name);
+  Pitch();
   virtual ~Pitch();
 
   // the entity was manually moved
