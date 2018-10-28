@@ -28,7 +28,7 @@ namespace senseless_soccer {
 static const float GRAVITY = 9.8f; // meters per second per second
 static const float AIR_FACTOR = 0.0001f;
 static const float co_friction = 0.991f;
-static const float co_friction_bounce = 1.0f; // bounce fricton
+static const float co_friction_bounce = 0.98f; // bounce fricton
 static const float co_bounciness = 0.8f;
 static const float co_spin_decay = 0.8f; // how much spin decays over time
 static const float ball_mass = 200.f;    // used in air resistance calc
@@ -228,7 +228,6 @@ void Ball::kick(const Vector3 &force) {
   acceleration.reset();
   velocity.reset();
   acceleration = force;
-  // acceleration = acceleration.normalise() * acceleration.magnitude();
 }
 
 // -----------------------------------------------------------------------------

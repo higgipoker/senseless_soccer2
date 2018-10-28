@@ -155,14 +155,14 @@ void Player::update(float dt) {
 // -----------------------------------------------------------------------------
 void Player::do_physics(float dt) {
   // normalizes for diagonals
-  velocity = velocity.normalise();
-  if (velocity.magnitude() > speed) {
+  if (Floats::greater_than(velocity.magnitude(), 0)) {
+    velocity = velocity.normalise();
     velocity *= speed;
   }
 
   // basic euler motion
   velocity += acceleration * dt;
-  position += velocity * dt * speed;
+  position += velocity * dt;
 
   if (Floats::less_than(position.z, 0)) {
     position.z = 0;
@@ -194,7 +194,12 @@ void Player::do_dribble() {
 
   // calc force needed for kick
   float force_needed = speed * 200.0f;
-  Vector3 kick = facing_old.toVector().normalise() * force_needed;
+  Vector3 kick = facing_old.toVector().normalise();
+
+  if (Floats::greater_than(kick.magnitude(), 0)) {
+    kick = kick.normalise();
+    kick *= force_needed;
+  }
 
   // apply the kick force to ball
   ball->kick(kick);
@@ -243,11 +248,17 @@ void Player::kick(const Vector3 &direction, unsigned int power) {
   power = std::max(min_pass_power, std::min(power, max_pass_power));
 
   // always kick in direction player is facing
-  Vector3 force = direction * power;
-  force.z = force.magnitude() * 0.02f;
+  Vector3 force = direction;
+  // force.z = force.magnitude() * 0.001f;
+
+  // normalise for diagonals
+  if (Floats::greater_than(force.magnitude(), 0)) {
+    force = force.normalise();
+    force *= power * 1000;
+  }
 
   //  apply to ball
-  ball->kick(force * 1000);
+  ball->kick(force);
 
   //  start aftertouch and apply initial extra force to ball depending on dpad
   if (controller) {
@@ -272,7 +283,7 @@ void Player::short_pass() {
     Player::ball->kick(force);
     receiver->brain.message("receive");
   } else {
-    ball->kick(facing.toVector() * 25000);
+    kick(facing.toVector(), 1);
   }
 
   shooting = true;
