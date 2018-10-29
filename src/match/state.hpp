@@ -26,10 +26,10 @@ class State {
 public:
   State(std::string n, Match &m);
   virtual void update(float dt) = 0;
+  std::string name;
 
 protected:
   Match &football_match;
-  std::string name;
 };
 
 } // namespace match

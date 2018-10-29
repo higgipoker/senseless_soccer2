@@ -106,7 +106,7 @@ void Diagnostic::showPlayerMenu() {
       std::string orig_anim = selected_player->widget->currentAnimation()->name;
       std::vector<const char *> anims;
       process_animation_list(anims, active_anim_index);
-      ImGui::Combo("animation", &active_anim_index, anims.data(), anims.size());
+      ImGui::Combo("##animation", &active_anim_index, anims.data(), anims.size());
       if (orig_anim != anims[active_anim_index]) {
         std::string new_anim = anims[active_anim_index];
         selected_player->widget->startAnimation(new_anim);
@@ -132,7 +132,7 @@ void Diagnostic::showPlayerMenu() {
       std::string orig_state = selected_player->brain.currentState();
       std::vector<const char *> states;
       process_brainstate_list(states, active_state_index);
-      ImGui::Combo("Brainstate", &active_state_index, states.data(),
+      ImGui::Combo("##Brainstate", &active_state_index, states.data(),
                    states.size());
       if (orig_state != states[active_state_index]) {
         ai::State new_state = ai::Brain::state_map[states[active_state_index]];
@@ -142,7 +142,7 @@ void Diagnostic::showPlayerMenu() {
 
     { // locomotion
       ImGui::Text(
-          "Locomotion: %s",
+          "##Locomotion: %s",
           selected_player->brain.locomotion.currentLocomotion().name.c_str());
       if (selected_player->brain.locomotion.currentLocomotion()
               .diagnosticParamaters()
