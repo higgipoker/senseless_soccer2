@@ -46,8 +46,9 @@ using namespace gamelib2;
 namespace senseless_soccer {
 
 enum class PlayerState { Stand, Run, Slide, Jump };
-
+namespace team {
 class Team;
+}
 class Player : public Entity, public ControllerListener {
 public:
   // construct with an entity name
@@ -78,7 +79,7 @@ public:
   void detatchInput();
 
   // set my team
-  void setTeam(Team *t);
+  void setTeam(team::Team *t);
 
   // get current state name
   std::string stateName();
@@ -195,7 +196,7 @@ private:
   State *current_state = nullptr;
 
   // current team i play on
-  Team *my_team = nullptr;
+  team::Team *my_team = nullptr;
 
   // calc environment stuff
   void calc_short_pass_recipients();
@@ -225,7 +226,7 @@ public:
   friend class ai::Jump;
   friend class Locomotion;
   friend class locomotion::Stand;
-  friend class Team;
+  friend class team::Team;
 };
 
 } // namespace senseless_soccer

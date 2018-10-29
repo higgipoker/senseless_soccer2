@@ -40,8 +40,6 @@ static const int SHADOW_OFFSET = 1;
 Ball::Ball(std::string in_name, float dt) : Entity("ball", std::move(in_name)) {
   circle.setRadius(6.0f);
 
-  // gravity is a constant, can set it up here once
-
   // formulas are in seconds, physics step is in "dt"
   float time_slice = dt / 1;
 

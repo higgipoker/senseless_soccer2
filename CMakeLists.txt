@@ -45,6 +45,9 @@ add_executable(senseless_soccer
     src/joysticker/sensicontroller.cpp
     src/joysticker/aftertouch.cpp
     src/team/team.cpp
+    src/team/state.cpp
+    src/team/enterpitch.cpp
+    src/team/kit.cpp
     src/match/match.cpp
     src/match/state.cpp
     src/match/play.cpp

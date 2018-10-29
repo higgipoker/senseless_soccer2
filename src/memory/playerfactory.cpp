@@ -41,15 +41,6 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   // get a pointer to derived class sprite
   auto sprite = static_cast<Sprite *>(widget.get());
 
-  // test some paletting
-  std::vector<std::pair<sf::Color, sf::Color>> palette = {
-      std::make_pair(sf::Color(135, 0, 0), sf::Color(0, 0, 135)),
-      std::make_pair(sf::Color(175, 0, 0), sf::Color(0, 0, 175)),
-      std::make_pair(sf::Color(215, 0, 0), sf::Color(0, 0, 215)),
-      std::make_pair(sf::Color(255, 0, 0), sf::Color(0, 0, 255)),
-  };
-  sprite->swapColors(palette);
-
   sprite->clickable = true;
   sprite->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
   player_animations::fill_animations(sprite);

@@ -18,23 +18,25 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "../team/team.hpp"
-#include <gamelib2/game/entity.hpp>
-#include <memory>
+#include <SFML/Graphics/Color.hpp>
+#include <vector>
 
 namespace senseless_soccer {
-namespace match {
-class Match : public gamelib2::Entity {
-public:
-  Match();
-  void init(team::Team *t1, team::Team *t2);
-  void update(float dt);
-  team::Team *team1;
-  team::Team *team2;
+namespace team {
 
-private:
+enum KitStyle{Plain, Vertical};
+
+class Kit {
 public:
-  friend class Play;
+  Kit();
+
+  std::vector<std::pair<sf::Color, sf::Color>> palette;
+  KitStyle style = KitStyle::Plain;
+
+  static Kit make_standard_red_kit();
+  static Kit make_standard_blue_kit();
+  static Kit make_standard_gk_kit();
 };
-} // namespace match
+
+} // namespace team
 } // namespace senseless_soccer

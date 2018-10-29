@@ -17,24 +17,11 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
-#include "../team/team.hpp"
-#include <gamelib2/game/entity.hpp>
-#include <memory>
-
+#include "state.hpp"
+#include "team.hpp"
 namespace senseless_soccer {
-namespace match {
-class Match : public gamelib2::Entity {
-public:
-  Match();
-  void init(team::Team *t1, team::Team *t2);
-  void update(float dt);
-  team::Team *team1;
-  team::Team *team2;
+namespace team {
+State::State(Team &t) : team(t) {}
 
-private:
-public:
-  friend class Play;
-};
-} // namespace match
+} // namespace team
 } // namespace senseless_soccer

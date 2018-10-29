@@ -18,23 +18,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "../team/team.hpp"
-#include <gamelib2/game/entity.hpp>
-#include <memory>
-
 namespace senseless_soccer {
-namespace match {
-class Match : public gamelib2::Entity {
-public:
-  Match();
-  void init(team::Team *t1, team::Team *t2);
-  void update(float dt);
-  team::Team *team1;
-  team::Team *team2;
+namespace team {
 
-private:
+class Team;
+class State {
 public:
-  friend class Play;
+  State(Team &t);
+  virtual ~State() = default;
+  virtual void start() = 0;
+  virtual void stop() = 0;
+  virtual bool finished() = 0;
+  virtual void update(float dt) = 0;
+
+protected:
+  Team &team;
 };
-} // namespace match
+} // namespace team
 } // namespace senseless_soccer

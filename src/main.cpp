@@ -4,6 +4,7 @@
 #include "memory/playerfactory.hpp"
 #include "pitch/pitch.hpp"
 #include "pitch/pitchwidget.hpp"
+#include "team/kit.hpp"
 #include "team/team.hpp"
 
 #include <gamelib2/engine/engine.hpp>
@@ -31,8 +32,12 @@ int main() {
   Engine engine;
   Match match;
   Pitch pitch;
-  Team team1("team1");
-  Team team2("team2");
+  team::Team team1("team1");
+  team::Team team2("team2");
+
+  team1.kit1 = team::Kit::make_standard_blue_kit();
+  team2.kit1 = team::Kit::make_standard_red_kit();
+
   match.init(&team1, &team2);
 
   // a debug hud
@@ -67,7 +72,9 @@ int main() {
 
   // players
   std::vector<std::unique_ptr<Player>> players;
-  for (int i = 0; i < 1; ++i) {
+
+  // team 1
+  for (int i = 0; i < 20; ++i) {
     std::stringstream name;
     name << "player" << i;
     auto player = PlayerFactory::makePlayer(name.str());
@@ -77,7 +84,12 @@ int main() {
     pitch.widget->addChild(sprite->getShadow());
     engine.addEntity(player.get());
     player->shirt_number = i + 1;
-    team1.addPlayer(player.get());
+
+    if (i < 10) {
+      team1.addPlayer(player.get());
+    } else {
+      team2.addPlayer(player.get());
+    }
 
     // need to move out of loop scope or smart pointer will be destroyed
     players.emplace_back(std::move(player));
@@ -104,6 +116,8 @@ int main() {
 
   Player::ball = ball.get();
   Player::pitch = &pitch;
+
+  team1.init();
   // test
   for (unsigned int i = 0; i < sf::Joystick::Count; ++i) {
     if (sf::Joystick::isConnected(i)) {

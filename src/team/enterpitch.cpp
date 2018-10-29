@@ -17,27 +17,45 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "match.hpp"
-
+#include "enterpitch.hpp"
+#include "../player/player.hpp"
+#include "team.hpp"
 namespace senseless_soccer {
-namespace match {
+namespace team {
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Match::Match() : gamelib2::Entity("match", "match") {}
+EnterPitch::EnterPitch(Team &t) : State(t) {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Match::init(team::Team *t1, team::Team *t2) {
-  team1 = t1;
-  team2 = t2;
+void EnterPitch::start() {
+  // initial position of all players
+  int x = 250;
+  int y = 250;
+  for (auto &player : team.players) {
+    player->setPosition(x, y);
+    x += 30;
+    y += 30;
+  }
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Match::update(float dt) {}
-} // namespace match
+void EnterPitch::stop() {}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool EnterPitch::finished() { return false; }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void EnterPitch::update(float dt) {}
+
+} // namespace team
 } // namespace senseless_soccer

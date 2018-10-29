@@ -2,7 +2,7 @@
 #include "../player/player.hpp"
 
 namespace senseless_soccer {
-
+namespace team {
 // -----------------------------------------------------------------------------
 // sort predicate for players
 // -----------------------------------------------------------------------------
@@ -15,7 +15,13 @@ struct {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Team::Team(std::string in_name) : Entity("team", std::move(in_name)) {}
+Team::Team(std::string in_name)
+    : Entity("team", std::move(in_name)), enter_pitch(*this) {}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Team::init() { current_state.start(); }
 
 // -----------------------------------------------------------------------------
 //
@@ -23,14 +29,22 @@ Team::Team(std::string in_name) : Entity("team", std::move(in_name)) {}
 void Team::update(float dt) {
   set_key_players();
   update_controller();
+  current_state.update(dt);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Team::addPlayer(Player *p) {
+
+  // add player to team
   players.emplace_back(p);
+
+  // tell player of team
   p->setTeam(this);
+
+  // apply the kit to player
+  dynamic_cast<gamelib2::Sprite *>(p->widget.get())->swapColors(kit1.palette);
 }
 
 // -----------------------------------------------------------------------------
@@ -89,4 +103,5 @@ void Team::lostPossession(Player *p) {
     key_players.in_possession = nullptr;
   }
 }
+} // namespace team
 } // namespace senseless_soccer

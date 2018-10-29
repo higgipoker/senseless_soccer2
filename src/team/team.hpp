@@ -1,15 +1,21 @@
 #pragma once
 #include "../joysticker/sensicontroller.hpp"
+#include "enterpitch.hpp"
+#include "kit.hpp"
 #include <gamelib2/game/entity.hpp>
 #include <vector>
 
 using namespace gamelib2;
 namespace senseless_soccer {
-enum class TeamState { Defend, Attack };
 class Player;
+namespace team {
+enum class TeamState { Defend, Attack };
 class Team : public Entity {
 public:
   Team(std::string in_name);
+
+  // init
+  void init();
 
   // uodate each game frame
   void update(float dt) override;
@@ -37,18 +43,26 @@ public:
   bool requestPossession(Player *p);
   void lostPossession(Player *p);
 
+  Kit kit1;
+  Kit kit12;
+  Kit kit3;
+
 protected:
   // players in this team
   std::vector<Player *> players;
   std::vector<Player *> subs;
+
+  EnterPitch enter_pitch;
+  State &current_state = enter_pitch;
 
   // update helpers
   void set_key_players();
   void update_controller();
 
 public:
-  friend class Player;
+  friend class senseless_soccer::Player;
   friend class State;
+  friend class EnterPitch;
 };
-
+} // namespace team
 } // namespace senseless_soccer
