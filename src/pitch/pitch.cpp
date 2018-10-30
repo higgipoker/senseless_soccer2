@@ -51,10 +51,10 @@ Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
   // goals (for actual goal detection)
   dimensions.goal_north.left = dimensions.bounds.left +
                                dimensions.bounds.width / 2 -
-                               Metrics::MetersToPixels(3.66);
+                               Metrics::MetersToPixels(3.66f);
   dimensions.goal_north.top =
       dimensions.bounds.top - Metrics::MetersToPixels(2);
-  dimensions.goal_north.width = Metrics::MetersToPixels(7.32);
+  dimensions.goal_north.width = Metrics::MetersToPixels(7.32f);
   dimensions.goal_north.height = Metrics::MetersToPixels(2); // depth of goal
 
   dimensions.goal_south = dimensions.goal_north;

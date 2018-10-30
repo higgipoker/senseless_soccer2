@@ -33,7 +33,7 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Diagnostic::Diagnostic(Viewer &v) : gamelib2::Diagnostic(v) {}
+Diagnostic::Diagnostic(std::shared_ptr<Viewer> &v) : gamelib2::Diagnostic(v) {}
 
 // -----------------------------------------------------------------------------
 // update
@@ -142,7 +142,7 @@ void Diagnostic::showPlayerMenu() {
 
     { // locomotion
       ImGui::Text(
-          "##Locomotion: %s",
+          "Locomotion: %s",
           selected_player->brain.locomotion.currentLocomotion().name.c_str());
       if (selected_player->brain.locomotion.currentLocomotion()
               .diagnosticParamaters()

@@ -28,8 +28,8 @@ using namespace match;
 int main() {
 
   // main game objects
-  Viewer viewer;
-  Engine engine;
+  std::shared_ptr< Viewer > viewer = std::make_shared< Viewer >();
+  std::shared_ptr< Engine > engine = std::make_shared< Engine >();
   Match match;
   Pitch pitch;
   team::Team team1("team1");
@@ -42,7 +42,7 @@ int main() {
 
   // a debug hud
   senseless_soccer::Diagnostic debug(viewer);
-  viewer.connectDiagnostics(debug);
+  viewer.get()->connectDiagnostics(debug);
 
   // inits static stuff
   Player::init();
@@ -54,24 +54,23 @@ int main() {
   team1.controller = &controller;
 
   // scrolling background
-  std::unique_ptr<PitchWidget> pitch_widget = std::make_unique<PitchWidget>(
-      Files::getWorkingDirectory() + "/gfx/grass_horizontal.png",
-      engine.camera);
+  std::unique_ptr< PitchWidget > pitch_widget = std::make_unique< PitchWidget >(
+    Files::getWorkingDirectory() + "/gfx/grass_horizontal.png", engine->camera);
   pitch_widget->z_order = -10;
   pitch_widget->connectEntity(&pitch);
   pitch.connectWidget(std::move(pitch_widget));
-  viewer.addWidget(pitch.widget.get());
+  viewer.get()->addWidget(pitch.widget.get());
 
   // auto pitch = dynamic_cast<Pitch *>(pitch_entity);
   team2.attacking_goal = pitch.dimensions.goal_north;
   team2.defending_goal = pitch.dimensions.goal_south;
 
   // test
-  auto *l = static_cast<Widget *>(&controller.label);
+  auto *l = static_cast< Widget * >(&controller.label);
   pitch.widget->addChild(l);
 
   // players
-  std::vector<std::unique_ptr<Player>> players;
+  std::vector< std::unique_ptr< Player > > players;
 
   // team 1
   for (int i = 0; i < 20; ++i) {
@@ -79,10 +78,10 @@ int main() {
     name << "player" << i;
     auto player = PlayerFactory::makePlayer(name.str());
     player->setPosition(300, 300);
-    auto *sprite = dynamic_cast<Sprite *>(player->widget.get());
+    auto *sprite = dynamic_cast< Sprite * >(player->widget.get());
     pitch.widget->addChild(sprite);
     pitch.widget->addChild(sprite->getShadow());
-    engine.addEntity(player.get());
+    engine->addEntity(player.get());
     player->shirt_number = i + 1;
 
     if (i < 10) {
@@ -96,23 +95,23 @@ int main() {
   }
 
   // ball
-  std::unique_ptr<Ball> ball = BallFactory::makeBall("ball");
-  auto *ballsprite = dynamic_cast<Sprite *>(ball->widget.get());
+  std::unique_ptr< Ball > ball = BallFactory::makeBall("ball");
+  auto *ballsprite = dynamic_cast< Sprite * >(ball->widget.get());
   ball->position.x = 300;
   ball->position.y = 300;
   pitch.widget->addChild(ballsprite->getShadow());
   pitch.widget->addChild(ballsprite);
 
   // add entities to engine
-  engine.addEntity(&match);
-  engine.addEntity(&team1);
-  engine.addEntity(&team2);
-  engine.addEntity(&pitch);
-  engine.addEntity(ball.get());
+  engine->addEntity(&match);
+  engine->addEntity(&team1);
+  engine->addEntity(&team2);
+  engine->addEntity(&pitch);
+  engine->addEntity(ball.get());
 
   // there is a circular relationship engine <-> viewer
-  engine.connectViewer(&viewer);
-  viewer.connectEngine(&engine);
+  engine->connectViewer(viewer);
+  viewer.get()->connectEngine(engine);
 
   Player::ball = ball.get();
   Player::pitch = &pitch;
@@ -127,22 +126,22 @@ int main() {
   }
 
   // camera
-  engine.camera.init(800, 600);
-  engine.camera.setWorldRect(sf::Rect<int>(0, 0, 1900, 2600));
-  engine.camera.follow(ball.get());
+  engine->camera.init(800, 600);
+  engine->camera.setWorldRect(sf::Rect< int >(0, 0, 1900, 2600));
+  engine->camera.follow(ball.get());
   ball->bounds.setSize(sf::Vector2f(1900, 2600));
 
-  viewer.startup();
+  viewer.get()->startup();
   float timestep = 0.01f; // optimal for semi-implicit euler
-  while (viewer.running) {
+  while (viewer.get()->running) {
     // debug ui
     debug.update();
     controller.update();
-    engine.frame(timestep);
-    viewer.frame();
+    engine->frame(timestep);
+    viewer.get()->frame();
   }
   ImGui::SFML::Shutdown();
-  viewer.close();
+  viewer.get()->close();
 
   return 0;
 }
