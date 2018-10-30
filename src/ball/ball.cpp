@@ -78,9 +78,6 @@ void Ball::update(float dt) {
     auto sprite = dynamic_cast<Sprite *>(widget.get());
     sprite->setPosition(position.x, position.y);
     sprite->animate();
-
-    // sync shadow with sprite
-    Sprite *shadow = sprite->getShadow();
     perspectivize(CAMERA_HEIGHT);
   }
   circle.setPosition(position.x, position.y);

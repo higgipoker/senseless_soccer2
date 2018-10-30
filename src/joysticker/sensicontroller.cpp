@@ -21,7 +21,6 @@
 #include "../ball/ball.hpp"
 #include "../player/player.hpp"
 #include <SFML/Graphics/Color.hpp>
-#include <gamelib2/utils/files.hpp>
 #include <iostream>
 
 using namespace gamelib2;
@@ -31,13 +30,12 @@ namespace senseless_soccer {
 // SensiController
 // -----------------------------------------------------------------------------
 SensiController::SensiController(InputDevice &i)
-    : Controller(i), label(Files::getWorkingDirectory() +
-                           "/fonts/swos.ttf") // todo font factory
+    : Controller(i)
       ,
       aftertouch(*this) {
 
-  label.setSize(14);
-  label.setColor(sf::Color::White);
+  label->setSize(14);
+  label->setColor(sf::Color::White);
 
 } // namespace senseless_soccer
 
@@ -54,7 +52,7 @@ void SensiController::attachToPlayer(Player *p) {
   player = p;
   if (player) {
     player->attachInput(this);
-    label.setText(p->shirt_number);
+    label->setText(p->shirt_number);
   }
 }
 
@@ -68,7 +66,7 @@ void SensiController::update() {
   // attached to a player?
   if (player) {
     auto rect = player->widget->bounds();
-    label.setCenter(static_cast<unsigned int>(rect.left + rect.width / 2),
+    label->setCenter(static_cast<unsigned int>(rect.left + rect.width / 2),
                     static_cast<unsigned int>(rect.top + rect.width / 2 -
                                               rect.height / 2 - 4));
   }

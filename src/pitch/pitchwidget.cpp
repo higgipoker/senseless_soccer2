@@ -33,10 +33,10 @@ PitchWidget::PitchWidget(const std::string &in_file, Camera &c)
 
   clickable = false;
 
-  addChild(goal_north.get());
+  addChild(goal_north);
   goal_north->z_order = 100;
 
-  addChild(goal_south.get());
+  addChild(goal_south);
   goal_south->z_order = 100;
 }
 

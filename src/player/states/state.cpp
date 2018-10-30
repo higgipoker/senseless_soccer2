@@ -19,8 +19,8 @@ void State::start() {}
 // -----------------------------------------------------------------------------
 void State::update(const float _dt) {
 
-  player.velocity.reset();
   if (player.controller) {
+    player.velocity.reset();
     if (player.controller->input.states[Left]) {
       player.velocity.x = -1;
     }

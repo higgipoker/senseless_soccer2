@@ -31,10 +31,10 @@ public:
   void render(sf::RenderTarget &target) override;
 
 private:
-  std::unique_ptr<Widget> goal_north = std::make_unique<Sprite>(
+  std::shared_ptr<Widget> goal_north = std::make_shared<Sprite>(
       Files::getWorkingDirectory() + "/gfx/goal_top_new.png", 1, 1);
 
-  std::unique_ptr<Widget> goal_south = std::make_unique<Sprite>(
+  std::shared_ptr<Widget> goal_south = std::make_shared<Sprite>(
       Files::getWorkingDirectory() + "/gfx/goal_bottom_new_persepective.png", 1,
       1);
 };

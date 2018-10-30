@@ -33,35 +33,40 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Diagnostic::Diagnostic(std::shared_ptr<Viewer> &v) : gamelib2::Diagnostic(v) {}
+Diagnostic::Diagnostic(std::shared_ptr< Viewer > &v)
+  : gamelib2::Diagnostic(v) {
+}
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Diagnostic::update() {
-  if (on) {
-    gamelib2::Diagnostic::update();
-    // dimensions
-    panel_dimensions.width = last_panel_dimensions.width;
-    panel_dimensions.height =
-        viewer.getWindow().getSize().y - last_panel_dimensions.height;
-    panel_dimensions.left =
-        viewer.getWindow().getSize().x - panel_dimensions.width;
-    panel_dimensions.top =
+  if (auto view = viewer.lock()) {
+
+    if (on) {
+      gamelib2::Diagnostic::update();
+      // dimensions
+      panel_dimensions.width = last_panel_dimensions.width;
+      panel_dimensions.height =
+        view->getWindow().getSize().y - last_panel_dimensions.height;
+      panel_dimensions.left =
+        view->getWindow().getSize().x - panel_dimensions.width;
+      panel_dimensions.top =
         last_panel_dimensions.top + last_panel_dimensions.height;
 
-    ImGui::SetNextWindowSize(
+      ImGui::SetNextWindowSize(
         sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
-    ImGui::SetNextWindowPos(
+      ImGui::SetNextWindowPos(
         sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
-    // entity window
-    ImGui::Begin(selected_entity->name.c_str());
-    if (selected_player) {
-      showPlayerMenu();
+      // entity window
+      ImGui::Begin(selected_entity->name.c_str());
+      if (selected_player) {
+        showPlayerMenu();
+      }
+      last_panel_dimensions = panel_dimensions;
+      ImGui::End();
     }
-    last_panel_dimensions = panel_dimensions;
-    ImGui::End();
   }
 }
 
@@ -72,7 +77,7 @@ void Diagnostic::selectEntity(Entity *e) {
   gamelib2::Diagnostic::selectEntity(e);
   if (e->type == "player") {
     if (selected_player != e) {
-      selected_player = dynamic_cast<Player *>(e);
+      selected_player = dynamic_cast< Player * >(e);
     }
   } else {
     selected_player = nullptr;
@@ -82,7 +87,9 @@ void Diagnostic::selectEntity(Entity *e) {
 // -----------------------------------------------------------------------------
 // deSelect
 // -----------------------------------------------------------------------------
-void Diagnostic::deSelect() { selected_player = nullptr; }
+void Diagnostic::deSelect() {
+  selected_player = nullptr;
+}
 
 // -----------------------------------------------------------------------------
 // showPlayerMenu
@@ -104,9 +111,10 @@ void Diagnostic::showPlayerMenu() {
     if (selected_player->controller != nullptr) {
       int active_anim_index = 0;
       std::string orig_anim = selected_player->widget->currentAnimation()->name;
-      std::vector<const char *> anims;
+      std::vector< const char * > anims;
       process_animation_list(anims, active_anim_index);
-      ImGui::Combo("##animation", &active_anim_index, anims.data(), anims.size());
+      ImGui::Combo("##animation", &active_anim_index, anims.data(),
+                   anims.size());
       if (orig_anim != anims[active_anim_index]) {
         std::string new_anim = anims[active_anim_index];
         selected_player->widget->startAnimation(new_anim);
@@ -130,7 +138,7 @@ void Diagnostic::showPlayerMenu() {
     { // brain state
       int active_state_index = 0;
       std::string orig_state = selected_player->brain.currentState();
-      std::vector<const char *> states;
+      std::vector< const char * > states;
       process_brainstate_list(states, active_state_index);
       ImGui::Combo("##Brainstate", &active_state_index, states.data(),
                    states.size());
@@ -142,16 +150,16 @@ void Diagnostic::showPlayerMenu() {
 
     { // locomotion
       ImGui::Text(
-          "Locomotion: %s",
-          selected_player->brain.locomotion.currentLocomotion().name.c_str());
+        "Locomotion: %s",
+        selected_player->brain.locomotion.currentLocomotion().name.c_str());
       if (selected_player->brain.locomotion.currentLocomotion()
-              .diagnosticParamaters()
-              .length()) {
+            .diagnosticParamaters()
+            .length()) {
         ImGui::SameLine();
         ImGui::Text("(%s)",
                     selected_player->brain.locomotion.currentLocomotion()
-                        .diagnosticParamaters()
-                        .c_str());
+                      .diagnosticParamaters()
+                      .c_str());
       }
     }
   }
@@ -169,7 +177,7 @@ void Diagnostic::showPlayerMenu() {
 // -----------------------------------------------------------------------------
 // process_animation_list
 // -----------------------------------------------------------------------------
-void Diagnostic::process_animation_list(std::vector<const char *> &out_list,
+void Diagnostic::process_animation_list(std::vector< const char * > &out_list,
                                         int &out_active_index) {
 
   auto current_anim = selected_player->widget->currentAnimation();
@@ -187,7 +195,7 @@ void Diagnostic::process_animation_list(std::vector<const char *> &out_list,
 // -----------------------------------------------------------------------------
 // process_brainstate_list
 // -----------------------------------------------------------------------------
-void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
+void Diagnostic::process_brainstate_list(std::vector< const char * > &out_list,
                                          int &out_active_index) {
   int idx = 0;
   for (auto &state : ai::Brain::state_map) {
@@ -202,5 +210,9 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Diagnostic::onClose() { ImGui::SFML::Render(viewer.getWindow()); }
+void Diagnostic::onClose() {
+  if (auto view = viewer.lock()) {
+    ImGui::SFML::Render(view->getWindow());
+  }
+}
 } // namespace senseless_soccer

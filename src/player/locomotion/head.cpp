@@ -35,7 +35,7 @@ void Head::init(const Vector3 &t) { direction = t; }
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
-void Head::start() { player.velocity = direction; }
+void Head::start() { player.velocity = direction.normalizeToUnits(); }
 
 // -----------------------------------------------------------------------------
 // update

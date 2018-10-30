@@ -65,7 +65,7 @@ void Dribble::update(float dt) {
 //
 // -----------------------------------------------------------------------------
 void Dribble::change_direction(int angle) {
-  Vector3 new_direction = brain.player.brain.player.velocity
+  Vector3 new_direction = brain.player.brain.player.facing.toVector()
                               .rotate(rand() % 2 == 1 ? angle : -angle)
                               .roundAngle(45);
   brain.locomotion.startHead(new_direction);

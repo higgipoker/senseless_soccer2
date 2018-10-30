@@ -22,6 +22,7 @@
 #include "aftertouch.hpp"
 #include <gamelib2/input/device.hpp>
 #include <gamelib2/widgets/label.hpp>
+#include <gamelib2/utils/files.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {
@@ -32,18 +33,18 @@ class Player;
 // todo make this an entity!
 class SensiController : public Controller {
 public:
-    SensiController(InputDevice &i);
+  SensiController(InputDevice &i);
 
-    void update() override;
-    void startAftertouch(Ball *b, const Vector3 &normal,
-                         const float initial_mag);
-    void stopAftertouch();
-    void attachToPlayer(Player *p);
+  void update() override;
+  void startAftertouch(Ball *b, const Vector3 &normal, const float initial_mag);
+  void stopAftertouch();
+  void attachToPlayer(Player *p);
 
-    Player *player = nullptr;
-    Label label;
+  Player *player = nullptr;
+  std::shared_ptr< Label > label =
+    std::make_shared< Label >(Files::getWorkingDirectory() + "/fonts/swos.ttf");
 
 private:
-    Aftertouch aftertouch;
+  Aftertouch aftertouch;
 };
 } // namespace senseless_soccer

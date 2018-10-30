@@ -104,8 +104,8 @@ void Player::update(float dt) {
     sprite->animate();
 
     // sync shadow with sprite
-    Sprite *shadow = sprite->getShadow();
-    if (shadow) {
+    auto shadow = sprite->getShadow();
+    if (shadow.get()) {
       shadow->setFrame(sprite->getFrame());
       shadow->setPosition(sprite->position().x, sprite->position().y);
     }

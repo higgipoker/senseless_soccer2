@@ -54,37 +54,36 @@ int main() {
   team1.controller = &controller;
 
   // scrolling background
-  std::unique_ptr< PitchWidget > pitch_widget = std::make_unique< PitchWidget >(
+  std::shared_ptr< PitchWidget > pitch_widget = std::make_shared< PitchWidget >(
     Files::getWorkingDirectory() + "/gfx/grass_horizontal.png", engine->camera);
   pitch_widget->z_order = -10;
   pitch_widget->connectEntity(&pitch);
   pitch.connectWidget(std::move(pitch_widget));
-  viewer.get()->addWidget(pitch.widget.get());
+  viewer.get()->addWidget(pitch.widget);
 
   // auto pitch = dynamic_cast<Pitch *>(pitch_entity);
   team2.attacking_goal = pitch.dimensions.goal_north;
   team2.defending_goal = pitch.dimensions.goal_south;
 
   // test
-  auto *l = static_cast< Widget * >(&controller.label);
-  pitch.widget->addChild(l);
+  pitch.widget->addChild(controller.label);
 
   // players
   std::vector< std::unique_ptr< Player > > players;
 
   // team 1
-  for (int i = 0; i < 20; ++i) {
+  for (int i = 0; i < 1; ++i) {
     std::stringstream name;
     name << "player" << i;
     auto player = PlayerFactory::makePlayer(name.str());
     player->setPosition(300, 300);
     auto *sprite = dynamic_cast< Sprite * >(player->widget.get());
-    pitch.widget->addChild(sprite);
+    pitch.widget->addChild(player->widget);
     pitch.widget->addChild(sprite->getShadow());
     engine->addEntity(player.get());
     player->shirt_number = i + 1;
 
-    if (i < 10) {
+    if (i >= 10) {
       team1.addPlayer(player.get());
     } else {
       team2.addPlayer(player.get());
@@ -100,7 +99,7 @@ int main() {
   ball->position.x = 300;
   ball->position.y = 300;
   pitch.widget->addChild(ballsprite->getShadow());
-  pitch.widget->addChild(ballsprite);
+  pitch.widget->addChild(ball->widget);
 
   // add entities to engine
   engine->addEntity(&match);
