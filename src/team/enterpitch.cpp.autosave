@@ -17,50 +17,50 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "head.hpp"
-#include <gamelib2/compass/compass.hpp>
-#include <sstream>
-#include "../player.hpp"
-
+#include "enterpitch.hpp"
+#include "../player/player.hpp"
+#include "team.hpp"
 namespace senseless_soccer {
-namespace locomotion {
+namespace team {
 
 // -----------------------------------------------------------------------------
-// Head
+//
 // -----------------------------------------------------------------------------
-Head::Head(Player &player) : Locomotion(player, "Head") {}
+EnterPitch::EnterPitch(Team &t) : State(t) {}
 
 // -----------------------------------------------------------------------------
-// init
+//
 // -----------------------------------------------------------------------------
-void Head::init(const Vector3 &t) { direction = t; }
-// -----------------------------------------------------------------------------
-// start
-// -----------------------------------------------------------------------------
-void Head::start() { player.velocity = direction.normalizeToUnits(); }
-
-// -----------------------------------------------------------------------------
-// update
-// -----------------------------------------------------------------------------
-void Head::update(float _dt) {}
-
-// -----------------------------------------------------------------------------
-// stop
-// -----------------------------------------------------------------------------
-void Head::stop() { player.velocity.reset(); }
-
-// -----------------------------------------------------------------------------
-// finished
-// -----------------------------------------------------------------------------
-bool Head::finished() { return false; }
-
-// -----------------------------------------------------------------------------
-// diagnosticParamaters
-// -----------------------------------------------------------------------------
-std::string Head::diagnosticParamaters() {
-  gamelib2::Compass dir(direction);
-  return dir.print();
+void EnterPitch::start() {
+  // initial position of all players
+  int x = 250;
+  int y = 250;
+  for (auto &player : team.players) {
+    player->setPosition(x, y);
+    x += 30;
+    y += 30;
+  }
+  
+  // march!
+  for(auto &player : team.players){
+      player->brain.changeState(ai::State::)
+  }
 }
 
-}  // namespace locomotion
-}  // namespace senseless_soccer
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void EnterPitch::stop() {}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool EnterPitch::finished() { return false; }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void EnterPitch::update(float dt) {}
+
+} // namespace team
+} // namespace senseless_soccer

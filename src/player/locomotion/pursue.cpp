@@ -65,7 +65,7 @@ void Pursue::stop() {
 bool Pursue::finished() { return false; }
 
 // -----------------------------------------------------------------------------
-// finished
+// diagnosticParamaters
 // -----------------------------------------------------------------------------
 std::string Pursue::diagnosticParamaters() {
   std::stringstream s;
@@ -73,5 +73,5 @@ std::string Pursue::diagnosticParamaters() {
   return s.str();
 }
 
-} // namespace locomotion
-} // namespace senseless_soccer
+}  // namespace locomotion
+}  // namespace senseless_soccer
