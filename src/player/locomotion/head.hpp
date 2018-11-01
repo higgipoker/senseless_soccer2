@@ -4,6 +4,8 @@
 namespace senseless_soccer {
 class Player;
 namespace locomotion {
+
+// continue in the specified direction until stopped
 class Head : public Locomotion {
  public:
   Head(Player &player);

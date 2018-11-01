@@ -18,16 +18,17 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "locomotion.hpp"
 #include <gamelib2/game/entity.hpp>
+#include "locomotion.hpp"
 
 using namespace gamelib2;
 namespace senseless_soccer {
 class Player;
 namespace locomotion {
-// pursue locomption follows a moving target
+
+// follow a target entity
 class Pursue : public Locomotion {
-public:
+ public:
   Pursue(Player &p);
   ~Pursue() override = default;
   void start() override;
@@ -39,8 +40,8 @@ public:
 
   void init(Entity *t);
 
-private:
+ private:
   Entity *target = nullptr;
 };
-} // namespace locomotion
-} // namespace senseless_soccer
+}  // namespace locomotion
+}  // namespace senseless_soccer

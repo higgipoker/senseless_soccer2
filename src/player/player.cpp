@@ -50,16 +50,16 @@ static const float control_radius = 8.f;
 // Player
 // -----------------------------------------------------------------------------
 Player::Player(std::string in_name)
-    : Entity("player", std::move(in_name)), brain(*this),
+    : Entity("player", std::move(in_name)),
+      brain(*this),
       debug_short_pass(sf::Triangles, 3),
-      stand_state(std::make_unique<Standing>(*this)),
-      run_state(std::make_unique<Running>(*this)),
-      slide_state(std::make_unique<Sliding>(*this)),
-      jump_state(std::make_unique<Jumping>(*this)) {
+      stand_state(*this),
+      run_state(*this),
+      slide_state(*this),
+      jump_state(*this) {
   feet.setRadius(dribble_radius);
   control_inner.setRadius(control_radius);
   control_outer.setRadius(control_radius * 1.2f);
-  current_state = stand_state.get();
 }
 
 // -----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ void Player::update(float dt) {
 
     // sync shadow with sprite
     auto shadow = sprite->getShadow();
-    if (shadow.get()) {
+    if (shadow.get() != nullptr) {
       shadow->setFrame(sprite->getFrame());
       shadow->setPosition(sprite->position().x, sprite->position().y);
     }
@@ -189,8 +189,7 @@ void Player::onDragged(const gamelib2::Vector3 &new_position) {
 // -----------------------------------------------------------------------------
 void Player::do_dribble() {
   // TODO height
-  if (ball->position.z > 30)
-    return;
+  if (ball->position.z > 30) return;
 
   // calc force needed for kick
   float force_needed = speed * 200.0f;
@@ -225,18 +224,18 @@ void Player::do_close_control() {
 // -----------------------------------------------------------------------------
 void Player::change_state(const PlayerState &state) {
   switch (state) {
-  case PlayerState::Stand:
-    current_state = stand_state.get();
-    break;
-  case PlayerState::Run:
-    current_state = run_state.get();
-    break;
-  case PlayerState::Slide:
-    current_state = slide_state.get();
-    break;
-  case PlayerState::Jump:
-    current_state = jump_state.get();
-    break;
+    case PlayerState::Stand:
+      current_state = &stand_state;
+      break;
+    case PlayerState::Run:
+      current_state = &run_state;
+      break;
+    case PlayerState::Slide:
+      current_state = &slide_state;
+      break;
+    case PlayerState::Jump:
+      current_state = &jump_state;
+      break;
   }
 }
 
@@ -295,9 +294,9 @@ void Player::short_pass() {
 void Player::shoot() {
   // for now just aim at center of goal
   Vector3 to_goal =
-      Vector3(my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
-              my_team->attacking_goal.top +
-                  my_team->attacking_goal.height / 2) -
+      Vector3(
+          my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
+          my_team->attacking_goal.top + my_team->attacking_goal.height / 2) -
       position;
   kick(to_goal.normalise(), 60);
 }
@@ -380,7 +379,9 @@ void Player::calc_short_pass_recipients() {
 // on_got_possession
 // -----------------------------------------------------------------------------
 void Player::on_got_possession() {
-  in_possession = my_team->requestPossession(this);
+  if (my_team) {
+    in_possession = my_team->requestPossession(this);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -442,7 +443,7 @@ void Player::face_ball() {
 // -----------------------------------------------------------------------------
 void Player::perspectivize(float camera_height) {
   // size depending on distance from camera
-  float dimensions = 48; // need to standardize heights /	pngs
+  float dimensions = 48;  // need to standardize heights /	pngs
   float dist_from_camera = camera_height - position.z;
   float angular_diameter = 2 * (atanf(dimensions / (2 * dist_from_camera)));
   float degs = DEGREES(angular_diameter);
@@ -526,4 +527,9 @@ void Player::init() {
 // stateName
 // -----------------------------------------------------------------------------
 std::string Player::stateName() { return current_state->name; }
-} // namespace senseless_soccer
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Player::setRole(std::shared_ptr<team::Position> r) { role = std::move(r); }
+}  // namespace senseless_soccer

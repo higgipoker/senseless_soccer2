@@ -16,27 +16,51 @@ struct {
 //
 // -----------------------------------------------------------------------------
 Team::Team(std::string in_name)
-    : Entity("team", std::move(in_name)), enter_pitch(*this) {}
+    : Entity("team", std::move(in_name)),
+      enter_pitch(*this),
+      lineup(*this),
+      defend(*this) {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Team::init() { current_state.start(); }
+void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
+  pitch = p;
+  side = s;
+
+  if (side == Direction::NORTH) {
+    attacking_goal = p->dimensions.goal_south;
+    defending_goal = p->dimensions.goal_north;
+  } else {
+    attacking_goal = p->dimensions.goal_north;
+    defending_goal = p->dimensions.goal_south;
+  }
+
+  if (formation.size() == 11 && players.size() == 11) {
+    int i = 0;
+    for (const auto &position : formation) {
+      players[i++]->setRole(team::Position::positions[position]);
+    }
+  }
+
+  current_state->start();
+}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Team::update(float dt) {
   set_key_players();
-  update_controller();
-  current_state.update(dt);
+  current_state->update(dt);
+  if (current_state->finished()) {
+    change_state();
+  }
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Team::addPlayer(Player *p) {
-
   // add player to team
   players.emplace_back(p);
 
@@ -44,15 +68,14 @@ void Team::addPlayer(Player *p) {
   p->setTeam(this);
 
   // apply the kit to player
-  dynamic_cast<gamelib2::Sprite *>(p->widget.get())->swapColors(kit1.palette);
+  dynamic_cast<gamelib2::Sprite *>(p->widget.get())->swapColors(kit.palette);
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Team::set_key_players() {
-  if (players.empty())
-    return;
+  if (players.empty()) return;
   std::sort(players.begin(), players.end(), sort_players);
   size_t i = 0;
   do {
@@ -65,10 +88,8 @@ void Team::set_key_players() {
 //
 // -----------------------------------------------------------------------------
 void Team::update_controller() {
-  if (controller == nullptr)
-    return;
-  if (players.empty())
-    return;
+  if (controller == nullptr) return;
+  if (players.empty()) return;
 
   Player *player = nullptr;
 
@@ -103,5 +124,30 @@ void Team::lostPossession(Player *p) {
     key_players.in_possession = nullptr;
   }
 }
-} // namespace team
-} // namespace senseless_soccer
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Team::connectPitch(const std::shared_ptr<Pitch> &p) { pitch = p; }
+
+void Team::change_state() {
+  current_state->stop();
+  switch (current_state->next_state) {
+    case TeamState::EnterPitch:
+      current_state = &enter_pitch;
+      break;
+    case TeamState::LineUp:
+      current_state = &lineup;
+      break;
+    case TeamState::Defend:
+      current_state = &defend;
+      break;
+    case TeamState::Attack:
+      current_state = &defend;
+      break;
+  }
+  current_state->start();
+}
+
+}  // namespace team
+}  // namespace senseless_soccer

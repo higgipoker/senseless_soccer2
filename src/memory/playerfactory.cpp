@@ -18,9 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "playerfactory.hpp"
-#include "../player/player_animations.h"
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
+#include "../player/player_animations.h"
+#include "../team/tactics/position.hpp"
 
 namespace senseless_soccer {
 // -----------------------------------------------------------------------------
@@ -56,7 +57,7 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   // entity owns the sprite
   player->connectWidget(std::move(widget));
 
-  // widget refers back to owning enity with weak/raw pointer
+  // widget refers back to owning enity with weak pointer
   sprite->connectEntity(player.get());
   player->activate();
 
@@ -64,4 +65,4 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   return player;
 }
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

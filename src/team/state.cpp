@@ -18,10 +18,12 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "state.hpp"
+
 #include "team.hpp"
+
 namespace senseless_soccer {
 namespace team {
-State::State(Team &t) : team(t) {}
+State::State(Team &t) : team(t), next_state(TeamState::Defend) {}
 
-} // namespace team
-} // namespace senseless_soccer
+}  // namespace team
+}  // namespace senseless_soccer

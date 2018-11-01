@@ -25,13 +25,13 @@ namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
 
-static const float GRAVITY = 9.8f; // meters per second per second
+static const float GRAVITY = 9.8f;  // meters per second per second
 static const float AIR_FACTOR = 0.0001f;
 static const float co_friction = 0.991f;
-static const float co_friction_bounce = 0.98f; // bounce fricton
+static const float co_friction_bounce = 0.98f;  // bounce fricton
 static const float co_bounciness = 0.8f;
-static const float co_spin_decay = 0.8f; // how much spin decays over time
-static const float ball_mass = 200.f;    // used in air resistance calc
+static const float co_spin_decay = 0.8f;  // how much spin decays over time
+static const float ball_mass = 200.f;     // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 
 // -----------------------------------------------------------------------------
@@ -59,11 +59,7 @@ Ball::Ball(std::string in_name, float dt) : Entity("ball", std::move(in_name)) {
 // -----------------------------------------------------------------------------
 // activate
 // -----------------------------------------------------------------------------
-void Ball::activate() {
-  position.x = 60;
-  position.y = 60;
-  position.z = Metrics::MetersToPixels(0);
-}
+void Ball::activate() {}
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
@@ -87,13 +83,11 @@ void Ball::update(float dt) {
 // do_physics
 // -----------------------------------------------------------------------------
 void Ball::do_physics(float dt) {
-
   // save bounce so we dont have to calc again for dampening
   bool bounced = false;
 
   // ball is in the air so do gravity, drag and spin
   if (Floats::greater_than(position.z, 0)) {
-
     //
     // gravity
     //
@@ -117,7 +111,6 @@ void Ball::do_physics(float dt) {
   // bounce if z < - and moving down
   else if (Floats::less_than(position.z, 0) &&
            Floats::less_than(velocity.z, 0)) {
-
     // do dampening for infinite bounce later
     bounced = true;
 
@@ -242,7 +235,7 @@ void Ball::rebound(Vector3 &wall, const Vector3 dampen) {
   wall = wall.normalise();
   velocity *= dampen;
   velocity = velocity.reflect(wall);
-  position += velocity * 0.01; // tmp fixes sticky walls
+  position += velocity * 0.01;  // tmp fixes sticky walls
 }
 
 // -----------------------------------------------------------------------------
@@ -269,4 +262,4 @@ void Ball::keep_in_bounds() {
   }
 }
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

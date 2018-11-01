@@ -17,37 +17,23 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
-#include "state.hpp"
+#include "formation.hpp"
 
-#include <gamelib2/math/vector.hpp>
-
-#include <queue>
 namespace senseless_soccer {
-class Player;
 namespace team {
 
-class EnterPitch : public State {
- public:
-  EnterPitch(Team &t);
-  virtual ~EnterPitch() = default;
-  virtual void start() override;
-  virtual void stop() override;
-  virtual bool finished() override;
-  virtual void update(float dt) override;
-
- protected:
-  // line up positions to send players to
-  gamelib2::Vector3 first_position;
-  gamelib2::Vector3 offset;
-  gamelib2::Vector3 last_position;
-
-  void march_player();
-  std::queue<Player *> marchers;
-  int ticks = 0;
-  int speed = 10;
-  int vertical_offset = 50;
-};
+const std::set<std::string> Formation::four_four_two = {
+    "Goalkeeper",
+    "Left Back",
+    "Right Back",
+    "Left Center Back",
+    "Right Center Back",
+    "Left Midfielder",
+    "Right Midfielder",
+    "Left Center Midfielder",
+    "Right Center Midfielder",
+    "Left Center Attacker",
+    "Right Center Attacker"};
 
 }  // namespace team
 }  // namespace senseless_soccer

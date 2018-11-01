@@ -35,12 +35,26 @@ void Seek::init(const Vector3 &t) { target = t; }
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
-void Seek::start() {}
+void Seek::start() {
+  target.z = 0;
+
+  // this will be normalised within player logic
+  player.velocity = target - player.position;
+  distance = (target - player.position).magnitude();
+}
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Seek::update(float _dt) {}
+void Seek::update(float _dt) {
+  float new_distance = (target - player.position).magnitude();
+
+  if (new_distance > distance) {
+    player.velocity = target - player.position;
+  }
+
+  distance = new_distance;
+}
 
 // -----------------------------------------------------------------------------
 // stop
@@ -50,6 +64,6 @@ void Seek::stop() { player.velocity.reset(); }
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
-bool Seek::finished() { return false; }
-} // namespace locomotion
-} // namespace senseless_soccer
+bool Seek::finished() { return player.position.equals(target, 5.f); }
+}  // namespace locomotion
+}  // namespace senseless_soccer

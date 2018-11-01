@@ -18,10 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "pitchwidget.hpp"
-#include "../metrics/metrics.hpp"
-#include "pitch.hpp"
 #include <SFML/Graphics.hpp>
 #include <gamelib2/graphics/primitives.hpp>
+#include "../metrics/metrics.hpp"
+#include "pitch.hpp"
 
 namespace senseless_soccer {
 
@@ -30,7 +30,6 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 PitchWidget::PitchWidget(const std::string &in_file, Camera &c)
     : TiledScrollingBackground(in_file, c) {
-
   clickable = false;
 
   addChild(goal_north);
@@ -49,7 +48,7 @@ void PitchWidget::render(sf::RenderTarget &target) {
 
   // draw the pitch lines
   // todo gather into one draw list
-  Pitch &pitch = static_cast<Pitch &>(*entity);
+  auto &pitch = dynamic_cast<Pitch &>(*entity);
   float line_width = 2.5f;
 
   // north horizontal
@@ -89,15 +88,15 @@ void PitchWidget::render(sf::RenderTarget &target) {
   circle.setOutlineThickness(2.5);
   circle.setOutlineColor(sf::Color(255, 255, 255, 255));
   circle.setPosition(
-      pitch.dimensions.center.left - pitch.dimensions.center_circle_radius,
-      pitch.dimensions.center.top - pitch.dimensions.center_circle_radius);
+      pitch.dimensions.center.x - pitch.dimensions.center_circle_radius,
+      pitch.dimensions.center.y - pitch.dimensions.center_circle_radius);
   target.draw(circle);
 
   // north 6 yard box
   // east vertical
-  line.setPosition(sf::Vector2f(pitch.dimensions.north_6.left +
-                                    pitch.dimensions.north_6.width,
-                                pitch.dimensions.north_6.top));
+  line.setPosition(sf::Vector2f(
+      pitch.dimensions.north_6.left + pitch.dimensions.north_6.width,
+      pitch.dimensions.north_6.top));
   line.setSize(sf::Vector2f(pitch.dimensions.north_6.height, line_width));
   line.rotate(90);
   target.draw(line);
@@ -116,9 +115,9 @@ void PitchWidget::render(sf::RenderTarget &target) {
   // north 18 yard box
   // east vertical
   line.setRotation(0);
-  line.setPosition(sf::Vector2f(pitch.dimensions.north_18.left +
-                                    pitch.dimensions.north_18.width,
-                                pitch.dimensions.north_18.top));
+  line.setPosition(sf::Vector2f(
+      pitch.dimensions.north_18.left + pitch.dimensions.north_18.width,
+      pitch.dimensions.north_18.top));
   line.setSize(sf::Vector2f(pitch.dimensions.north_18.height, line_width));
   line.rotate(90);
   target.draw(line);
@@ -138,9 +137,9 @@ void PitchWidget::render(sf::RenderTarget &target) {
   // south 6 yard box
   // east vertical
   line.setRotation(0);
-  line.setPosition(sf::Vector2f(pitch.dimensions.south_6.left +
-                                    pitch.dimensions.south_6.width,
-                                pitch.dimensions.south_6.top));
+  line.setPosition(sf::Vector2f(
+      pitch.dimensions.south_6.left + pitch.dimensions.south_6.width,
+      pitch.dimensions.south_6.top));
   line.setSize(sf::Vector2f(pitch.dimensions.south_6.height, line_width));
   line.rotate(90);
   target.draw(line);
@@ -159,9 +158,9 @@ void PitchWidget::render(sf::RenderTarget &target) {
   // south 18 yard box
   // east vertical
   line.setRotation(0);
-  line.setPosition(sf::Vector2f(pitch.dimensions.south_18.left +
-                                    pitch.dimensions.south_18.width,
-                                pitch.dimensions.south_18.top));
+  line.setPosition(sf::Vector2f(
+      pitch.dimensions.south_18.left + pitch.dimensions.south_18.width,
+      pitch.dimensions.south_18.top));
   line.setSize(sf::Vector2f(pitch.dimensions.south_18.height, line_width));
   line.rotate(90);
   target.draw(line);
@@ -194,9 +193,9 @@ void PitchWidget::render(sf::RenderTarget &target) {
       329, 100, 3);
 
   // goals
-  goal_north->setPosition(pitch.goal_north_gfx.left,
-                          pitch.goal_north_gfx.top -
-                              goal_north->bounds().height / 2);
+  goal_north->setPosition(
+      pitch.goal_north_gfx.left,
+      pitch.goal_north_gfx.top - goal_north->bounds().height / 2);
 
   goal_south->setPosition(pitch.goal_south_gfx.left,
                           pitch.goal_south_gfx.top + 32);
@@ -216,4 +215,4 @@ void PitchWidget::render(sf::RenderTarget &target) {
   // this->shapes.emplace_back(&n2);
   Widget::render(target);
 }
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

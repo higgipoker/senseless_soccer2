@@ -33,6 +33,7 @@ std::map<std::string, State> Brain::state_map = {
     std::make_pair("shoot", State::BrainShoot),
     std::make_pair("slide", State::BrainSlide),
     std::make_pair("jump", State::BrainJump),
+    std::make_pair("cover", State::BrainCover),
 };
 
 // debug
@@ -44,14 +45,26 @@ std::map<State, std::string> Brain::reverse_state_map = {
     std::make_pair(State::BrainRetrieve, "retrieve"),
     std::make_pair(State::BrainShoot, "shoot"),
     std::make_pair(State::BrainJump, "jump"),
+    std::make_pair(State::BrainGoTo, "go to"),
+    std::make_pair(State::BrainCover, "cover"),
 };
 
 // -----------------------------------------------------------------------------
 // Brain
 // -----------------------------------------------------------------------------
 Brain::Brain(Player &p)
-    : player(p), idle(*this), dribble(*this), receive_pass(*this), pass(*this),
-      shoot(*this), retrieve(*this), slide(*this), jump(*this), locomotion(p) {
+    : player(p),
+      idle(*this),
+      dribble(*this),
+      receive_pass(*this),
+      pass(*this),
+      shoot(*this),
+      retrieve(*this),
+      slide(*this),
+      jump(*this),
+      go(*this),
+      cover(*this),
+      locomotion(p) {
   locomotion.startStand();
 }
 
@@ -59,7 +72,6 @@ Brain::Brain(Player &p)
 // update
 // -----------------------------------------------------------------------------
 void Brain::update(float dt) {
-
   // update brain state machine
   current_state->update(dt);
   if (current_state->finished()) {
@@ -87,38 +99,41 @@ void Brain::message(const std::string &msg) {
 //
 // -----------------------------------------------------------------------------
 void Brain::changeState(const State state) {
-
-  std::cout << "change state to " << reverse_state_map[state] << std::endl;
-
   // stop ----------------------------------------
   current_state->stop();
 
   // change --------------------------------------
   switch (state) {
-  case State::BrainIdle:
-    current_state = &idle;
-    break;
-  case State::BrainDribble:
-    current_state = &dribble;
-    break;
-  case State::BrainPass:
-    current_state = &pass;
-    break;
-  case State::BrainShoot:
-    current_state = &shoot;
-    break;
-  case State::BrainReceive:
-    current_state = &receive_pass;
-    break;
-  case State::BrainRetrieve:
-    current_state = &retrieve;
-    break;
-  case State::BrainSlide:
-    current_state = &slide;
-    break;
-  case State::BrainJump:
-    current_state = &jump;
-    break;
+    case State::BrainIdle:
+      current_state = &idle;
+      break;
+    case State::BrainDribble:
+      current_state = &dribble;
+      break;
+    case State::BrainPass:
+      current_state = &pass;
+      break;
+    case State::BrainShoot:
+      current_state = &shoot;
+      break;
+    case State::BrainReceive:
+      current_state = &receive_pass;
+      break;
+    case State::BrainRetrieve:
+      current_state = &retrieve;
+      break;
+    case State::BrainSlide:
+      current_state = &slide;
+      break;
+    case State::BrainJump:
+      current_state = &jump;
+      break;
+    case State::BrainGoTo:
+      current_state = &go;
+      break;
+    case State::BrainCover:
+      current_state = &cover;
+      break;
   }
 
   // start ---------------------------------------
@@ -134,5 +149,13 @@ std::string Brain::currentState() { return current_state->name; }
 // onControllerAttached
 // -----------------------------------------------------------------------------
 void Brain::onControllerAttached() { current_state->stop(); }
-} // namespace ai
-} // namespace senseless_soccer
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Brain::goTo(const Vector3 &target) {
+  go.init(target);
+  changeState(State::BrainGoTo);
+}
+}  // namespace ai
+}  // namespace senseless_soccer

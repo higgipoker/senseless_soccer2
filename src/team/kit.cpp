@@ -21,7 +21,7 @@
 
 namespace senseless_soccer {
 namespace team {
-Kit::Kit() {}
+Kit::Kit() = default;
 
 Kit Kit::Kit::make_standard_red_kit() {
   // graphic is already standard red kit for now
@@ -32,13 +32,13 @@ Kit Kit::Kit::make_standard_red_kit() {
 Kit Kit::Kit::make_standard_blue_kit() {
   Kit kit;
 
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(135, 0, 0), sf::Color(0, 0, 135)));
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(175, 0, 0), sf::Color(0, 0, 175)));
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(215, 0, 0), sf::Color(0, 0, 215)));
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(255, 0, 0), sf::Color(0, 0, 255)));
 
   return kit;
@@ -47,16 +47,16 @@ Kit Kit::Kit::make_standard_blue_kit() {
 Kit Kit::Kit::make_standard_gk_kit() {
   Kit kit;
 
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(135, 0, 0), sf::Color(0, 135, 0)));
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(175, 0, 0), sf::Color(0, 175, 0)));
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(215, 0, 0), sf::Color(0, 215, 0)));
-  kit.palette.push_back(
+  kit.palette.emplace_back(
       std::make_pair(sf::Color(255, 0, 0), sf::Color(0, 255, 0)));
 
   return kit;
 }
-} // namespace team
-} // namespace senseless_soccer
+}  // namespace team
+}  // namespace senseless_soccer

@@ -21,6 +21,7 @@
 
 #include "ai/attack/pass.hpp"
 #include "ai/brain.hpp"
+#include "ai/defend/cover.hpp"
 #include "ai/defend/slide.hpp"
 #include "states/jumping.hpp"
 #include "states/running.hpp"
@@ -31,6 +32,7 @@
 #include "../ball/ball.hpp"
 #include "../joysticker/sensicontroller.hpp"
 #include "../pitch/pitch.hpp"
+#include "../team/tactics/position.hpp"
 #include "../team/team.hpp"
 
 #include <gamelib2/compass/compass.hpp>
@@ -50,7 +52,7 @@ namespace team {
 class Team;
 }
 class Player : public Entity, public ControllerListener {
-public:
+ public:
   // construct with an entity name
   Player(std::string in_name);
 
@@ -87,6 +89,9 @@ public:
   // trigger a state manuall
   void triggerState(const PlayerState state);
 
+  // playing position (role)
+  void setRole(std::shared_ptr<team::Position> r);
+
   // ai
   ai::Brain brain;
 
@@ -117,7 +122,10 @@ public:
   // track facing direction
   Compass facing;
 
-protected:
+  // testing
+  std::shared_ptr<team::Position> role;
+
+ protected:
   // add perspective to the ball
   void perspectivize(float camera_height) override;
 
@@ -187,13 +195,13 @@ protected:
   static std::map<Direction, std::string> run_animation_map;
   static std::map<Direction, std::string> slide_animation_map;
 
-private:
+ private:
   // states
-  std::unique_ptr<Standing> stand_state;
-  std::unique_ptr<Running> run_state;
-  std::unique_ptr<Sliding> slide_state;
-  std::unique_ptr<Jumping> jump_state;
-  State *current_state = nullptr;
+  Standing stand_state;
+  Running run_state;
+  Sliding slide_state;
+  Jumping jump_state;
+  State *current_state = &stand_state;
 
   // current team i play on
   team::Team *my_team = nullptr;
@@ -213,7 +221,7 @@ private:
       3,
   };
 
-public:
+ public:
   // for state machine pattern
   friend class State;
   friend class Standing;
@@ -224,9 +232,10 @@ public:
   friend class ai::Shoot;
   friend class ai::Slide;
   friend class ai::Jump;
+  friend class ai::Cover;
   friend class Locomotion;
   friend class locomotion::Stand;
   friend class team::Team;
 };
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

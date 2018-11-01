@@ -17,86 +17,65 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "enterpitch.hpp"
-#include "../player/player.hpp"
-#include "team.hpp"
+#include "cover.hpp"
+#include "../../../team/tactics/position.hpp"
+#include "../../player.hpp"
+#include "../brain.hpp"
+
 namespace senseless_soccer {
-namespace team {
+namespace ai {
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-EnterPitch::EnterPitch(Team &t) : State(t) { next_state = TeamState::LineUp; }
+Cover::Cover(Brain &b) : BrainState(b, "cover") {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::start() {
-  if (team.players.empty()) return;
-  // set up some line up positions
-  offset.x = team.players[0]->widget->bounds().left * 2;
-  first_position = team.pitch.lock()->dimensions.center;
-  first_position.x -= offset.x * team.players.size() / 2;
-  if (team.side == Direction::NORTH) {
-    first_position.y -= vertical_offset;
-  } else {
-    first_position.y += vertical_offset;
-  }
-
-  last_position = first_position;
-  last_position += offset * team.players.size();
-
-  // init marchers
-  for (auto &player : team.players) {
-    player->setPosition(team.pitch.lock()->dimensions.bounds.left +
-                            team.pitch.lock()->dimensions.bounds.width,
-                        last_position.y);
-    marchers.push(player);
-  }
-  march_player();
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void EnterPitch::stop() {}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-bool EnterPitch::finished() {
-  for (auto player : team.players) {
-    if (player->velocity.magnitude()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void EnterPitch::update(float dt) {
-  if (++ticks > speed) {
-    ticks = 0;
-    march_player();
+void Cover::start() {
+  pitch = brain.player.my_team->pitch;
+  if (pitch.lock()) {
+    grid = pitch.lock()->grid;
   }
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::march_player() {
-  if (!marchers.empty()) {
-    Player *player = marchers.front();
-    marchers.pop();
+void Cover::stop() {}
 
-    if (auto pitch = team.pitch.lock()) {
-      player->brain.goTo(last_position);
-      last_position -= offset;
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Cover::finished() { return false; }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Cover::update(float dt) {
+  if (auto pitch = brain.player.my_team->pitch.lock()) {
+    auto grid = pitch->grid;
+    int ball_sector = grid->getSector(Player::ball->position);
+
+    // only recalculate if ball is in a different sector
+    if (ball_sector != last_sector) {
+      last_sector = ball_sector;
+
+      int player_sector =
+          brain.player.role->target(team::Situation::Play, ball_sector);
+
+      // rotate sectors for attacking south goal
+      if (brain.player.my_team->side == Direction::NORTH) {
+        ball_sector = grid->mirrorSector(ball_sector);
+        player_sector =
+            brain.player.role->target(team::Situation::Play, ball_sector);
+        player_sector = grid->mirrorSector(player_sector);
+      }
+
+      brain.locomotion.startSeek(grid->getRandoPointInSector(player_sector));
     }
   }
 }
-
-}  // namespace team
+}  // namespace ai
 }  // namespace senseless_soccer

@@ -17,50 +17,68 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "enterpitch.hpp"
-#include "../player/player.hpp"
-#include "team.hpp"
+#include "position.hpp"
+#include <gamelib2/utils/file.hpp>
+#include <gamelib2/utils/files.hpp>
+
 namespace senseless_soccer {
 namespace team {
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-EnterPitch::EnterPitch(Team &t) : State(t) {}
+std::map<std::string, std::shared_ptr<Position>> Position::positions;
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::start() {
-  // initial position of all players
-  int x = 250;
-  int y = 250;
-  for (auto &player : team.players) {
-    player->setPosition(x, y);
-    x += 30;
-    y += 30;
-  }
-  
-  // march!
-  for(auto &player : team.players){
-      player->brain.changeState(ai::State::)
+Position::Position(std::string fn) : filename(std::move(fn)) {
+  gamelib2::File file(filename);
+
+  auto lines = file.getLines("//");
+
+  if (lines.size() > 1) {
+    name = lines[0];
+    for (unsigned int i = 1; i < lines.size(); i++) {
+      std::string str = lines[i];
+      std::size_t pos = str.find(':');
+      std::string first = str.substr(0, pos);
+      std::string second = str.substr(pos + 1);
+      sectors.push_back(atoi(first.c_str()));
+    }
   }
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::stop() {}
+void Position::scanPositions() {
+  // already scanned
+  if (positions.empty()) {
+    auto files = gamelib2::Files::getFilesInFolder(
+        gamelib2::Files::getWorkingDirectory() + "/data/positions");
+
+    for (auto filename : files) {
+      auto position = std::make_shared<Position>(filename);
+      positions.insert(std::make_pair(position->name, position));
+
+      std::cout << "found position: " << position->name << std::endl;
+    }
+  }
+}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool EnterPitch::finished() { return false; }
+int Position::target(const Situation s, const int ball_sector) {
+  switch (s) {
+    case Situation::Play:
+      return sectors[ball_sector + index_offset_play];
+      break;
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void EnterPitch::update(float dt) {}
+    case Situation::KickOff:
+      return sectors[index_offset_kickoff];
+      break;
+  }
 
-} // namespace team
-} // namespace senseless_soccer
+  return sectors[ball_sector];
+}
+}  // namespace team
+}  // namespace senseless_soccer

@@ -25,7 +25,9 @@
 #include "attack/receivepass.hpp"
 #include "attack/shoot.hpp"
 #include "brainstate.hpp"
+#include "defend/cover.hpp"
 #include "defend/slide.hpp"
+#include "goto.hpp"
 #include "idle.hpp"
 #include "jump.hpp"
 #include "retrieve.hpp"
@@ -46,15 +48,19 @@ enum class State {
   BrainRetrieve,
   BrainSlide,
   BrainJump,
+  BrainGoTo,
+  BrainCover
 };
 
 class Brain {
-public:
+ public:
   Brain(Player &p);
   void update(float dt);
   void message(const std::string &msg);
   void changeState(const State state);
   void onControllerAttached();
+
+  void goTo(const Vector3 &target);
 
   locomotion::LocomotionManager locomotion;
 
@@ -63,7 +69,7 @@ public:
   static std::map<State, std::string> reverse_state_map;
   std::string currentState();
 
-private:
+ private:
   Player &player;
   State next_state = State::BrainIdle;
 
@@ -75,9 +81,11 @@ private:
   Shoot shoot;
   Slide slide;
   Jump jump;
+  GoTo go;
+  Cover cover;
   BrainState *current_state = &idle;
 
-public:
+ public:
   // state machine pattern
   friend class Idle;
   friend class Pass;
@@ -87,6 +95,8 @@ public:
   friend class Dribble;
   friend class Slide;
   friend class Jump;
+  friend class GoTo;
+  friend class Cover;
 };
-} // namespace ai
-} // namespace senseless_soccer
+}  // namespace ai
+}  // namespace senseless_soccer

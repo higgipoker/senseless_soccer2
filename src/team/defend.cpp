@@ -17,17 +17,41 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "play.hpp"
+#include "defend.hpp"
+#include "../player/ai/brain.hpp"
+#include "../player/player.hpp"
+#include "team.hpp"
 namespace senseless_soccer {
-namespace match {
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-Play::Play(std::string n, Match &m) : State(std::move(n), m) {}
+namespace team {
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Play::update(float dt) {}
-}  // namespace match
+Defend::Defend(Team &t) : State(t) {}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Defend::start() {
+  for (auto player : team.players) {
+    player->brain.changeState(ai::State::BrainCover);
+  }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Defend::stop() {}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Defend::finished() { return false; }
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Defend::update(float dt) { team.update_controller(); }
+
+}  // namespace team
 }  // namespace senseless_soccer

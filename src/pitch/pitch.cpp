@@ -2,13 +2,17 @@
 #include "../metrics/metrics.hpp"
 
 #include <gamelib2/widgets/widget.hpp>
+
 namespace senseless_soccer {
+
+// temp
+static const int grid_columns = 15;
+static const int grid_rows = 19;
 
 // -----------------------------------------------------------------------------
 // Pitch
 // -----------------------------------------------------------------------------
 Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
-
   // det up a default pitch size
   dimensions.bounds.left = 250;
   dimensions.bounds.top = 250;
@@ -43,10 +47,8 @@ Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
                             dimensions.south_18.height;
 
   // center point
-  dimensions.center.left =
-      dimensions.bounds.left + (dimensions.bounds.width / 2);
-  dimensions.center.top =
-      dimensions.bounds.top + (dimensions.bounds.height / 2);
+  dimensions.center.x = dimensions.bounds.left + (dimensions.bounds.width / 2);
+  dimensions.center.y = dimensions.bounds.top + (dimensions.bounds.height / 2);
 
   // goals (for actual goal detection)
   dimensions.goal_north.left = dimensions.bounds.left +
@@ -55,7 +57,7 @@ Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
   dimensions.goal_north.top =
       dimensions.bounds.top - Metrics::MetersToPixels(2);
   dimensions.goal_north.width = Metrics::MetersToPixels(7.32f);
-  dimensions.goal_north.height = Metrics::MetersToPixels(2); // depth of goal
+  dimensions.goal_north.height = Metrics::MetersToPixels(2);  // depth of goal
 
   dimensions.goal_south = dimensions.goal_north;
   dimensions.goal_south.top +=
@@ -70,6 +72,10 @@ Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
 
   goal_south_gfx = goal_north_gfx;
   goal_south_gfx.top += dimensions.bounds.height;
+
+  grid->init(dimensions.bounds.left, dimensions.bounds.top,
+             dimensions.bounds.width, dimensions.bounds.height, grid_columns,
+             grid_rows);
 }
 
 // -----------------------------------------------------------------------------
@@ -86,4 +92,4 @@ void Pitch::onDragged(const gamelib2::Vector3 &diff) {
     widget->move(diff.x, diff.y);
   }
 }
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

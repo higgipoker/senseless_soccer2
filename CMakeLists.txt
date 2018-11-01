@@ -47,7 +47,11 @@ add_executable(senseless_soccer
     src/team/team.cpp
     src/team/state.cpp
     src/team/enterpitch.cpp
+    src/team/lineup.cpp
+    src/team/defend.cpp
     src/team/kit.cpp
+    src/team/tactics/formation.cpp
+    src/team/tactics/position.cpp
     src/match/match.cpp
     src/match/state.cpp
     src/match/play.cpp
@@ -72,11 +76,13 @@ add_executable(senseless_soccer
     src/player/ai/idle.cpp
     src/player/ai/retrieve.cpp
     src/player/ai/jump.cpp
+    src/player/ai/goto.cpp
     src/player/ai/attack/dribble.cpp
     src/player/ai/attack/pass.cpp
     src/player/ai/attack/receivepass.cpp
     src/player/ai/attack/shoot.cpp
     src/player/ai/defend/slide.cpp
+    src/player/ai/defend/cover.cpp
     src/debug/diagnostics.cpp
     src/imgui/imgui.cpp
     src/imgui/imgui_draw.cpp
@@ -93,4 +99,5 @@ target_link_libraries (senseless_soccer gamelib2)
 target_link_libraries (senseless_soccer sfml-graphics)
 target_link_libraries (senseless_soccer sfml-window)
 target_link_libraries (senseless_soccer sfml-system)
+target_link_libraries (senseless_soccer stdc++fs)
 target_link_libraries (senseless_soccer GL)

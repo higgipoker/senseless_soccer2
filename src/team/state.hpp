@@ -18,12 +18,14 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+#include "tactics/position.hpp"
 namespace senseless_soccer {
 namespace team {
 
+enum class TeamState;
 class Team;
 class State {
-public:
+ public:
   State(Team &t);
   virtual ~State() = default;
   virtual void start() = 0;
@@ -31,8 +33,10 @@ public:
   virtual bool finished() = 0;
   virtual void update(float dt) = 0;
 
-protected:
+  TeamState next_state;
+
+ protected:
   Team &team;
 };
-} // namespace team
-} // namespace senseless_soccer
+}  // namespace team
+}  // namespace senseless_soccer

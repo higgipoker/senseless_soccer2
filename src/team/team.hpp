@@ -1,21 +1,31 @@
 #pragma once
-#include "../joysticker/sensicontroller.hpp"
+
+#include "defend.hpp"
 #include "enterpitch.hpp"
 #include "kit.hpp"
+#include "lineup.hpp"
+#include "tactics/formation.hpp"
+
+#include "../joysticker/sensicontroller.hpp"
+#include "../pitch/pitch.hpp"
+#include "../player/ai/defend/cover.hpp"
+
+#include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
+
 #include <vector>
 
 using namespace gamelib2;
 namespace senseless_soccer {
 class Player;
 namespace team {
-enum class TeamState { Defend, Attack };
+enum class TeamState { EnterPitch, LineUp, Defend, Attack };
 class Team : public Entity {
-public:
+ public:
   Team(std::string in_name);
 
   // init
-  void init();
+  void init(const std::shared_ptr<Pitch> &p, const Direction s);
 
   // uodate each game frame
   void update(float dt) override;
@@ -43,26 +53,44 @@ public:
   bool requestPossession(Player *p);
   void lostPossession(Player *p);
 
-  Kit kit1;
-  Kit kit12;
-  Kit kit3;
+  // associate aptich
+  void connectPitch(const std::shared_ptr<Pitch> &p);
 
-protected:
+  // kit
+  Kit kit;
+
+  // a formation
+  std::set<std::string> formation = Formation::four_four_two;
+
+  // side of the pitch team is defending
+  Compass side = Direction::SOUTH;
+
+ protected:
   // players in this team
   std::vector<Player *> players;
   std::vector<Player *> subs;
 
+  // team needs to know about the pitch
+  std::weak_ptr<Pitch> pitch;
+
+  // states
   EnterPitch enter_pitch;
-  State &current_state = enter_pitch;
+  LineUp lineup;
+  Defend defend;
+  State *current_state = &enter_pitch;
+  void change_state();
 
   // update helpers
   void set_key_players();
   void update_controller();
 
-public:
+ public:
   friend class senseless_soccer::Player;
+  friend class senseless_soccer::ai::Cover;
   friend class State;
   friend class EnterPitch;
+  friend class LineUp;
+  friend class Defend;
 };
-} // namespace team
-} // namespace senseless_soccer
+}  // namespace team
+}  // namespace senseless_soccer

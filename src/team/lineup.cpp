@@ -17,7 +17,7 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "enterpitch.hpp"
+#include "lineup.hpp"
 #include "../player/player.hpp"
 #include "team.hpp"
 namespace senseless_soccer {
@@ -26,31 +26,17 @@ namespace team {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-EnterPitch::EnterPitch(Team &t) : State(t) { next_state = TeamState::LineUp; }
+LineUp::LineUp(Team &t) : State(t) {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::start() {
+void LineUp::start() {
   if (team.players.empty()) return;
-  // set up some line up positions
-  offset.x = team.players[0]->widget->bounds().left * 2;
-  first_position = team.pitch.lock()->dimensions.center;
-  first_position.x -= offset.x * team.players.size() / 2;
-  if (team.side == Direction::NORTH) {
-    first_position.y -= vertical_offset;
-  } else {
-    first_position.y += vertical_offset;
-  }
 
-  last_position = first_position;
-  last_position += offset * team.players.size();
-
+  marchers = {};
   // init marchers
   for (auto &player : team.players) {
-    player->setPosition(team.pitch.lock()->dimensions.bounds.left +
-                            team.pitch.lock()->dimensions.bounds.width,
-                        last_position.y);
     marchers.push(player);
   }
   march_player();
@@ -59,12 +45,12 @@ void EnterPitch::start() {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::stop() {}
+void LineUp::stop() {}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-bool EnterPitch::finished() {
+bool LineUp::finished() {
   for (auto player : team.players) {
     if (player->velocity.magnitude()) {
       return false;
@@ -76,7 +62,7 @@ bool EnterPitch::finished() {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::update(float dt) {
+void LineUp::update(float dt) {
   if (++ticks > speed) {
     ticks = 0;
     march_player();
@@ -86,14 +72,21 @@ void EnterPitch::update(float dt) {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void EnterPitch::march_player() {
+void LineUp::march_player() {
   if (!marchers.empty()) {
     Player *player = marchers.front();
     marchers.pop();
 
     if (auto pitch = team.pitch.lock()) {
-      player->brain.goTo(last_position);
-      last_position -= offset;
+      int player_sector = player->role->target(team::Situation::KickOff, 0);
+
+      // rotate sectors for attacking south goal
+      if (team.side == Direction::NORTH) {
+        player_sector = team.pitch.lock()->grid->mirrorSector(player_sector);
+      }
+
+      player->brain.goTo(
+          team.pitch.lock()->grid->getRandoPointInSector(player_sector));
     }
   }
 }

@@ -18,36 +18,40 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "state.hpp"
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <gamelib2/math/vector.hpp>
-
-#include <queue>
 namespace senseless_soccer {
-class Player;
 namespace team {
 
-class EnterPitch : public State {
+// possible match situations
+enum class Situation { Play, KickOff, GoalKick, Corner};
+
+// offsets for match situation sectors
+const static int total_sectors = 285;
+const static int index_offset_attacking = 0;
+const static int index_offset_play = 0;
+const static int index_offset_kickoff = total_sectors;
+const static int index_offset_goalkick = index_offset_kickoff + 1;
+const static int index_offset_corner = index_offset_goalkick + 1;
+const static int index_offset_defending = index_offset_corner + 1;
+
+class Position {
  public:
-  EnterPitch(Team &t);
-  virtual ~EnterPitch() = default;
-  virtual void start() override;
-  virtual void stop() override;
-  virtual bool finished() override;
-  virtual void update(float dt) override;
+  Position(std::string fn);
+  static std::map<std::string, std::shared_ptr<Position>> positions;
+  std::string name;
+
+  int target(const Situation s, const int ball_sector);
+
+  static void scanPositions();
+
 
  protected:
-  // line up positions to send players to
-  gamelib2::Vector3 first_position;
-  gamelib2::Vector3 offset;
-  gamelib2::Vector3 last_position;
-
-  void march_player();
-  std::queue<Player *> marchers;
-  int ticks = 0;
-  int speed = 10;
-  int vertical_offset = 50;
+  std::vector<int> sectors;
+  std::string filename;
 };
-
 }  // namespace team
 }  // namespace senseless_soccer

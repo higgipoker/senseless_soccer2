@@ -18,36 +18,29 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "state.hpp"
+#include "../brainstate.hpp"
+#include "../../../pitch/pitch.hpp"
 
-#include <gamelib2/math/vector.hpp>
+#include <gamelib2/utils/grid.hpp>
 
-#include <queue>
+#include <memory>
+
 namespace senseless_soccer {
-class Player;
-namespace team {
+class Brain;
+namespace ai {
+class Cover : public BrainState {
+   public:
+    Cover(Brain &b);
+    virtual ~Cover() override = default;
+    virtual void start() override;
+    virtual void stop() override;
+    virtual bool finished() override;
+    virtual void update(float dt) override;
 
-class EnterPitch : public State {
- public:
-  EnterPitch(Team &t);
-  virtual ~EnterPitch() = default;
-  virtual void start() override;
-  virtual void stop() override;
-  virtual bool finished() override;
-  virtual void update(float dt) override;
-
- protected:
-  // line up positions to send players to
-  gamelib2::Vector3 first_position;
-  gamelib2::Vector3 offset;
-  gamelib2::Vector3 last_position;
-
-  void march_player();
-  std::queue<Player *> marchers;
-  int ticks = 0;
-  int speed = 10;
-  int vertical_offset = 50;
+protected:
+    int last_sector = -1;
+    std::weak_ptr<gamelib2::Grid> grid;
+    std::weak_ptr<Pitch> pitch;
 };
-
-}  // namespace team
+}  // namespace ai
 }  // namespace senseless_soccer

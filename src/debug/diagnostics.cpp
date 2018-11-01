@@ -33,31 +33,28 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-Diagnostic::Diagnostic(std::shared_ptr< Viewer > &v)
-  : gamelib2::Diagnostic(v) {
-}
+Diagnostic::Diagnostic(std::shared_ptr<Viewer> &v) : gamelib2::Diagnostic(v) {}
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Diagnostic::update() {
   if (auto view = viewer.lock()) {
-
     if (on) {
       gamelib2::Diagnostic::update();
       // dimensions
       panel_dimensions.width = last_panel_dimensions.width;
       panel_dimensions.height =
-        view->getWindow().getSize().y - last_panel_dimensions.height;
+          view->getWindow().getSize().y - last_panel_dimensions.height;
       panel_dimensions.left =
-        view->getWindow().getSize().x - panel_dimensions.width;
+          view->getWindow().getSize().x - panel_dimensions.width;
       panel_dimensions.top =
-        last_panel_dimensions.top + last_panel_dimensions.height;
+          last_panel_dimensions.top + last_panel_dimensions.height;
 
       ImGui::SetNextWindowSize(
-        sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
+          sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
       ImGui::SetNextWindowPos(
-        sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
+          sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
       // entity window
       ImGui::Begin(selected_entity->name.c_str());
@@ -77,7 +74,7 @@ void Diagnostic::selectEntity(Entity *e) {
   gamelib2::Diagnostic::selectEntity(e);
   if (e->type == "player") {
     if (selected_player != e) {
-      selected_player = dynamic_cast< Player * >(e);
+      selected_player = dynamic_cast<Player *>(e);
     }
   } else {
     selected_player = nullptr;
@@ -87,15 +84,12 @@ void Diagnostic::selectEntity(Entity *e) {
 // -----------------------------------------------------------------------------
 // deSelect
 // -----------------------------------------------------------------------------
-void Diagnostic::deSelect() {
-  selected_player = nullptr;
-}
+void Diagnostic::deSelect() { selected_player = nullptr; }
 
 // -----------------------------------------------------------------------------
 // showPlayerMenu
 // -----------------------------------------------------------------------------
 void Diagnostic::showPlayerMenu() {
-
   // player widgets
   ImGuiStyle &style = ImGui::GetStyle();
   //  ImGui::DragFloat("Global Alpha", &style.Alpha, 0.005f, 0.20f, 1.0f,
@@ -107,11 +101,16 @@ void Diagnostic::showPlayerMenu() {
   // player state
   ImGui::Text("Player State: %s", selected_player->stateName().c_str());
 
-  { // animation
+  // player role
+  if (selected_player->role.get()) {
+    ImGui::Text("Position: %s", selected_player->role->name.c_str());
+  }
+
+  {  // animation
     if (selected_player->controller != nullptr) {
       int active_anim_index = 0;
       std::string orig_anim = selected_player->widget->currentAnimation()->name;
-      std::vector< const char * > anims;
+      std::vector<const char *> anims;
       process_animation_list(anims, active_anim_index);
       ImGui::Combo("##animation", &active_anim_index, anims.data(),
                    anims.size());
@@ -135,10 +134,10 @@ void Diagnostic::showPlayerMenu() {
     ImGui::Text("Locomotion: input attached");
 
   } else {
-    { // brain state
+    {  // brain state
       int active_state_index = 0;
       std::string orig_state = selected_player->brain.currentState();
-      std::vector< const char * > states;
+      std::vector<const char *> states;
       process_brainstate_list(states, active_state_index);
       ImGui::Combo("##Brainstate", &active_state_index, states.data(),
                    states.size());
@@ -148,18 +147,18 @@ void Diagnostic::showPlayerMenu() {
       }
     }
 
-    { // locomotion
+    {  // locomotion
       ImGui::Text(
-        "Locomotion: %s",
-        selected_player->brain.locomotion.currentLocomotion().name.c_str());
+          "Locomotion: %s",
+          selected_player->brain.locomotion.currentLocomotion().name.c_str());
       if (selected_player->brain.locomotion.currentLocomotion()
-            .diagnosticParamaters()
-            .length()) {
+              .diagnosticParamaters()
+              .length()) {
         ImGui::SameLine();
         ImGui::Text("(%s)",
                     selected_player->brain.locomotion.currentLocomotion()
-                      .diagnosticParamaters()
-                      .c_str());
+                        .diagnosticParamaters()
+                        .c_str());
       }
     }
   }
@@ -177,9 +176,8 @@ void Diagnostic::showPlayerMenu() {
 // -----------------------------------------------------------------------------
 // process_animation_list
 // -----------------------------------------------------------------------------
-void Diagnostic::process_animation_list(std::vector< const char * > &out_list,
+void Diagnostic::process_animation_list(std::vector<const char *> &out_list,
                                         int &out_active_index) {
-
   auto current_anim = selected_player->widget->currentAnimation();
 
   int idx = 0;
@@ -195,7 +193,7 @@ void Diagnostic::process_animation_list(std::vector< const char * > &out_list,
 // -----------------------------------------------------------------------------
 // process_brainstate_list
 // -----------------------------------------------------------------------------
-void Diagnostic::process_brainstate_list(std::vector< const char * > &out_list,
+void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
                                          int &out_active_index) {
   int idx = 0;
   for (auto &state : ai::Brain::state_map) {
@@ -215,4 +213,4 @@ void Diagnostic::onClose() {
     ImGui::SFML::Render(view->getWindow());
   }
 }
-} // namespace senseless_soccer
+}  // namespace senseless_soccer
