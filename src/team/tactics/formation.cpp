@@ -22,6 +22,9 @@
 namespace senseless_soccer {
 namespace team {
 
+// -----------------------------------------------------------------------------
+// four_four_two
+// -----------------------------------------------------------------------------
 const std::set<std::string> Formation::four_four_two = {
     "Goalkeeper",
     "Left Back",

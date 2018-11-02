@@ -19,22 +19,22 @@
  ****************************************************************************/
 #pragma once
 
-#include "../player/player.hpp"
 #include <gamelib2/debug/diagnostic.hpp>
+#include "../player/player.hpp"
 
 namespace senseless_soccer {
 class Diagnostic : public gamelib2::Diagnostic {
-public:
+ public:
   Diagnostic(std::shared_ptr<Viewer> &v);
   ~Diagnostic() = default;
   void update() override;
-  void selectEntity(Entity *e) override;
+  void selectEntity(std::weak_ptr<Entity> e) override;
   void deSelect() override;
   void showPlayerMenu();
   void onClose() override;
 
-protected:
-  Player *selected_player = nullptr;
+ protected:
+  std::weak_ptr<Entity> selected_player;
   void process_animation_list(std::vector<const char *> &out_list,
                               int &out_active_index);
 
@@ -42,4 +42,4 @@ protected:
                                int &out_active_index);
 };
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

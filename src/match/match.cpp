@@ -23,21 +23,22 @@ namespace senseless_soccer {
 namespace match {
 
 // -----------------------------------------------------------------------------
-//
+// Match
 // -----------------------------------------------------------------------------
 Match::Match() : gamelib2::Entity("match", "match") {}
 
 // -----------------------------------------------------------------------------
-//
+// init
 // -----------------------------------------------------------------------------
-void Match::init(team::Team *t1, team::Team *t2) {
+void Match::init(std::shared_ptr<team::Team> t1,
+                 std::shared_ptr<team::Team> t2) {
   team1 = t1;
   team2 = t2;
 }
 
 // -----------------------------------------------------------------------------
-//
+// update
 // -----------------------------------------------------------------------------
 void Match::update(float dt) {}
-} // namespace match
-} // namespace senseless_soccer
+}  // namespace match
+}  // namespace senseless_soccer

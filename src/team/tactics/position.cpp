@@ -40,7 +40,6 @@ Position::Position(std::string fn) : filename(std::move(fn)) {
       std::string str = lines[i];
       std::size_t pos = str.find(':');
       std::string first = str.substr(0, pos);
-      std::string second = str.substr(pos + 1);
       sectors.push_back(atoi(first.c_str()));
     }
   }
@@ -75,6 +74,12 @@ int Position::target(const Situation s, const int ball_sector) {
 
     case Situation::KickOff:
       return sectors[index_offset_kickoff];
+      break;
+
+    case Situation::GoalKick:
+      break;
+
+    case Situation::Corner:
       break;
   }
 

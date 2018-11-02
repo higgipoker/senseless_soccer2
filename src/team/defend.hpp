@@ -35,8 +35,6 @@ class Defend : public State {
   virtual void stop() override;
   virtual bool finished() override;
   virtual void update(float dt) override;
-
- protected:
 };
 
 }  // namespace team

@@ -38,7 +38,7 @@ void Pursue::init(Entity *t) { target = t; }
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
-void Pursue::start() { std::cout << "start pursue" << std::endl; }
+void Pursue::start() {}
 
 // -----------------------------------------------------------------------------
 // update
@@ -54,7 +54,6 @@ void Pursue::update(float dt) {
 // stop
 // -----------------------------------------------------------------------------
 void Pursue::stop() {
-  std::cout << "stop retrieve" << std::endl;
   destination_reached = true;
   player.velocity.reset();
 }

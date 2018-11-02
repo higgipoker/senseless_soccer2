@@ -27,21 +27,20 @@ using namespace match;
 
 int main() {
   // main game objects
-  std::shared_ptr<Viewer> viewer = std::make_shared<Viewer>();
-  std::shared_ptr<Engine> engine = std::make_shared<Engine>();
-  std::shared_ptr<Pitch> pitch = std::make_shared<Pitch>();
-  std::shared_ptr<Match> match = std::make_shared<Match>();
-
-  team::Team team1("team1");
-  team::Team team2("team2");
+  auto viewer = std::make_shared<Viewer>();
+  auto engine = std::make_shared<Engine>();
+  auto pitch = std::make_shared<Pitch>();
+  auto match = std::make_shared<Match>();
+  auto team1 = std::make_shared<team::Team>("team1");
+  auto team2 = std::make_shared<team::Team>("team2");
 
   engine->camera.setPosition(pitch->dimensions.center +
                              Vector3(0, pitch->dimensions.bounds.height / 2));
 
-  team1.kit = team::Kit::make_standard_blue_kit();
-  team2.kit = team::Kit::make_standard_red_kit();
+  team1->kit = team::Kit::make_standard_blue_kit();
+  team2->kit = team::Kit::make_standard_red_kit();
 
-  match->init(&team1, &team2);
+  match->init(team1, team2);
 
   // a debug hud
   senseless_soccer::Diagnostic debug(viewer);
@@ -54,14 +53,14 @@ int main() {
   XboxController xbox_controller;
   Keyboard keyboard;
   SensiController controller(keyboard);
-  team1.controller = &controller;
+  team1->controller = &controller;
 
   // scrolling background
   std::shared_ptr<PitchWidget> pitch_widget = std::make_shared<PitchWidget>(
       Files::getWorkingDirectory() + "/gfx/grass_horizontal.png",
       engine->camera);
   pitch_widget->z_order = -10;
-  pitch_widget->connectEntity(pitch.get());
+  pitch_widget->connectEntity(pitch);
   pitch->connectWidget(std::move(pitch_widget));
   viewer.get()->addWidget(pitch->widget);
 
@@ -69,7 +68,7 @@ int main() {
   pitch->widget->addChild(controller.label);
 
   // players
-  std::vector<std::unique_ptr<Player> > players;
+  std::vector<std::shared_ptr<Player> > players;
 
   // team 1
   for (int i = 0; i < 22; ++i) {
@@ -79,13 +78,13 @@ int main() {
     auto *sprite = dynamic_cast<Sprite *>(player->widget.get());
     pitch->widget->addChild(player->widget);
     pitch->widget->addChild(sprite->getShadow());
-    engine->addEntity(player.get());
+    engine->addEntity(player);
     player->shirt_number = i + 1;
 
     if (i >= 11) {
-      team1.addPlayer(player.get());
+      team1->addPlayer(player.get());
     } else {
-      team2.addPlayer(player.get());
+      team2->addPlayer(player.get());
     }
 
     // need to move out of loop scope or smart pointer will be destroyed
@@ -93,7 +92,7 @@ int main() {
   }
 
   // ball
-  std::unique_ptr<Ball> ball = BallFactory::makeBall("ball");
+  std::shared_ptr<Ball> ball = BallFactory::makeBall("ball");
   auto *ballsprite = dynamic_cast<Sprite *>(ball->widget.get());
   ball->position.x = 300;
   ball->position.y = 300;
@@ -101,11 +100,11 @@ int main() {
   pitch->widget->addChild(ball->widget);
 
   // add entities to engine
-  engine->addEntity(match.get());
-  engine->addEntity(&team1);
-  engine->addEntity(&team2);
-  engine->addEntity(pitch.get());
-  engine->addEntity(ball.get());
+  engine->addEntity(match);
+  engine->addEntity(team1);
+  engine->addEntity(team2);
+  engine->addEntity(pitch);
+  engine->addEntity(ball);
 
   // there is a circular relationship engine <-> viewer
   engine->connectViewer(viewer);
@@ -115,8 +114,8 @@ int main() {
   Player::pitch = pitch.get();
 
   team::Position::scanPositions();
-  team1.init(pitch, Direction::NORTH);
-  team2.init(pitch, Direction::SOUTH);
+  team1->init(pitch, Direction::NORTH);
+  team2->init(pitch, Direction::SOUTH);
 
   // test
   for (unsigned int i = 0; i < sf::Joystick::Count; ++i) {

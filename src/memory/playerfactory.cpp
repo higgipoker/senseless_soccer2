@@ -27,17 +27,17 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
-std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
+std::shared_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   // gfx files
   static const std::string dir = gamelib2::Files::getWorkingDirectory();
   static const std::string player_file = dir + "/gfx/player/player.png";
   static const std::string shadow_file = dir + "/gfx/player/player_shadow.png";
 
   // make the entity
-  auto player = std::make_unique<Player>(name);
+  auto player = std::make_shared<Player>(name);
 
   // make the sprite
-  auto widget = std::make_unique<Sprite>(player_file, 6, 24);
+  auto widget = std::make_shared<Sprite>(player_file, 6, 24);
 
   // get a pointer to derived class sprite
   auto sprite = static_cast<Sprite *>(widget.get());
@@ -47,7 +47,7 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   player_animations::fill_animations(sprite);
 
   // make a shadow for the sprite
-  auto shadow = std::make_unique<Sprite>(shadow_file, 6, 24);
+  auto shadow = std::make_shared<Sprite>(shadow_file, 6, 24);
   shadow->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
   shadow->z_order = -1;
 
@@ -58,7 +58,7 @@ std::unique_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   player->connectWidget(std::move(widget));
 
   // widget refers back to owning enity with weak pointer
-  sprite->connectEntity(player.get());
+  sprite->connectEntity(player);
   player->activate();
 
   // move semantics is implicit here

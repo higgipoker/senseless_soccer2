@@ -18,10 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "ballfactory.hpp"
-#include "../ball/ball.hpp"
-#include "../ball/ball_animations.hpp"
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
+#include "../ball/ball.hpp"
+#include "../ball/ball_animations.hpp"
 
 #include <iostream>
 
@@ -31,7 +31,7 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // makePlayer
 // -----------------------------------------------------------------------------
-std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
+std::shared_ptr<Ball> BallFactory::makeBall(const std::string &name) {
   // for gfx
   static const std::string working_dir = gamelib2::Files::getWorkingDirectory();
   static const std::string ball_file = working_dir + "/gfx/ball_new.png";
@@ -39,7 +39,7 @@ std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
       working_dir + "/gfx/ball_shadow.png";
 
   // make the entity
-  std::unique_ptr<Ball> ball = std::make_unique<Ball>(name);
+  std::shared_ptr<Ball> ball = std::make_shared<Ball>(name);
 
   // make a sprite for the player
   std::unique_ptr<Widget> widget = std::make_unique<Sprite>(ball_file, 4, 2);
@@ -62,7 +62,7 @@ std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
   sprite->connectShadow(std::move(shadow));
 
   // sprite has raw "look at" pointer back to entity
-  sprite->connectEntity(ball.get());
+  sprite->connectEntity(ball);
   sprite->startAnimation("roll");
   ball->activate();
 
@@ -70,4 +70,4 @@ std::unique_ptr<Ball> BallFactory::makeBall(const std::string &name) {
   return ball;
 }
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

@@ -48,7 +48,12 @@ void PitchWidget::render(sf::RenderTarget &target) {
 
   // draw the pitch lines
   // todo gather into one draw list
-  auto &pitch = dynamic_cast<Pitch &>(*entity);
+
+  // to get at the derived class, make a shared ptr to cast
+  std::shared_ptr e = entity.lock();
+  auto &pitch = dynamic_cast<Pitch &>(*e.get());
+
+  auto widget = e.get();
   float line_width = 2.5f;
 
   // north horizontal

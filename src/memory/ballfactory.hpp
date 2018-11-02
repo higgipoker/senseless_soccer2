@@ -18,12 +18,12 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "../ball/ball.hpp"
 #include <memory>
+#include "../ball/ball.hpp"
 namespace senseless_soccer {
 class BallFactory {
-public:
-    // constructs a ball and delivers shared pointer
-    static std::unique_ptr<Ball> makeBall(const std::string &name);
+ public:
+  // constructs a ball and delivers shared pointer
+  static std::shared_ptr<Ball> makeBall(const std::string &name);
 };
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

@@ -40,7 +40,7 @@ class LineUp : public State {
   void march_player();
   std::queue<Player *> marchers;
   int ticks = 0;
-  int speed = 10;
+  int speed = 1;
 };
 
 }  // namespace team

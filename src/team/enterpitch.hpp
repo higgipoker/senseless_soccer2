@@ -27,6 +27,8 @@ namespace senseless_soccer {
 class Player;
 namespace team {
 
+enum class MiniState { Entering, Waiting };
+
 class EnterPitch : public State {
  public:
   EnterPitch(Team &t);
@@ -47,6 +49,8 @@ class EnterPitch : public State {
   int ticks = 0;
   int speed = 10;
   int vertical_offset = 50;
+  int end_ticks = 0;
+  int end_delay = 400;
 };
 
 }  // namespace team

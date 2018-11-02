@@ -33,7 +33,6 @@ Retrieve::Retrieve(Brain &b) : BrainState(b, "retrieve") {}
 //
 // -----------------------------------------------------------------------------
 void Retrieve::start() {
-  std::cout << "start retrieve" << std::endl;
   // go backt to standing
   brain.locomotion.startPursue(Player::ball);
 }
@@ -42,7 +41,6 @@ void Retrieve::start() {
 //
 // -----------------------------------------------------------------------------
 void Retrieve::stop() {
-  std::cout << "stop retrieve" << std::endl;
   brain.locomotion.startStand();
 }
 
@@ -56,5 +54,5 @@ bool Retrieve::finished() { return brain.player.ball_under_control(); }
 // -----------------------------------------------------------------------------
 void Retrieve::update(float dt) {}
 
-} // namespace ai
-} // namespace senseless_soccer
+}  // namespace ai
+}  // namespace senseless_soccer

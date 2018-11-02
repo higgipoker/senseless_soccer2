@@ -18,19 +18,21 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+#include "../team/team.hpp"
+
 #include <gamelib2/game/entity.hpp>
 #include <memory>
-#include "../team/team.hpp"
 
 namespace senseless_soccer {
 namespace match {
+
 class Match : public gamelib2::Entity {
  public:
   Match();
-  void init(team::Team *t1, team::Team *t2);
+  void init(std::shared_ptr<team::Team> t1, std::shared_ptr<team::Team> t2);
   void update(float dt);
-  team::Team *team1 = nullptr;
-  team::Team *team2 = nullptr;
+  std::weak_ptr<team::Team> team1;
+  std::weak_ptr<team::Team> team2;
 
  private:
  public:

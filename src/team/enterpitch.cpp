@@ -70,7 +70,10 @@ bool EnterPitch::finished() {
       return false;
     }
   }
-  return true;
+  if (++end_ticks >= end_delay) {
+    return true;
+  }
+  return false;
 }
 
 // -----------------------------------------------------------------------------

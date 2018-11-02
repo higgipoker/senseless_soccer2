@@ -31,7 +31,7 @@
 namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
-//
+// Diagnostic
 // -----------------------------------------------------------------------------
 Diagnostic::Diagnostic(std::shared_ptr<Viewer> &v) : gamelib2::Diagnostic(v) {}
 
@@ -57,12 +57,14 @@ void Diagnostic::update() {
           sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
       // entity window
-      ImGui::Begin(selected_entity->name.c_str());
-      if (selected_player) {
-        showPlayerMenu();
+      if (auto entity = selected_entity.lock()) {
+        ImGui::Begin(selected_entity.lock().get()->name.c_str());
+        if (selected_player.lock()) {
+          showPlayerMenu();
+        }
+        last_panel_dimensions = panel_dimensions;
+        ImGui::End();
       }
-      last_panel_dimensions = panel_dimensions;
-      ImGui::End();
     }
   }
 }
@@ -70,21 +72,21 @@ void Diagnostic::update() {
 // -----------------------------------------------------------------------------
 // selectEntity
 // -----------------------------------------------------------------------------
-void Diagnostic::selectEntity(Entity *e) {
+void Diagnostic::selectEntity(std::weak_ptr<Entity> e) {
   gamelib2::Diagnostic::selectEntity(e);
-  if (e->type == "player") {
-    if (selected_player != e) {
-      selected_player = dynamic_cast<Player *>(e);
+  if (e.lock()->type == "player") {
+    if (selected_player.lock().get() != e.lock().get()) {
+      selected_player = e;
     }
   } else {
-    selected_player = nullptr;
+    selected_player.reset();
   }
 }
 
 // -----------------------------------------------------------------------------
 // deSelect
 // -----------------------------------------------------------------------------
-void Diagnostic::deSelect() { selected_player = nullptr; }
+void Diagnostic::deSelect() { selected_player.reset(); }
 
 // -----------------------------------------------------------------------------
 // showPlayerMenu
@@ -92,40 +94,40 @@ void Diagnostic::deSelect() { selected_player = nullptr; }
 void Diagnostic::showPlayerMenu() {
   // player widgets
   ImGuiStyle &style = ImGui::GetStyle();
-  //  ImGui::DragFloat("Global Alpha", &style.Alpha, 0.005f, 0.20f, 1.0f,
-  //  "%.2f");
+
+  auto &player = dynamic_cast<Player &>(*selected_player.lock().get());
 
   // shirt number
-  ImGui::Text("Shirt Number: %i", selected_player->shirt_number);
+  ImGui::Text("Shirt Number: %i", player.shirt_number);
 
   // player state
-  ImGui::Text("Player State: %s", selected_player->stateName().c_str());
+  ImGui::Text("Player State: %s", player.stateName().c_str());
 
   // player role
-  if (selected_player->role.get()) {
-    ImGui::Text("Position: %s", selected_player->role->name.c_str());
+  if (player.role.get()) {
+    ImGui::Text("Position: %s", player.role->name.c_str());
   }
 
   {  // animation
-    if (selected_player->controller != nullptr) {
+    if (player.controller != nullptr) {
       int active_anim_index = 0;
-      std::string orig_anim = selected_player->widget->currentAnimation()->name;
+      std::string orig_anim = player.widget->currentAnimation()->name;
       std::vector<const char *> anims;
       process_animation_list(anims, active_anim_index);
       ImGui::Combo("##animation", &active_anim_index, anims.data(),
                    anims.size());
       if (orig_anim != anims[active_anim_index]) {
         std::string new_anim = anims[active_anim_index];
-        selected_player->widget->startAnimation(new_anim);
+        player.widget->startAnimation(new_anim);
       }
     } else {
       ImGui::Text("Animation: %s",
-                  selected_player->widget->currentAnimation()->name.c_str());
+                  player.widget->currentAnimation()->name.c_str());
     }
   }
 
   // these things mean nothing if an input is attached
-  if (selected_player->controller != nullptr) {
+  if (player.controller != nullptr) {
     style.Alpha = 0.2f;
     // brainstate
     ImGui::Text("Brainstate: input attached");
@@ -136,29 +138,27 @@ void Diagnostic::showPlayerMenu() {
   } else {
     {  // brain state
       int active_state_index = 0;
-      std::string orig_state = selected_player->brain.currentState();
+      std::string orig_state = player.brain.currentState();
       std::vector<const char *> states;
       process_brainstate_list(states, active_state_index);
       ImGui::Combo("##Brainstate", &active_state_index, states.data(),
                    states.size());
       if (orig_state != states[active_state_index]) {
         ai::State new_state = ai::Brain::state_map[states[active_state_index]];
-        selected_player->brain.changeState(new_state);
+        player.brain.changeState(new_state);
       }
     }
 
     {  // locomotion
-      ImGui::Text(
-          "Locomotion: %s",
-          selected_player->brain.locomotion.currentLocomotion().name.c_str());
-      if (selected_player->brain.locomotion.currentLocomotion()
+      ImGui::Text("Locomotion: %s",
+                  player.brain.locomotion.currentLocomotion().name.c_str());
+      if (player.brain.locomotion.currentLocomotion()
               .diagnosticParamaters()
               .length()) {
         ImGui::SameLine();
-        ImGui::Text("(%s)",
-                    selected_player->brain.locomotion.currentLocomotion()
-                        .diagnosticParamaters()
-                        .c_str());
+        ImGui::Text("(%s)", player.brain.locomotion.currentLocomotion()
+                                .diagnosticParamaters()
+                                .c_str());
       }
     }
   }
@@ -178,10 +178,10 @@ void Diagnostic::showPlayerMenu() {
 // -----------------------------------------------------------------------------
 void Diagnostic::process_animation_list(std::vector<const char *> &out_list,
                                         int &out_active_index) {
-  auto current_anim = selected_player->widget->currentAnimation();
+  auto current_anim = selected_player.lock().get()->widget->currentAnimation();
 
   int idx = 0;
-  for (auto &anim : selected_player->widget->animations) {
+  for (auto &anim : selected_player.lock().get()->widget->animations) {
     out_list.emplace_back(anim.first.c_str());
     if (anim.first == current_anim->name) {
       out_active_index = idx;
@@ -198,7 +198,8 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
   int idx = 0;
   for (auto &state : ai::Brain::state_map) {
     out_list.emplace_back(state.first.c_str());
-    if (selected_player->brain.currentState() == state.first) {
+    auto &player = dynamic_cast<Player &>(*selected_player.lock().get());
+    if (player.brain.currentState() == state.first) {
       out_active_index = idx;
     }
     idx++;
@@ -206,7 +207,7 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
 }
 
 // -----------------------------------------------------------------------------
-//
+// onClose
 // -----------------------------------------------------------------------------
 void Diagnostic::onClose() {
   if (auto view = viewer.lock()) {

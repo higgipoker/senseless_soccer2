@@ -354,11 +354,11 @@ void Player::calc_short_pass_recipients() {
 
   // rotate x degrees and project out
   Vector3 temp1 = facing.toVector();
-  Vector3 t2 = position + (temp1.rotate(40, 0, 0)).normalise() * 350;
+  Vector3 t2 = position + (temp1.rotate(40, 0, 0)).normalise() * 450;
 
   // rotate minus x degrees and project out
   Vector3 temp2 = facing.toVector();
-  Vector3 t3 = position + (temp2.rotate(-40, 0, 0)).normalise() * 350;
+  Vector3 t3 = position + (temp2.rotate(-40, 0, 0)).normalise() * 450;
 
   // save 3 points to triangle
   short_pass_triangle.p1 = Vector3(t1.x, t1.y);
