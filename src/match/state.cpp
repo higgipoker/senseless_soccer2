@@ -24,7 +24,7 @@ namespace match {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-State::State(std::string n, Match &m) : name(std::move(n)), football_match(m) {}
+State::State(std::string n, Match &m) : name(std::move(n)), match(m) {}
 
-} // namespace match
-} // namespace senseless_soccer
+}  // namespace match
+}  // namespace senseless_soccer

@@ -17,7 +17,7 @@ void State::start() {}
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void State::update(const float _dt) {
+void State::update(const float dt) {
 
   if (player.controller) {
     player.velocity.reset();

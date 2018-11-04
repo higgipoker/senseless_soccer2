@@ -18,24 +18,61 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "../team/team.hpp"
+#include "play.hpp"
+#include "state.hpp"
 
+#include "../ball/ball.hpp"
+#include "../pitch/pitch.hpp"
+
+#include <gamelib2/compass/compass.hpp>
 #include <gamelib2/game/entity.hpp>
+
 #include <memory>
+#include <set>
+#include <utility>
 
 namespace senseless_soccer {
+namespace team {
+class Team;
+}
 namespace match {
+
+enum class MatchState { Play };
+
+class MatchObserver {
+ public:
+  virtual void matchStateChanged(const MatchState new_state) = 0;
+
+ private:
+};
 
 class Match : public gamelib2::Entity {
  public:
   Match();
-  void init(std::shared_ptr<team::Team> t1, std::shared_ptr<team::Team> t2);
+  void init(const std::shared_ptr<team::Team> &t1,
+            const std::shared_ptr<team::Team> &t2,
+            const std::shared_ptr<Pitch> &p, const std::shared_ptr<Ball> &b);
   void update(float dt);
-  std::weak_ptr<team::Team> team1;
-  std::weak_ptr<team::Team> team2;
+  void changeState(const MatchState next_state);
+  void observe(MatchObserver *o);
+  void unObserve(MatchObserver *o);
+
+  std::shared_ptr<team::Team> team1;
+  std::shared_ptr<team::Team> team2;
+  std::shared_ptr<Pitch> pitch;
+  std::shared_ptr<Ball> ball;
 
  private:
+  Play play;
+  State *current_state = &play;
+  std::set<MatchObserver *> observers;
+
+  // check ballin pitch conditions
+  bool ball_in_pitch();
+  std::pair<gamelib2::Direction, gamelib2::Direction> ball_out_side;
+
  public:
+  friend class State;
   friend class Play;
 };
 }  // namespace match

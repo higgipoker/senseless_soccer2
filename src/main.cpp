@@ -24,6 +24,7 @@
 using namespace gamelib2;
 using namespace senseless_soccer;
 using namespace match;
+using namespace team;
 
 int main() {
   // main game objects
@@ -31,20 +32,22 @@ int main() {
   auto engine = std::make_shared<Engine>();
   auto pitch = std::make_shared<Pitch>();
   auto match = std::make_shared<Match>();
+  auto ball = BallFactory::makeBall("ball");
   auto team1 = std::make_shared<team::Team>("team1");
   auto team2 = std::make_shared<team::Team>("team2");
 
   engine->camera.setPosition(pitch->dimensions.center +
                              Vector3(0, pitch->dimensions.bounds.height / 2));
 
-  team1->kit = team::Kit::make_standard_blue_kit();
-  team2->kit = team::Kit::make_standard_red_kit();
+  team1->kit = Kit::make_standard_blue_kit();
+  team2->kit = Kit::make_standard_red_kit();
 
-  match->init(team1, team2);
+  // match->init(team1, team2);
+  match->init(team1, team2, pitch, ball);
 
   // a debug hud
   senseless_soccer::Diagnostic debug(viewer);
-  viewer.get()->connectDiagnostics(debug);
+  viewer->connectDiagnostics(debug);
 
   // inits static stuff
   Player::init();
@@ -69,8 +72,6 @@ int main() {
 
   // players
   std::vector<std::shared_ptr<Player> > players;
-
-  // team 1
   for (int i = 0; i < 22; ++i) {
     std::stringstream name;
     name << "player" << i;
@@ -82,9 +83,9 @@ int main() {
     player->shirt_number = i + 1;
 
     if (i >= 11) {
-      team1->addPlayer(player.get());
+      team1->addPlayer(player);
     } else {
-      team2->addPlayer(player.get());
+      team2->addPlayer(player);
     }
 
     // need to move out of loop scope or smart pointer will be destroyed
@@ -92,7 +93,6 @@ int main() {
   }
 
   // ball
-  std::shared_ptr<Ball> ball = BallFactory::makeBall("ball");
   auto *ballsprite = dynamic_cast<Sprite *>(ball->widget.get());
   ball->position.x = 300;
   ball->position.y = 300;
@@ -110,6 +110,7 @@ int main() {
   engine->connectViewer(viewer);
   viewer.get()->connectEngine(engine);
 
+  // todo move to match
   Player::ball = ball.get();
   Player::pitch = pitch.get();
 
@@ -133,12 +134,13 @@ int main() {
   ball->bounds.setSize(sf::Vector2f(2000, 3000));
   ball->setPosition(pitch->dimensions.center);
 
-  viewer.get()->startup();
+  viewer->startup();
   float timestep = 0.01f;  // optimal for semi-implicit euler
   while (viewer.get()->running) {
     // debug ui
     debug.update();
     controller.update();
+    match->update(0.01f);
     engine->frame(timestep);
     viewer.get()->frame();
   }

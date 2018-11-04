@@ -29,7 +29,7 @@ public:
   Locomotion(Player &p, std::string n);
   virtual ~Locomotion() = default;
   virtual void start();
-  virtual void update(float _dt);
+  virtual void update(float dt);
   virtual void stop();
   virtual bool finished() = 0;
   std::string name;

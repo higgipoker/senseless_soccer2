@@ -54,7 +54,7 @@ bool Cover::finished() { return false; }
 //
 // -----------------------------------------------------------------------------
 void Cover::update(float dt) {
-  if (auto pitch = brain.player.my_team->pitch.lock()) {
+  if (auto pitch = brain.player.my_team->pitch) {
     auto grid = pitch->grid;
     int ball_sector = grid->getSector(Player::ball->position);
 

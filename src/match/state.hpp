@@ -23,14 +23,18 @@ namespace senseless_soccer {
 namespace match {
 class Match;
 class State {
-public:
+ public:
   State(std::string n, Match &m);
+  virtual void start() = 0;
   virtual void update(float dt) = 0;
+  virtual bool finished() = 0;
+  virtual void stop() = 0;
+  virtual void changeToNextState() = 0;
   std::string name;
 
-protected:
-  Match &football_match;
+ protected:
+  Match &match;
 };
 
-} // namespace match
-} // namespace senseless_soccer
+}  // namespace match
+}  // namespace senseless_soccer

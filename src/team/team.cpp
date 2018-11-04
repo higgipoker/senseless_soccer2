@@ -1,4 +1,5 @@
 #include "team.hpp"
+
 #include "../player/player.hpp"
 
 namespace senseless_soccer {
@@ -7,8 +8,9 @@ namespace team {
 // sort predicate for players
 // -----------------------------------------------------------------------------
 struct {
-  bool operator()(const Player *p1, const Player *p2) const {
-    return p1->distance_from_ball < p2->distance_from_ball;
+  bool operator()(const std::weak_ptr<Player> &p1,
+                  const std::weak_ptr<Player> &p2) const {
+    return p1.lock()->distance_from_ball < p2.lock()->distance_from_ball;
   }
 } sort_players;
 
@@ -39,7 +41,7 @@ void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
   if (formation.size() == 11 && players.size() == 11) {
     int i = 0;
     for (const auto &position : formation) {
-      players[i++]->setRole(team::Position::positions[position]);
+      players[i++].lock()->setRole(team::Position::positions[position]);
     }
   }
 
@@ -60,7 +62,7 @@ void Team::update(float dt) {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Team::addPlayer(Player *p) {
+void Team::addPlayer(std::shared_ptr<Player> p) {
   // add player to team
   players.emplace_back(p);
 
@@ -79,7 +81,7 @@ void Team::set_key_players() {
   std::sort(players.begin(), players.end(), sort_players);
   size_t i = 0;
   do {
-    key_players.closest_to_ball = players[i++];
+    key_players.closest_to_ball = players[i++].lock().get();
   } while (key_players.closest_to_ball->in_possession &&
            i < players.size() - 1);
 }
@@ -100,7 +102,7 @@ void Team::update_controller() {
     player = key_players.closest_to_ball;
   }
 
-  if (player != controller->player) {
+  if (player != nullptr && player != controller->player) {
     controller->attachToPlayer(player);
   }
 }
@@ -130,6 +132,9 @@ void Team::lostPossession(Player *p) {
 // -----------------------------------------------------------------------------
 void Team::connectPitch(const std::shared_ptr<Pitch> &p) { pitch = p; }
 
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
 void Team::change_state() {
   current_state->stop();
   switch (current_state->next_state) {
@@ -148,6 +153,9 @@ void Team::change_state() {
   }
   current_state->start();
 }
-
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Team::matchStateChanged(match::MatchState new_state) {}
 }  // namespace team
 }  // namespace senseless_soccer

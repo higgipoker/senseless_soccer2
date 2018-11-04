@@ -55,6 +55,13 @@ add_executable(senseless_soccer
     src/match/match.cpp
     src/match/state.cpp
     src/match/play.cpp
+    src/match/enterpitch.cpp
+    src/match/lineup.cpp
+    src/match/kickoff.cpp
+    src/match/goalkick.cpp
+    src/match/throwin.cpp
+    src/match/corner.cpp
+    src/match/freekick.cpp
     src/player/player.cpp
     src/player/states/state.cpp
     src/player/states/standing.cpp

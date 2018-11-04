@@ -7,6 +7,7 @@
 #include "tactics/formation.hpp"
 
 #include "../joysticker/sensicontroller.hpp"
+#include "../match/match.hpp"
 #include "../pitch/pitch.hpp"
 #include "../player/ai/defend/cover.hpp"
 
@@ -16,11 +17,16 @@
 #include <vector>
 
 using namespace gamelib2;
+
 namespace senseless_soccer {
+
 class Player;
+
 namespace team {
+
 enum class TeamState { EnterPitch, LineUp, Defend, Attack };
-class Team : public Entity {
+
+class Team : public Entity, public match::MatchObserver {
  public:
   Team(std::string in_name);
 
@@ -31,7 +37,7 @@ class Team : public Entity {
   void update(float dt) override;
 
   // add a player to the team
-  void addPlayer(Player *p);
+  void addPlayer(std::shared_ptr<Player> p);
 
   // controller for this team
   SensiController *controller = nullptr;
@@ -65,13 +71,16 @@ class Team : public Entity {
   // side of the pitch team is defending
   Compass side = Direction::SOUTH;
 
+  // from match observer interface
+  void matchStateChanged(match::MatchState new_state);
+
  protected:
   // players in this team
-  std::vector<Player *> players;
-  std::vector<Player *> subs;
+  std::vector<std::weak_ptr<Player>> players;
+  std::vector<std::weak_ptr<Player>> subs;
 
   // team needs to know about the pitch
-  std::weak_ptr<Pitch> pitch;
+  std::shared_ptr<Pitch> pitch;
 
   // states
   EnterPitch enter_pitch;

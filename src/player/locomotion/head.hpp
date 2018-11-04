@@ -11,7 +11,7 @@ class Head : public Locomotion {
   Head(Player &player);
   virtual ~Head() override = default;
   virtual void start() override;
-  virtual void update(float _dt) override;
+  virtual void update(float dt) override;
   virtual void stop() override;
   virtual bool finished() override;
   std::string diagnosticParamaters() override;

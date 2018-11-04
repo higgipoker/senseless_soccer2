@@ -23,11 +23,15 @@ namespace senseless_soccer {
 namespace match {
 
 class Play : public State {
-public:
-  Play(std::string n, Match &m);
+ public:
+  Play(Match &m);
 
+  void start() override;
   void update(float dt) override;
+  bool finished() override;
+  void stop() override;
+  void changeToNextState() override;
 };
 
-} // namespace match
-} // namespace senseless_soccer
+}  // namespace match
+}  // namespace senseless_soccer

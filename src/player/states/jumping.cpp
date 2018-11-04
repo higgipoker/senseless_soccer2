@@ -27,7 +27,7 @@ void Jumping::start() {
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Jumping::update(const float _dt) {
+void Jumping::update(const float dt) {
 
   if (Collision::collides(player.feet, Player::ball->circle)) {
     if (!player.shooting) {

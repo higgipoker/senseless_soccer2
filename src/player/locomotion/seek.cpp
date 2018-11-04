@@ -46,7 +46,7 @@ void Seek::start() {
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Seek::update(float _dt) {
+void Seek::update(float dt) {
   float new_distance = (target - player.position).magnitude();
 
   if (new_distance > distance) {

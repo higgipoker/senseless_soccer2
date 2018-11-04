@@ -34,8 +34,8 @@ EnterPitch::EnterPitch(Team &t) : State(t) { next_state = TeamState::LineUp; }
 void EnterPitch::start() {
   if (team.players.empty()) return;
   // set up some line up positions
-  offset.x = team.players[0]->widget->bounds().left * 2;
-  first_position = team.pitch.lock()->dimensions.center;
+  offset.x = team.players[0].lock()->widget->bounds().left * 2;
+  first_position = team.pitch->dimensions.center;
   first_position.x -= offset.x * team.players.size() / 2;
   if (team.side == Direction::NORTH) {
     first_position.y -= vertical_offset;
@@ -48,10 +48,10 @@ void EnterPitch::start() {
 
   // init marchers
   for (auto &player : team.players) {
-    player->setPosition(team.pitch.lock()->dimensions.bounds.left +
-                            team.pitch.lock()->dimensions.bounds.width,
-                        last_position.y);
-    marchers.push(player);
+    player.lock()->setPosition(team.pitch->dimensions.bounds.left +
+                                   team.pitch->dimensions.bounds.width,
+                               last_position.y);
+    marchers.push(player.lock());
   }
   march_player();
 }
@@ -66,7 +66,7 @@ void EnterPitch::stop() {}
 // -----------------------------------------------------------------------------
 bool EnterPitch::finished() {
   for (auto player : team.players) {
-    if (player->velocity.magnitude()) {
+    if (player.lock()->velocity.magnitude()) {
       return false;
     }
   }
@@ -91,10 +91,10 @@ void EnterPitch::update(float dt) {
 // -----------------------------------------------------------------------------
 void EnterPitch::march_player() {
   if (!marchers.empty()) {
-    Player *player = marchers.front();
+    auto player = marchers.front();
     marchers.pop();
 
-    if (auto pitch = team.pitch.lock()) {
+    if (auto pitch = team.pitch) {
       player->brain.goTo(last_position);
       last_position -= offset;
     }

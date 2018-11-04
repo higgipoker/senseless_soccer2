@@ -27,7 +27,7 @@ void Sliding::start() {
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Sliding::update(const float _dt) {
+void Sliding::update(const float dt) {
   if (Collision::collides(player.feet, Player::ball->circle)) {
     if (!player.shooting) {
       player.kick(player.facing.toVector(), 1);

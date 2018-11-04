@@ -402,8 +402,8 @@ Player *Player::calc_short_pass_receiver() {
   std::vector<Player *> candidates;
   for (auto &player : my_team->players) {
     // is in short pass range
-    if (Collision::collides(player->position, short_pass_triangle)) {
-      candidates.emplace_back(player);
+    if (Collision::collides(player.lock()->position, short_pass_triangle)) {
+      candidates.emplace_back(player.lock().get());
     }
   }
 
