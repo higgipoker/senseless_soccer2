@@ -33,8 +33,8 @@ class Defend : public State {
   virtual ~Defend() = default;
   virtual void start() override;
   virtual void stop() override;
-  virtual bool finished() override;
   virtual void update(float dt) override;
+  virtual bool finished() override;
 };
 
 }  // namespace team

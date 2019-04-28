@@ -35,8 +35,8 @@ Cover::Cover(Brain &b) : BrainState(b, "cover") {}
 // -----------------------------------------------------------------------------
 void Cover::start() {
   pitch = brain.player.my_team->pitch;
-  if (pitch.lock()) {
-    grid = pitch.lock()->grid;
+  if (auto p = pitch.lock()) {
+    grid = p->grid;
   }
 }
 

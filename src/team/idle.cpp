@@ -17,42 +17,39 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#pragma once
-#include "state.hpp"
+#include "idle.hpp"
+#include "team.hpp"
 
-#include <gamelib2/math/vector.hpp>
-
-#include <queue>
+#include "../player/ai/brain.hpp"
+#include "../player/player.hpp"
 
 namespace senseless_soccer {
-class Player;
 namespace team {
 
-enum class MiniState { Entering, Waiting };
+// -----------------------------------------------------------------------------
+// Idle
+// -----------------------------------------------------------------------------
+Idle::Idle(Team &t) : State(t) {}
 
-class EnterPitch : public State {
- public:
-  EnterPitch(Team &t);
-  virtual ~EnterPitch() = default;
-  virtual void start() override;
-  virtual void stop() override;
-  virtual bool finished() override;
-  virtual void update(float dt) override;
+// -----------------------------------------------------------------------------
+// start
+// -----------------------------------------------------------------------------
+void Idle::start() {}
 
- protected:
-  // line up positions to send players to
-  gamelib2::Vector3 first_position;
-  gamelib2::Vector3 offset;
-  gamelib2::Vector3 last_position;
+// -----------------------------------------------------------------------------
+// stop
+// -----------------------------------------------------------------------------
+void Idle::stop() {}
 
-  void march_player();
-  std::queue<std::shared_ptr<Player>> marchers;
-  int ticks = 0;
-  int speed = 10;
-  int vertical_offset = 50;
-  int end_ticks = 0;
-  int end_delay = 400;
-};
+// -----------------------------------------------------------------------------
+// finished
+// -----------------------------------------------------------------------------
+bool Idle::finished() { return false; }
+
+// -----------------------------------------------------------------------------
+// update
+// -----------------------------------------------------------------------------
+void Idle::update(float dt) {}
 
 }  // namespace team
 }  // namespace senseless_soccer

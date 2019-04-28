@@ -18,6 +18,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+#include "enterpitch.hpp"
 #include "play.hpp"
 #include "state.hpp"
 
@@ -37,7 +38,21 @@ class Team;
 }
 namespace match {
 
-enum class MatchState { Play };
+struct BallOut {
+  gamelib2::Direction pitch_side = gamelib2::Direction::NONE;
+  gamelib2::Direction pitch_end = gamelib2::Direction::NONE;
+};
+
+enum class MatchState {
+  EnterPitch,
+  Kickoff,
+  Play,
+  ThrowIn,
+  Corner,
+  GoalKick,
+  FreeKick,
+  Penalty
+};
 
 class MatchObserver {
  public:
@@ -64,12 +79,13 @@ class Match : public gamelib2::Entity {
 
  private:
   Play play;
-  State *current_state = &play;
+  EnterPitch enter_pitch;
+  State *current_state = &enter_pitch;
   std::set<MatchObserver *> observers;
 
   // check ballin pitch conditions
   bool ball_in_pitch();
-  std::pair<gamelib2::Direction, gamelib2::Direction> ball_out_side;
+  BallOut ball_out;
 
  public:
   friend class State;

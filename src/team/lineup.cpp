@@ -36,7 +36,7 @@ void LineUp::start() {
 
   marchers = {};
   // init marchers
-  for (auto player : team.players) {
+  for (const auto &player : team.players) {
     marchers.push(player);
   }
   march_player();
@@ -51,9 +51,11 @@ void LineUp::stop() {}
 //
 // -----------------------------------------------------------------------------
 bool LineUp::finished() {
-  for (auto player : team.players) {
-    if (player.lock()->velocity.magnitude()) {
-      return false;
+  for (const auto &player : team.players) {
+    if (auto p = player.lock()) {
+      if (p->velocity.magnitude()) {
+        return false;
+      }
     }
   }
   return true;
@@ -78,16 +80,16 @@ void LineUp::march_player() {
     marchers.pop();
 
     if (auto pitch = team.pitch) {
-      int player_sector =
-          player.lock()->role->target(team::Situation::KickOff, 0);
+      if (auto p = player.lock()) {
+        int player_sector = p->role->target(team::Situation::KickOff, 0);
 
-      // rotate sectors for attacking south goal
-      if (team.side == Direction::NORTH) {
-        player_sector = team.pitch->grid->mirrorSector(player_sector);
+        // rotate sectors for attacking south goal
+        if (team.side == Direction::NORTH) {
+          player_sector = team.pitch->grid->mirrorSector(player_sector);
+        }
+
+        p->brain.goTo(team.pitch->grid->getRandoPointInSector(player_sector));
       }
-
-      player.lock()->brain.goTo(
-          team.pitch->grid->getRandoPointInSector(player_sector));
     }
   }
 }

@@ -51,6 +51,7 @@ enum class PlayerState { Stand, Run, Slide, Jump };
 namespace team {
 class Team;
 }
+
 class Player : public Entity, public ControllerListener {
  public:
   // construct with an entity name

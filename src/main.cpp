@@ -46,7 +46,7 @@ int main() {
   match->init(team1, team2, pitch, ball);
 
   // a debug hud
-  senseless_soccer::Diagnostic debug(viewer);
+  senseless_soccer::Diagnostic debug(*viewer.get());
   viewer->connectDiagnostics(debug);
 
   // inits static stuff
@@ -63,7 +63,7 @@ int main() {
       Files::getWorkingDirectory() + "/gfx/grass_horizontal.png",
       engine->camera);
   pitch_widget->z_order = -10;
-  pitch_widget->connectEntity(pitch);
+  pitch_widget->connectEntity(pitch.get());
   pitch->connectWidget(std::move(pitch_widget));
   viewer.get()->addWidget(pitch->widget);
 
@@ -79,7 +79,7 @@ int main() {
     auto *sprite = dynamic_cast<Sprite *>(player->widget.get());
     pitch->widget->addChild(player->widget);
     pitch->widget->addChild(sprite->getShadow());
-    engine->addEntity(player);
+    engine->addEntity(player.get());
     player->shirt_number = i + 1;
 
     if (i >= 11) {
@@ -100,11 +100,11 @@ int main() {
   pitch->widget->addChild(ball->widget);
 
   // add entities to engine
-  engine->addEntity(match);
-  engine->addEntity(team1);
-  engine->addEntity(team2);
-  engine->addEntity(pitch);
-  engine->addEntity(ball);
+  engine->addEntity(match.get());
+  engine->addEntity(team1.get());
+  engine->addEntity(team2.get());
+  engine->addEntity(pitch.get());
+  engine->addEntity(ball.get());
 
   // there is a circular relationship engine <-> viewer
   engine->connectViewer(viewer);

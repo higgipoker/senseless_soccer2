@@ -25,16 +25,16 @@
 namespace senseless_soccer {
 class Diagnostic : public gamelib2::Diagnostic {
  public:
-  Diagnostic(std::shared_ptr<Viewer> &v);
+  Diagnostic(Viewer &v);
   ~Diagnostic() = default;
   void update() override;
-  void selectEntity(std::weak_ptr<Entity> e) override;
+  void selectEntity(Entity *e) override;
   void deSelect() override;
   void showPlayerMenu();
   void onClose() override;
 
  protected:
-  std::weak_ptr<Entity> selected_player;
+  Entity *selected_player = nullptr;
   void process_animation_list(std::vector<const char *> &out_list,
                               int &out_active_index);
 

@@ -2,6 +2,7 @@
 
 #include "defend.hpp"
 #include "enterpitch.hpp"
+#include "idle.hpp"
 #include "kit.hpp"
 #include "lineup.hpp"
 #include "tactics/formation.hpp"
@@ -86,7 +87,8 @@ class Team : public Entity, public match::MatchObserver {
   EnterPitch enter_pitch;
   LineUp lineup;
   Defend defend;
-  State *current_state = &enter_pitch;
+  Idle idle;
+  State *current_state = &idle;
   void change_state();
 
   // update helpers
@@ -100,6 +102,7 @@ class Team : public Entity, public match::MatchObserver {
   friend class EnterPitch;
   friend class LineUp;
   friend class Defend;
+  friend class Idle;
 };
 }  // namespace team
 }  // namespace senseless_soccer

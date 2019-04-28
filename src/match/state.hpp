@@ -34,6 +34,9 @@ class State {
 
  protected:
   Match &match;
+
+ public:
+  friend class EnterPitch;
 };
 
 }  // namespace match

@@ -105,7 +105,7 @@ void Player::update(float dt) {
 
     // sync shadow with sprite
     auto shadow = sprite->getShadow();
-    if (shadow.get() != nullptr) {
+    if (shadow != nullptr) {
       shadow->setFrame(sprite->getFrame());
       shadow->setPosition(sprite->position().x, sprite->position().y);
     }
@@ -402,8 +402,10 @@ Player *Player::calc_short_pass_receiver() {
   std::vector<Player *> candidates;
   for (auto &player : my_team->players) {
     // is in short pass range
-    if (Collision::collides(player.lock()->position, short_pass_triangle)) {
-      candidates.emplace_back(player.lock().get());
+    if (auto p = player.lock()) {
+      if (Collision::collides(p->position, short_pass_triangle)) {
+        candidates.emplace_back(p.get());
+      }
     }
   }
 

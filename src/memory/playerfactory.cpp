@@ -58,7 +58,7 @@ std::shared_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
   player->connectWidget(std::move(widget));
 
   // widget refers back to owning enity with weak pointer
-  sprite->connectEntity(player);
+  sprite->connectEntity(player.get());
   player->activate();
 
   // move semantics is implicit here

@@ -19,19 +19,23 @@
  ****************************************************************************/
 #pragma once
 #include "state.hpp"
+
+#include <gamelib2/math/vector.hpp>
+
+#include <queue>
 namespace senseless_soccer {
-namespace match {
+class Player;
+namespace team {
 
-class EnterPitch : public State {
+class Idle : public State {
  public:
-  EnterPitch(Match &m);
-
-  void start() override;
-  void update(float dt) override;
-  bool finished() override;
-  void stop() override;
-  void changeToNextState() override;
+  Idle(Team &t);
+  virtual ~Idle() = default;
+  virtual void start() override;
+  virtual void stop() override;
+  virtual void update(float dt) override;
+  virtual bool finished() override;
 };
 
-}  // namespace match
+}  // namespace team
 }  // namespace senseless_soccer

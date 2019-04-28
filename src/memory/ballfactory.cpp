@@ -62,7 +62,7 @@ std::shared_ptr<Ball> BallFactory::makeBall(const std::string &name) {
   sprite->connectShadow(std::move(shadow));
 
   // sprite has raw "look at" pointer back to entity
-  sprite->connectEntity(ball);
+  sprite->connectEntity(ball.get());
   sprite->startAnimation("roll");
   ball->activate();
 

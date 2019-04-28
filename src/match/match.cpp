@@ -27,7 +27,8 @@ namespace match {
 // -----------------------------------------------------------------------------
 // Match
 // -----------------------------------------------------------------------------
-Match::Match() : gamelib2::Entity("match", "match"), play(*this) {}
+Match::Match()
+    : gamelib2::Entity("match", "match"), play(*this), enter_pitch(*this) {}
 
 // -----------------------------------------------------------------------------
 // init
@@ -46,7 +47,6 @@ void Match::init(const std::shared_ptr<team::Team> &t1,
 // update
 // -----------------------------------------------------------------------------
 void Match::update(float dt) {
-  // state machine
   current_state->update(dt);
   if (current_state->finished()) {
     current_state->changeToNextState();
@@ -54,12 +54,28 @@ void Match::update(float dt) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// changeState
 // -----------------------------------------------------------------------------
 void Match::changeState(const MatchState next_state) {
   current_state->stop();
   switch (next_state) {
+    case MatchState::EnterPitch:
+      current_state = &enter_pitch;
+      break;
+    case MatchState::Kickoff:
+      break;
     case MatchState::Play:
+      current_state = &play;
+      break;
+    case MatchState::ThrowIn:
+      break;
+    case MatchState::Corner:
+      break;
+    case MatchState::GoalKick:
+      break;
+    case MatchState::FreeKick:
+      break;
+    case MatchState::Penalty:
       break;
   }
   current_state->start();
@@ -70,37 +86,37 @@ void Match::changeState(const MatchState next_state) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// observe
 // -----------------------------------------------------------------------------
 void Match::observe(MatchObserver *o) { observers.insert(o); }
 
 // -----------------------------------------------------------------------------
-//
+// unObserve
 // -----------------------------------------------------------------------------
 void Match::unObserve(MatchObserver *o) { observers.erase(o); }
 
 // -----------------------------------------------------------------------------
-//
+// ball_in_pitch
 // -----------------------------------------------------------------------------
 bool Match::ball_in_pitch() {
   if (ball->position.x - ball->circle.getRadius() <
       pitch->dimensions.bounds.left) {
-    ball_out_side.first = Direction::WEST;
+    ball_out.pitch_side = Direction::WEST;
     return false;
   }
   if (ball->position.y - ball->circle.getRadius() <
       pitch->dimensions.bounds.top) {
-    ball_out_side.second = Direction::NORTH;
+    ball_out.pitch_end = Direction::NORTH;
     return false;
   }
   if (ball->position.x + ball->circle.getRadius() >
       pitch->dimensions.bounds.left + pitch->dimensions.bounds.width) {
-    ball_out_side.first = Direction::EAST;
+    ball_out.pitch_side = Direction::EAST;
     return false;
   }
   if (ball->position.y + ball->circle.getRadius() >
       pitch->dimensions.bounds.top + pitch->dimensions.bounds.height) {
-    ball_out_side.second = Direction::SOUTH;
+    ball_out.pitch_end = Direction::SOUTH;
     return false;
   }
 

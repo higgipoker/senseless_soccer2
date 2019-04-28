@@ -33,38 +33,36 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // Diagnostic
 // -----------------------------------------------------------------------------
-Diagnostic::Diagnostic(std::shared_ptr<Viewer> &v) : gamelib2::Diagnostic(v) {}
+Diagnostic::Diagnostic(Viewer &v) : gamelib2::Diagnostic(v) {}
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Diagnostic::update() {
-  if (auto view = viewer.lock()) {
-    if (on) {
-      gamelib2::Diagnostic::update();
-      // dimensions
-      panel_dimensions.width = last_panel_dimensions.width;
-      panel_dimensions.height =
-          view->getWindow().getSize().y - last_panel_dimensions.height;
-      panel_dimensions.left =
-          view->getWindow().getSize().x - panel_dimensions.width;
-      panel_dimensions.top =
-          last_panel_dimensions.top + last_panel_dimensions.height;
+  if (on) {
+    gamelib2::Diagnostic::update();
+    // dimensions
+    panel_dimensions.width = last_panel_dimensions.width;
+    panel_dimensions.height =
+        viewer.getWindow().getSize().y - last_panel_dimensions.height;
+    panel_dimensions.left =
+        viewer.getWindow().getSize().x - panel_dimensions.width;
+    panel_dimensions.top =
+        last_panel_dimensions.top + last_panel_dimensions.height;
 
-      ImGui::SetNextWindowSize(
-          sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
-      ImGui::SetNextWindowPos(
-          sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
+    ImGui::SetNextWindowSize(
+        sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
+    ImGui::SetNextWindowPos(
+        sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
-      // entity window
-      if (auto entity = selected_entity.lock()) {
-        ImGui::Begin(selected_entity.lock().get()->name.c_str());
-        if (selected_player.lock()) {
-          showPlayerMenu();
-        }
-        last_panel_dimensions = panel_dimensions;
-        ImGui::End();
+    // entity window
+    if (selected_entity) {
+      ImGui::Begin(selected_entity->name.c_str());
+      if (selected_player) {
+        showPlayerMenu();
       }
+      last_panel_dimensions = panel_dimensions;
+      ImGui::End();
     }
   }
 }
@@ -72,21 +70,22 @@ void Diagnostic::update() {
 // -----------------------------------------------------------------------------
 // selectEntity
 // -----------------------------------------------------------------------------
-void Diagnostic::selectEntity(std::weak_ptr<Entity> e) {
+void Diagnostic::selectEntity(Entity *e) {
   gamelib2::Diagnostic::selectEntity(e);
-  if (e.lock()->type == "player") {
-    if (selected_player.lock().get() != e.lock().get()) {
+  if (e->type == "player") {
+    if (selected_player != e) {
       selected_player = e;
     }
   } else {
-    selected_player.reset();
+    // selected_player->reset();
   }
 }
 
 // -----------------------------------------------------------------------------
 // deSelect
 // -----------------------------------------------------------------------------
-void Diagnostic::deSelect() { selected_player.reset(); }
+void Diagnostic::deSelect() { /*selected_player.reset();*/
+}
 
 // -----------------------------------------------------------------------------
 // showPlayerMenu
@@ -95,7 +94,7 @@ void Diagnostic::showPlayerMenu() {
   // player widgets
   ImGuiStyle &style = ImGui::GetStyle();
 
-  auto &player = dynamic_cast<Player &>(*selected_player.lock().get());
+  auto &player = dynamic_cast<Player &>(*selected_player);
 
   // shirt number
   ImGui::Text("Shirt Number: %i", player.shirt_number);
@@ -178,10 +177,10 @@ void Diagnostic::showPlayerMenu() {
 // -----------------------------------------------------------------------------
 void Diagnostic::process_animation_list(std::vector<const char *> &out_list,
                                         int &out_active_index) {
-  auto current_anim = selected_player.lock().get()->widget->currentAnimation();
+  auto current_anim = selected_player->widget->currentAnimation();
 
   int idx = 0;
-  for (auto &anim : selected_player.lock().get()->widget->animations) {
+  for (auto &anim : selected_player->widget->animations) {
     out_list.emplace_back(anim.first.c_str());
     if (anim.first == current_anim->name) {
       out_active_index = idx;
@@ -198,7 +197,7 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
   int idx = 0;
   for (auto &state : ai::Brain::state_map) {
     out_list.emplace_back(state.first.c_str());
-    auto &player = dynamic_cast<Player &>(*selected_player.lock().get());
+    auto &player = dynamic_cast<Player &>(*selected_player);
     if (player.brain.currentState() == state.first) {
       out_active_index = idx;
     }
@@ -209,9 +208,5 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
 // -----------------------------------------------------------------------------
 // onClose
 // -----------------------------------------------------------------------------
-void Diagnostic::onClose() {
-  if (auto view = viewer.lock()) {
-    ImGui::SFML::Render(view->getWindow());
-  }
-}
+void Diagnostic::onClose() { ImGui::SFML::Render(viewer.getWindow()); }
 }  // namespace senseless_soccer

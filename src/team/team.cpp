@@ -10,21 +10,27 @@ namespace team {
 struct {
   bool operator()(const std::weak_ptr<Player> &p1,
                   const std::weak_ptr<Player> &p2) const {
-    return p1.lock()->distance_from_ball < p2.lock()->distance_from_ball;
+    if (auto player1 = p1.lock()) {
+      if (auto player2 = p2.lock()) {
+        return player1->distance_from_ball < player2->distance_from_ball;
+      }
+    }
+    return false;
   }
 } sort_players;
 
 // -----------------------------------------------------------------------------
-//
+// constructor
 // -----------------------------------------------------------------------------
 Team::Team(std::string in_name)
     : Entity("team", std::move(in_name)),
+      idle(*this),
       enter_pitch(*this),
       lineup(*this),
       defend(*this) {}
 
 // -----------------------------------------------------------------------------
-//
+// init
 // -----------------------------------------------------------------------------
 void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
   pitch = p;
@@ -41,7 +47,9 @@ void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
   if (formation.size() == 11 && players.size() == 11) {
     int i = 0;
     for (const auto &position : formation) {
-      players[i++].lock()->setRole(team::Position::positions[position]);
+      if (auto player = players[i++].lock()) {
+        player->setRole(team::Position::positions[position]);
+      }
     }
   }
 
@@ -49,7 +57,7 @@ void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// update
 // -----------------------------------------------------------------------------
 void Team::update(float dt) {
   set_key_players();
@@ -60,7 +68,7 @@ void Team::update(float dt) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// addPlayer
 // -----------------------------------------------------------------------------
 void Team::addPlayer(std::shared_ptr<Player> p) {
   // add player to team
@@ -74,20 +82,22 @@ void Team::addPlayer(std::shared_ptr<Player> p) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// set_key_players
 // -----------------------------------------------------------------------------
 void Team::set_key_players() {
   if (players.empty()) return;
   std::sort(players.begin(), players.end(), sort_players);
   size_t i = 0;
   do {
-    key_players.closest_to_ball = players[i++].lock().get();
+    if (auto player = players[i++].lock()) {
+      key_players.closest_to_ball = player.get();
+    }
   } while (key_players.closest_to_ball->in_possession &&
            i < players.size() - 1);
 }
 
 // -----------------------------------------------------------------------------
-//
+// update_controller
 // -----------------------------------------------------------------------------
 void Team::update_controller() {
   if (controller == nullptr) return;
@@ -119,7 +129,7 @@ bool Team::requestPossession(Player *p) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// lostPossession
 // -----------------------------------------------------------------------------
 void Team::lostPossession(Player *p) {
   if (key_players.in_possession == p) {
@@ -128,12 +138,12 @@ void Team::lostPossession(Player *p) {
 }
 
 // -----------------------------------------------------------------------------
-//
+// connectPitch
 // -----------------------------------------------------------------------------
 void Team::connectPitch(const std::shared_ptr<Pitch> &p) { pitch = p; }
 
 // -----------------------------------------------------------------------------
-//
+// change_state
 // -----------------------------------------------------------------------------
 void Team::change_state() {
   current_state->stop();
@@ -154,7 +164,7 @@ void Team::change_state() {
   current_state->start();
 }
 // -----------------------------------------------------------------------------
-//
+// matchStateChanged
 // -----------------------------------------------------------------------------
 void Team::matchStateChanged(match::MatchState new_state) {}
 }  // namespace team
