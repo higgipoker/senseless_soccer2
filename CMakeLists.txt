@@ -40,8 +40,6 @@ add_definitions(-std=c++17)
 add_executable(senseless_soccer
     src/main.cpp
     src/metrics/metrics.cpp
-    src/memory/playerfactory.cpp
-    src/memory/ballfactory.cpp
     src/joysticker/sensicontroller.cpp
     src/joysticker/aftertouch.cpp
     src/team/team.cpp
@@ -49,9 +47,11 @@ add_executable(senseless_soccer
     src/team/enterpitch.cpp
     src/team/lineup.cpp
     src/team/defend.cpp
+    src/team/idle.cpp
     src/team/kit.cpp
     src/team/tactics/formation.cpp
     src/team/tactics/position.cpp
+    src/team/tactics/positionfactory.cpp
     src/match/match.cpp
     src/match/state.cpp
     src/match/play.cpp
@@ -62,6 +62,7 @@ add_executable(senseless_soccer
     src/match/throwin.cpp
     src/match/corner.cpp
     src/match/freekick.cpp
+    src/player/playerfactory.cpp
     src/player/player.cpp
     src/player/states/state.cpp
     src/player/states/standing.cpp
@@ -69,6 +70,7 @@ add_executable(senseless_soccer
     src/player/states/sliding.cpp
     src/player/states/jumping.cpp
     src/ball/ball.cpp
+    src/ball/ballfactory.cpp
     src/pitch/pitch.cpp
     src/pitch/pitchwidget.cpp
     src/player/locomotion/locomotionmanager.cpp
@@ -108,3 +110,4 @@ target_link_libraries (senseless_soccer sfml-window)
 target_link_libraries (senseless_soccer sfml-system)
 target_link_libraries (senseless_soccer stdc++fs)
 target_link_libraries (senseless_soccer GL)
+#target_link_libraries (senseless_soccer stdc++fs)
