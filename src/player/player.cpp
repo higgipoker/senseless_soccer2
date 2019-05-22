@@ -35,9 +35,9 @@
 using namespace gamelib2;
 namespace senseless_soccer {
 
-std::map<gamelib2::Direction, std::string> Player::stand_animation_map;
-std::map<gamelib2::Direction, std::string> Player::run_animation_map;
-std::map<gamelib2::Direction, std::string> Player::slide_animation_map;
+std::map<gamelib2::Direction, std::string> Player::standmap;
+std::map<gamelib2::Direction, std::string> Player::runmap;
+std::map<gamelib2::Direction, std::string> Player::slidemap;
 
 Ball *Player::ball = nullptr;
 Pitch *Player::pitch = nullptr;
@@ -49,9 +49,8 @@ static const float control_radius = 8.f;
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
-Player::Player(std::string in_name)
-    : Entity("player", std::move(in_name)),
-      brain(*this),
+Player::Player()
+    : brain(*this),
       debug_short_pass(sf::Triangles, 3),
       stand_state(*this),
       run_state(*this),
@@ -60,17 +59,17 @@ Player::Player(std::string in_name)
   feet.setRadius(dribble_radius);
   control_inner.setRadius(control_radius);
   control_outer.setRadius(control_radius * 1.2f);
-}
 
-// -----------------------------------------------------------------------------
-// activate
-// -----------------------------------------------------------------------------
-void Player::activate() {
   // init state machine
   change_state(PlayerState::Stand);
   current_state->start();
-  speed = 200;
+  speed = 300;
 }
+
+// -----------------------------------------------------------------------------
+// Player
+// -----------------------------------------------------------------------------
+Player::~Player() {}
 
 // -----------------------------------------------------------------------------
 // update
@@ -97,26 +96,24 @@ void Player::update(float dt) {
   }
 
   // update widget (sprite)
-  if (widget) {
-    auto sprite = dynamic_cast<Sprite *>(widget.get());
+  auto sprite = static_cast<Sprite *>(widget);
 
-    sprite->setPosition(position.x, position.y);
-    sprite->animate();
+  sprite->setPosition(position.x, position.y);
+  sprite->animate();
 
-    // sync shadow with sprite
-    auto shadow = sprite->getShadow();
-    if (shadow != nullptr) {
-      shadow->setFrame(sprite->getFrame());
-      shadow->setPosition(sprite->position().x, sprite->position().y);
-    }
-
-    feet.setPosition(position.x, position.y);
-    control_inner.setPosition(feet.getPosition());
-    control_outer.setPosition(feet.getPosition());
-
-    widget->shapes.clear();
-    widget->shapes.emplace_back(&feet);
+  // sync shadow with sprite
+  auto shadow = sprite->getShadow();
+  if (shadow != nullptr) {
+    shadow->setFrame(sprite->getFrame());
+    shadow->setPosition(sprite->position().x, sprite->position().y + 7);
   }
+
+  feet.setPosition(position.x, position.y);
+  control_inner.setPosition(feet.getPosition());
+  control_outer.setPosition(feet.getPosition());
+
+  //    widget->shapes.clear();
+  //    widget->shapes.emplace_back(&feet);
 
   perspectivize(CAMERA_HEIGHT);
 
@@ -210,7 +207,7 @@ void Player::do_dribble() {
 void Player::do_close_control() {
   // player position + control range
   Vector3 f(feet.getPosition().x, feet.getPosition().y);
-  Vector3 ball_pos = f + (facing.toVector() * 5);
+  Vector3 ball_pos = f + (facing.toVector() * 8);
 
   // reset ball
   ball->velocity.reset();
@@ -242,13 +239,12 @@ void Player::change_state(const PlayerState &state) {
 // -----------------------------------------------------------------------------
 // kick
 // -----------------------------------------------------------------------------
-void Player::kick(const Vector3 &direction, unsigned int power) {
+void Player::kick(const Vector3 &direction, int power) {
   // clamp the power
   power = std::max(min_pass_power, std::min(power, max_pass_power));
 
   // always kick in direction player is facing
   Vector3 force = direction;
-  // force.z = force.magnitude() * 0.001f;
 
   // normalise for diagonals
   if (Floats::greater_than(force.magnitude(), 0)) {
@@ -292,13 +288,17 @@ void Player::short_pass() {
 // shoot
 // -----------------------------------------------------------------------------
 void Player::shoot() {
-  // for now just aim at center of goal
-  Vector3 to_goal =
-      Vector3(
-          my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
-          my_team->attacking_goal.top + my_team->attacking_goal.height / 2) -
-      position;
-  kick(to_goal.normalise(), 60);
+  if (my_team) {
+    // for now just aim at center of goal
+    Vector3 to_goal =
+        Vector3(
+            my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
+            my_team->attacking_goal.top + my_team->attacking_goal.height / 2) -
+        position;
+    kick(to_goal.normalise(), 300);
+  } else {
+    kick(facing.toVector().normalise(), 300);
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -397,15 +397,16 @@ void Player::on_lost_possession() {
 // -----------------------------------------------------------------------------
 Player *Player::calc_short_pass_receiver() {
   Player *p = nullptr;
+  if (my_team == nullptr) {
+    return p;
+  }
 
   // get a list of players in my short pass range
   std::vector<Player *> candidates;
   for (auto &player : my_team->players) {
     // is in short pass range
-    if (auto p = player.lock()) {
-      if (Collision::collides(p->position, short_pass_triangle)) {
-        candidates.emplace_back(p.get());
-      }
+    if (Collision::collides(player->position, short_pass_triangle)) {
+      candidates.emplace_back(player);
     }
   }
 
@@ -430,11 +431,10 @@ void Player::face_ball() {
     if (Player::ball) {
       gamelib2::Vector3 to_ball = Player::ball->position - position;
       gamelib2::Compass c(to_ball.normalise());
-      widget->startAnimation(Player::stand_animation_map[c.direction]);
+      widget->startAnimation(Player::standmap[c.direction]);
       facing.fromVector(to_ball.normalise());
     } else {
-      widget->startAnimation(
-          Player::stand_animation_map[gamelib2::Direction::SOUTH]);
+      widget->startAnimation(Player::standmap[gamelib2::Direction::SOUTH]);
       facing = gamelib2::Direction::SOUTH;
     }
   }
@@ -451,7 +451,7 @@ void Player::perspectivize(float camera_height) {
   float degs = DEGREES(angular_diameter);
   float sprite_scale_factor = degs / dimensions;
 
-  auto sprite = dynamic_cast<Sprite *>(widget.get());
+  auto sprite = static_cast<Sprite *>(widget);
 
   float sprite_ratio = dimensions / sprite->image_width;
   sprite_scale_factor *= sprite_ratio;
@@ -483,46 +483,34 @@ void Player::triggerState(const PlayerState state) {
 // -----------------------------------------------------------------------------
 void Player::init() {
   // standing animations
-  stand_animation_map.insert(
-      std::make_pair(Direction::SOUTH_EAST, "stand_southeast"));
-  stand_animation_map.insert(std::make_pair(Direction::SOUTH, "stand_south"));
-  stand_animation_map.insert(
-      std::make_pair(Direction::SOUTH_WEST, "stand_southwest"));
-  stand_animation_map.insert(std::make_pair(Direction::WEST, "stand_west"));
-  stand_animation_map.insert(
-      std::make_pair(Direction::NORTH_WEST, "stand_northwest"));
-  stand_animation_map.insert(std::make_pair(Direction::NORTH, "stand_north"));
-  stand_animation_map.insert(
-      std::make_pair(Direction::NORTH_EAST, "stand_northeast"));
-  stand_animation_map.insert(std::make_pair(Direction::EAST, "stand_east"));
+  standmap.insert(std::make_pair(Direction::SOUTH_EAST, "stand_southeast"));
+  standmap.insert(std::make_pair(Direction::SOUTH, "stand_south"));
+  standmap.insert(std::make_pair(Direction::SOUTH_WEST, "stand_southwest"));
+  standmap.insert(std::make_pair(Direction::WEST, "stand_west"));
+  standmap.insert(std::make_pair(Direction::NORTH_WEST, "stand_northwest"));
+  standmap.insert(std::make_pair(Direction::NORTH, "stand_north"));
+  standmap.insert(std::make_pair(Direction::NORTH_EAST, "stand_northeast"));
+  standmap.insert(std::make_pair(Direction::EAST, "stand_east"));
 
   // running animations
-  run_animation_map.insert(
-      std::make_pair(Direction::SOUTH_EAST, "run_southeast"));
-  run_animation_map.insert(std::make_pair(Direction::SOUTH, "run_south"));
-  run_animation_map.insert(
-      std::make_pair(Direction::SOUTH_WEST, "run_southwest"));
-  run_animation_map.insert(std::make_pair(Direction::WEST, "run_west"));
-  run_animation_map.insert(
-      std::make_pair(Direction::NORTH_WEST, "run_northwest"));
-  run_animation_map.insert(std::make_pair(Direction::NORTH, "run_north"));
-  run_animation_map.insert(
-      std::make_pair(Direction::NORTH_EAST, "run_northeast"));
-  run_animation_map.insert(std::make_pair(Direction::EAST, "run_east"));
+  runmap.insert(std::make_pair(Direction::SOUTH_EAST, "run_southeast"));
+  runmap.insert(std::make_pair(Direction::SOUTH, "run_south"));
+  runmap.insert(std::make_pair(Direction::SOUTH_WEST, "run_southwest"));
+  runmap.insert(std::make_pair(Direction::WEST, "run_west"));
+  runmap.insert(std::make_pair(Direction::NORTH_WEST, "run_northwest"));
+  runmap.insert(std::make_pair(Direction::NORTH, "run_north"));
+  runmap.insert(std::make_pair(Direction::NORTH_EAST, "run_northeast"));
+  runmap.insert(std::make_pair(Direction::EAST, "run_east"));
 
   // sliding animations
-  slide_animation_map.insert(
-      std::make_pair(Direction::SOUTH_EAST, "slide_southeast"));
-  slide_animation_map.insert(std::make_pair(Direction::SOUTH, "slide_south"));
-  slide_animation_map.insert(
-      std::make_pair(Direction::SOUTH_WEST, "slide_southwest"));
-  slide_animation_map.insert(std::make_pair(Direction::WEST, "slide_west"));
-  slide_animation_map.insert(
-      std::make_pair(Direction::NORTH_WEST, "slide_northwest"));
-  slide_animation_map.insert(std::make_pair(Direction::NORTH, "slide_north"));
-  slide_animation_map.insert(
-      std::make_pair(Direction::NORTH_EAST, "slide_northeast"));
-  slide_animation_map.insert(std::make_pair(Direction::EAST, "slide_east"));
+  slidemap.insert(std::make_pair(Direction::SOUTH_EAST, "slide_southeast"));
+  slidemap.insert(std::make_pair(Direction::SOUTH, "slide_south"));
+  slidemap.insert(std::make_pair(Direction::SOUTH_WEST, "slide_southwest"));
+  slidemap.insert(std::make_pair(Direction::WEST, "slide_west"));
+  slidemap.insert(std::make_pair(Direction::NORTH_WEST, "slide_northwest"));
+  slidemap.insert(std::make_pair(Direction::NORTH, "slide_north"));
+  slidemap.insert(std::make_pair(Direction::NORTH_EAST, "slide_northeast"));
+  slidemap.insert(std::make_pair(Direction::EAST, "slide_east"));
 }
 
 // -----------------------------------------------------------------------------
@@ -533,5 +521,5 @@ std::string Player::stateName() { return current_state->name; }
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Player::setRole(std::shared_ptr<team::Position> r) { role = std::move(r); }
+void Player::setRole(team::Position *in_role) { role = in_role; }
 }  // namespace senseless_soccer

@@ -22,9 +22,9 @@
 #include <vector>
 namespace senseless_soccer {
 namespace ball_animations {
-static unsigned int anim_speed = 5;
-static std::vector<unsigned int> roll() {
-    std::vector<unsigned int> v;
+static int anim_speed = 5;
+static std::vector<int> roll() {
+    std::vector<int> v;
     v.push_back(0);
     v.push_back(1);
     v.push_back(2);

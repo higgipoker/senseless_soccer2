@@ -26,19 +26,20 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 
 static const float GRAVITY = 9.8f;  // meters per second per second
-static const float AIR_FACTOR = 0.0001f;
-static const float co_friction = 0.991f;
+static const float AIR_FACTOR = 0.001f;
+static const float co_friction = 0.88f;
 static const float co_friction_bounce = 0.98f;  // bounce fricton
-static const float co_bounciness = 0.8f;
+static const float co_bounciness = 0.6f;
 static const float co_spin_decay = 0.8f;  // how much spin decays over time
-static const float ball_mass = 200.f;     // used in air resistance calc
+static const float ball_mass = 300.f;     // used in air resistance calc
 static const int SHADOW_OFFSET = 1;
 
 // -----------------------------------------------------------------------------
 // Ball
 // -----------------------------------------------------------------------------
-Ball::Ball(std::string in_name, float dt) : Entity("ball", std::move(in_name)) {
-  circle.setRadius(6.0f);
+Ball::Ball(std::string in_name, float dt) {
+  create("ball", std::move(in_name));
+  circle.setRadius(5.0f);
 
   // formulas are in seconds, physics step is in "dt"
   float time_slice = dt / 1;
@@ -57,10 +58,6 @@ Ball::Ball(std::string in_name, float dt) : Entity("ball", std::move(in_name)) {
 }
 
 // -----------------------------------------------------------------------------
-// activate
-// -----------------------------------------------------------------------------
-void Ball::activate() {}
-// -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
 void Ball::update(float dt) {
@@ -71,7 +68,7 @@ void Ball::update(float dt) {
 
   // update widget (sprite)
   if (widget) {
-    auto sprite = dynamic_cast<Sprite *>(widget.get());
+    auto sprite = static_cast<Sprite *>(widget);
     sprite->setPosition(position.x, position.y);
     sprite->animate();
     perspectivize(CAMERA_HEIGHT);
@@ -167,7 +164,7 @@ void Ball::do_physics(float dt) {
   acceleration.reset();
 
   // tmp
-  keep_in_bounds();
+  // keep_in_bounds();
 }
 
 // -----------------------------------------------------------------------------
@@ -181,7 +178,7 @@ void Ball::perspectivize(float camera_height) {
   float degs = DEGREES(angular_diameter);
   float sprite_scale_factor = degs / dimensions;
 
-  auto sprite = dynamic_cast<Sprite *>(widget.get());
+  auto sprite = static_cast<Sprite *>(widget);
 
   float sprite_ratio = dimensions / sprite->image_width;
   sprite_scale_factor *= sprite_ratio;

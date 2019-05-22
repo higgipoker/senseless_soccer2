@@ -25,13 +25,15 @@
 namespace senseless_soccer {
 class Diagnostic : public gamelib2::Diagnostic {
  public:
-  Diagnostic(Viewer &v);
+  Diagnostic(gamelib2::Game &_in_game);
   ~Diagnostic() = default;
   void update() override;
   void selectEntity(Entity *e) override;
   void deSelect() override;
-  void showPlayerMenu();
   void onClose() override;
+
+  void showEntityMenu();
+  void showPlayerMenu();
 
  protected:
   Entity *selected_player = nullptr;

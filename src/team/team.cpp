@@ -1,6 +1,7 @@
 #include "team.hpp"
-
+#include <cassert>
 #include "../player/player.hpp"
+#include "tactics/positionfactory.hpp"
 
 namespace senseless_soccer {
 namespace team {
@@ -8,14 +9,9 @@ namespace team {
 // sort predicate for players
 // -----------------------------------------------------------------------------
 struct {
-  bool operator()(const std::weak_ptr<Player> &p1,
-                  const std::weak_ptr<Player> &p2) const {
-    if (auto player1 = p1.lock()) {
-      if (auto player2 = p2.lock()) {
-        return player1->distance_from_ball < player2->distance_from_ball;
-      }
-    }
-    return false;
+  bool operator()(const Player *p1, const Player *p2) const {
+    assert(p1 && p2);
+    return p1->distance_from_ball < p2->distance_from_ball;
   }
 } sort_players;
 
@@ -23,16 +19,14 @@ struct {
 // constructor
 // -----------------------------------------------------------------------------
 Team::Team(std::string in_name)
-    : Entity("team", std::move(in_name)),
-      idle(*this),
-      enter_pitch(*this),
-      lineup(*this),
-      defend(*this) {}
+    : idle(*this), enter_pitch(*this), lineup(*this), defend(*this) {
+  create("team", std::move(in_name));
+}
 
 // -----------------------------------------------------------------------------
 // init
 // -----------------------------------------------------------------------------
-void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
+void Team::init(Pitch *p, const Direction s) {
   pitch = p;
   side = s;
 
@@ -47,8 +41,8 @@ void Team::init(const std::shared_ptr<Pitch> &p, const Direction s) {
   if (formation.size() == 11 && players.size() == 11) {
     int i = 0;
     for (const auto &position : formation) {
-      if (auto player = players[i++].lock()) {
-        player->setRole(team::Position::positions[position]);
+      if (auto player = players[i++]) {
+        player->setRole(team::PositionFactory::getPosition(position));
       }
     }
   }
@@ -70,7 +64,7 @@ void Team::update(float dt) {
 // -----------------------------------------------------------------------------
 // addPlayer
 // -----------------------------------------------------------------------------
-void Team::addPlayer(std::shared_ptr<Player> p) {
+void Team::addPlayer(Player *p) {
   // add player to team
   players.emplace_back(p);
 
@@ -78,7 +72,8 @@ void Team::addPlayer(std::shared_ptr<Player> p) {
   p->setTeam(this);
 
   // apply the kit to player
-  dynamic_cast<gamelib2::Sprite *>(p->widget.get())->swapColors(kit.palette);
+  auto sprite = static_cast<gamelib2::Sprite *>(p->widget);
+  sprite->swapColors(kit.palette);
 }
 
 // -----------------------------------------------------------------------------
@@ -89,8 +84,8 @@ void Team::set_key_players() {
   std::sort(players.begin(), players.end(), sort_players);
   size_t i = 0;
   do {
-    if (auto player = players[i++].lock()) {
-      key_players.closest_to_ball = player.get();
+    if (auto player = players[i++]) {
+      key_players.closest_to_ball = player;
     }
   } while (key_players.closest_to_ball->in_possession &&
            i < players.size() - 1);
@@ -140,7 +135,7 @@ void Team::lostPossession(Player *p) {
 // -----------------------------------------------------------------------------
 // connectPitch
 // -----------------------------------------------------------------------------
-void Team::connectPitch(const std::shared_ptr<Pitch> &p) { pitch = p; }
+void Team::connectPitch(Pitch *p) { pitch = p; }
 
 // -----------------------------------------------------------------------------
 // change_state

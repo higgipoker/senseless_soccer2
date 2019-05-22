@@ -50,7 +50,7 @@ private:
     Vector3 dpad;
 
     float initial_force = 0;
-    unsigned int ticks = 0;
+    int ticks = 0;
 
     // helper to set up directions orientated around the initial normal
     void set_vectors(Vector3 normal);

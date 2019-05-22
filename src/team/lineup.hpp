@@ -38,7 +38,7 @@ class LineUp : public State {
 
  protected:
   void march_player();
-  std::queue<std::weak_ptr<Player>> marchers;
+  std::queue<Player *> marchers;
   int ticks = 0;
   int speed = 1;
 };

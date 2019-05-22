@@ -29,14 +29,18 @@ namespace senseless_soccer {
 //	PitchWidget
 // -----------------------------------------------------------------------------
 PitchWidget::PitchWidget(const std::string &in_file, Camera &c)
-    : TiledScrollingBackground(in_file, c) {
+    : TiledScrollingBackground(in_file, c),
+      goal_north(Files::getWorkingDirectory() + "/gfx/goal_top_new.png", 1, 1),
+      goal_south(Files::getWorkingDirectory() +
+                     "/gfx/goal_bottom_new_persepective.png",
+                 1, 1) {
   clickable = false;
 
-  addChild(goal_north);
-  goal_north->z_order = 100;
+  addChild(&goal_north);
+  goal_north.z_order = 100;
 
-  addChild(goal_south);
-  goal_south->z_order = 100;
+  addChild(&goal_south);
+  goal_south.z_order = 100;
 }
 
 // -----------------------------------------------------------------------------
@@ -51,7 +55,7 @@ void PitchWidget::render(sf::RenderTarget &target) {
 
   // to get at the derived class
   if (entity) {
-    auto &pitch = dynamic_cast<Pitch &>(*entity);
+    auto &pitch = static_cast<Pitch &>(*entity);
     if (auto widget = entity->widget) {
       float line_width = 2.5f;
 
@@ -201,25 +205,27 @@ void PitchWidget::render(sf::RenderTarget &target) {
           213, 329, 100, 3);
 
       // goals
-      goal_north->setPosition(
+      goal_north.setPosition(
           pitch.goal_north_gfx.left,
-          pitch.goal_north_gfx.top - goal_north->bounds().height / 2);
+          pitch.goal_north_gfx.top - goal_north.bounds().height / 2);
 
-      goal_south->setPosition(pitch.goal_south_gfx.left,
-                              pitch.goal_south_gfx.top + 32);
+      goal_south.setPosition(pitch.goal_south_gfx.left,
+                             pitch.goal_south_gfx.top + 32);
 
       // debug goal areas
-      sf::RectangleShape n(sf::Vector2f(pitch.dimensions.goal_north.width,
-                                        pitch.dimensions.goal_north.height));
-      n.setPosition(pitch.dimensions.goal_north.left,
-                    pitch.dimensions.goal_north.top);
+      //      sf::RectangleShape
+      //      n(sf::Vector2f(pitch.dimensions.goal_north.width,
+      //                                        pitch.dimensions.goal_north.height));
+      //      n.setPosition(pitch.dimensions.goal_north.left,
+      //                    pitch.dimensions.goal_north.top);
 
-      sf::RectangleShape n2(sf::Vector2f(pitch.dimensions.goal_south.width,
-                                         pitch.dimensions.goal_south.height));
-      n2.setPosition(pitch.dimensions.goal_south.left,
-                     pitch.dimensions.goal_south.top);
-      this->shapes.clear();
-      this->shapes.emplace_back(&n);
+      //      sf::RectangleShape
+      //      n2(sf::Vector2f(pitch.dimensions.goal_south.width,
+      //                                         pitch.dimensions.goal_south.height));
+      //      n2.setPosition(pitch.dimensions.goal_south.left,
+      //                     pitch.dimensions.goal_south.top);
+      //      this->shapes.clear();
+      //      this->shapes.emplace_back(&n);
       // this->shapes.emplace_back(&n2);
     }
   }

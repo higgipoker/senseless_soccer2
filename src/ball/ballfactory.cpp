@@ -17,52 +17,36 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "playerfactory.hpp"
+#include "ballfactory.hpp"
+#include "../ball/ball.hpp"
+#include "../ball/ball_animations.hpp"
+
+#include <gamelib2/math/vector.hpp>
 #include <gamelib2/utils/files.hpp>
 #include <gamelib2/widgets/sprite.hpp>
-#include "../player/player_animations.h"
-#include "../team/tactics/position.hpp"
 
+#include <iostream>
+
+using namespace gamelib2;
 namespace senseless_soccer {
+
 // -----------------------------------------------------------------------------
-// makePlayer
+// make_ball
 // -----------------------------------------------------------------------------
-std::shared_ptr<Player> PlayerFactory::makePlayer(const std::string &name) {
-  // gfx files
-  static const std::string dir = gamelib2::Files::getWorkingDirectory();
-  static const std::string player_file = dir + "/gfx/player/player.png";
-  static const std::string shadow_file = dir + "/gfx/player/player_shadow.png";
+void BallFactory::make_ball(Ball *ball, Sprite *sprite, Sprite *shadow) {
+  std::string working_dir = Files::getWorkingDirectory();
+  std::string gfx_path = working_dir + "/gfx/";
 
-  // make the entity
-  auto player = std::make_shared<Player>(name);
-
-  // make the sprite
-  auto widget = std::make_shared<Sprite>(player_file, 6, 24);
-
-  // get a pointer to derived class sprite
-  auto sprite = static_cast<Sprite *>(widget.get());
-
+  ball->create("ball", "ball");
+  sprite->init(gfx_path + "ball_new.png", 4, 2);
+  sprite->z_order = 10;
+  ball_animations::fill_animations(sprite);
+  sprite->startAnimation("roll");
+  shadow->init(gfx_path + "ball_shadow.png", 1, 1);
   sprite->clickable = true;
-  sprite->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
-  player_animations::fill_animations(sprite);
-
-  // make a shadow for the sprite
-  auto shadow = std::make_shared<Sprite>(shadow_file, 6, 24);
-  shadow->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
   shadow->z_order = -1;
-
-  // sprite owns the shadow
-  sprite->connectShadow(std::move(shadow));
-
-  // entity owns the sprite
-  player->connectWidget(std::move(widget));
-
-  // widget refers back to owning enity with weak pointer
-  sprite->connectEntity(player.get());
-  player->activate();
-
-  // move semantics is implicit here
-  return player;
+  sprite->shadow = shadow;
+  Game::connect(ball, sprite);
 }
 
 }  // namespace senseless_soccer

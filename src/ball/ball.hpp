@@ -17,9 +17,6 @@ class Ball : public Entity {
   // main update
   void update(float dt) override;
 
-  // activate when sprite is connected
-  void activate() override;
-
   // the entity was manually moved
   void onDragged(const Vector3 &new_position);
 

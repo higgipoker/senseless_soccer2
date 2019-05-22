@@ -18,10 +18,10 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #include "sensicontroller.hpp"
-#include "../ball/ball.hpp"
-#include "../player/player.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <iostream>
+#include "../ball/ball.hpp"
+#include "../player/player.hpp"
 
 using namespace gamelib2;
 namespace senseless_soccer {
@@ -30,29 +30,26 @@ namespace senseless_soccer {
 // SensiController
 // -----------------------------------------------------------------------------
 SensiController::SensiController(InputDevice &i)
-    : Controller(i)
-      ,
+    : Controller(i),
+      label(Files::getWorkingDirectory() + "/fonts/swos.ttf"),
       aftertouch(*this) {
-
-  label->setSize(14);
-  label->setColor(sf::Color::White);
-
-} // namespace senseless_soccer
+  label.setSize(14);
+  label.setColor(sf::Color::White);
+}
 
 // -----------------------------------------------------------------------------
 // attachToPlayer
 // -----------------------------------------------------------------------------
 void SensiController::attachToPlayer(Player *p) {
-  if (p == player || p->input_suspended)
-    return;
+  if (p == player || p->input_suspended) return;
 
   if (player) {
     player->detatchInput();
   }
-  player = p;
-  if (player) {
+  if (p) {
+    player = p;
     player->attachInput(this);
-    label->setText(p->shirt_number);
+    label.setText(p->shirt_number);
   }
 }
 
@@ -66,9 +63,9 @@ void SensiController::update() {
   // attached to a player?
   if (player) {
     auto rect = player->widget->bounds();
-    label->setCenter(static_cast<unsigned int>(rect.left + rect.width / 2),
-                    static_cast<unsigned int>(rect.top + rect.width / 2 -
-                                              rect.height / 2 - 4));
+    label.setCenter(
+        static_cast<int>(rect.left + rect.width / 2),
+        static_cast<int>(rect.top + rect.width / 2 - rect.height / 2 - 4));
   }
 }
 
@@ -85,4 +82,4 @@ void SensiController::startAftertouch(Ball *b, const Vector3 &normal,
 // -----------------------------------------------------------------------------
 void SensiController::stopAftertouch() { aftertouch.end(); }
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

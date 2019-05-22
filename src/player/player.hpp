@@ -54,17 +54,14 @@ class Team;
 
 class Player : public Entity, public ControllerListener {
  public:
-  // construct with an entity name
-  Player(std::string in_name);
+  // construct
+  Player();
+
+  // destruct
+  virtual ~Player();
 
   // main update
   void update(float dt) override;
-
-  // only activate after sprite is connected!
-  void activate() override;
-
-  // helper to init the animatio map
-  static void init();
 
   // moved manually
   void onDragged(const Vector3 &diff) override;
@@ -87,11 +84,11 @@ class Player : public Entity, public ControllerListener {
   // get current state name
   std::string stateName();
 
-  // trigger a state manuall
+  // trigger a state manually
   void triggerState(const PlayerState state);
 
   // playing position (role)
-  void setRole(std::shared_ptr<team::Position> r);
+  void setRole(team::Position *in_role);
 
   // ai
   ai::Brain brain;
@@ -124,7 +121,10 @@ class Player : public Entity, public ControllerListener {
   Compass facing;
 
   // testing
-  std::shared_ptr<team::Position> role;
+  team::Position *role = nullptr;
+
+  // helper to init the animation map
+  static void init();
 
  protected:
   // add perspective to the ball
@@ -143,7 +143,7 @@ class Player : public Entity, public ControllerListener {
   void do_close_control();
 
   // kick the ball according to fire length
-  void kick(const Vector3 &direction, unsigned int power);
+  void kick(const Vector3 &direction, int power);
 
   // an automatic short pass
   void short_pass();
@@ -192,9 +192,9 @@ class Player : public Entity, public ControllerListener {
   bool jumping = false;
 
   // map animations based on direction
-  static std::map<Direction, std::string> stand_animation_map;
-  static std::map<Direction, std::string> run_animation_map;
-  static std::map<Direction, std::string> slide_animation_map;
+  static std::map<Direction, std::string> standmap;
+  static std::map<Direction, std::string> runmap;
+  static std::map<Direction, std::string> slidemap;
 
  private:
   // states
@@ -212,11 +212,11 @@ class Player : public Entity, public ControllerListener {
   void face_ball();
 
   // define max and min kick powers
-  const unsigned int min_pass_power = 30;
-  const unsigned int max_pass_power = 100;
+  const int min_pass_power = 30;
+  const int max_pass_power = 500;
 
   // a lookup to define the precision of short pass strengths
-  std::vector<unsigned int> short_pass_strenghts = {
+  std::vector<int> short_pass_strenghts = {
       1,
       2,
       3,

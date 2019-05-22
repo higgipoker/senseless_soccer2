@@ -32,16 +32,20 @@ class Team : public Entity, public match::MatchObserver {
   Team(std::string in_name);
 
   // init
-  void init(const std::shared_ptr<Pitch> &p, const Direction s);
+  void init(Pitch *p, const Direction s);
 
   // uodate each game frame
   void update(float dt) override;
 
   // add a player to the team
-  void addPlayer(std::shared_ptr<Player> p);
+  void addPlayer(Player *p);
 
   // controller for this team
   SensiController *controller = nullptr;
+
+  // players in this team
+  std::vector<Player *> players;
+  std::vector<Player *> subs;
 
   // track important players
   struct {
@@ -61,7 +65,7 @@ class Team : public Entity, public match::MatchObserver {
   void lostPossession(Player *p);
 
   // associate aptich
-  void connectPitch(const std::shared_ptr<Pitch> &p);
+  void connectPitch(Pitch *p);
 
   // kit
   Kit kit;
@@ -76,12 +80,8 @@ class Team : public Entity, public match::MatchObserver {
   void matchStateChanged(match::MatchState new_state);
 
  protected:
-  // players in this team
-  std::vector<std::weak_ptr<Player>> players;
-  std::vector<std::weak_ptr<Player>> subs;
-
   // team needs to know about the pitch
-  std::shared_ptr<Pitch> pitch;
+  Pitch *pitch;
 
   // states
   EnterPitch enter_pitch;

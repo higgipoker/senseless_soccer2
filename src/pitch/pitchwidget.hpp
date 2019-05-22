@@ -26,16 +26,12 @@
 using namespace gamelib2;
 namespace senseless_soccer {
 class PitchWidget : public TiledScrollingBackground {
-public:
+ public:
   PitchWidget(const std::string &in_file, Camera &c);
   void render(sf::RenderTarget &target) override;
 
-private:
-  std::shared_ptr<Widget> goal_north = std::make_shared<Sprite>(
-      Files::getWorkingDirectory() + "/gfx/goal_top_new.png", 1, 1);
-
-  std::shared_ptr<Widget> goal_south = std::make_shared<Sprite>(
-      Files::getWorkingDirectory() + "/gfx/goal_bottom_new_persepective.png", 1,
-      1);
+ private:
+  Sprite goal_north;
+  Sprite goal_south;
 };
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

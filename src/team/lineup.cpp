@@ -52,10 +52,8 @@ void LineUp::stop() {}
 // -----------------------------------------------------------------------------
 bool LineUp::finished() {
   for (const auto &player : team.players) {
-    if (auto p = player.lock()) {
-      if (p->velocity.magnitude()) {
-        return false;
-      }
+    if (player->velocity.magnitude()) {
+      return false;
     }
   }
   return true;
@@ -80,15 +78,15 @@ void LineUp::march_player() {
     marchers.pop();
 
     if (auto pitch = team.pitch) {
-      if (auto p = player.lock()) {
+      if (auto p = player) {
         int player_sector = p->role->target(team::Situation::KickOff, 0);
 
         // rotate sectors for attacking south goal
         if (team.side == Direction::NORTH) {
-          player_sector = team.pitch->grid->mirrorSector(player_sector);
+          player_sector = team.pitch->grid.mirrorSector(player_sector);
         }
 
-        p->brain.goTo(team.pitch->grid->getRandoPointInSector(player_sector));
+        p->brain.goTo(team.pitch->grid.getRandoPointInSector(player_sector));
       }
     }
   }

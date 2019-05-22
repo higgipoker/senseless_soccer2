@@ -44,7 +44,7 @@ class Pitch : public gamelib2::Entity {
   sf::FloatRect goal_south_gfx;
 
   //  a pitch has an underlying grid system for tactics
-  std::shared_ptr<gamelib2::Grid> grid = std::make_shared<gamelib2::Grid>();
+  gamelib2::Grid grid;
 
  protected:
 };

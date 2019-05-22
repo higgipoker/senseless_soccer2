@@ -17,27 +17,27 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "position.hpp"
+#include "positionfactory.hpp"
 #include <gamelib2/utils/file.hpp>
+#include <gamelib2/utils/files.hpp>
 
 namespace senseless_soccer {
 namespace team {
-
+std::map<std::string, Position> PositionFactory::positions;
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Position::loadFromFile(const std::string &in_file) {
-  gamelib2::File file(in_file);
+void PositionFactory::scanPositions() {
+  // already scanned
+  if (positions.empty()) {
+    auto dir = gamelib2::Files::getWorkingDirectory() + "/data/positions";
+    auto files = gamelib2::Files::getFilesInFolder(dir);
 
-  auto lines = file.getLines("//");
-
-  if (lines.size() > 1) {
-    name = lines[0];
-    for (int i = 1; i < lines.size(); i++) {
-      std::string str = lines[i];
-      std::size_t pos = str.find(':');
-      std::string first = str.substr(0, pos);
-      sectors.push_back(atoi(first.c_str()));
+    for (auto &filename : files) {
+      Position position;
+      position.loadFromFile(filename);
+      positions.insert(std::make_pair(position.name, position));
+      std::cout << "found position: " << position.name << std::endl;
     }
   }
 }
@@ -45,24 +45,12 @@ void Position::loadFromFile(const std::string &in_file) {
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-int Position::target(const Situation s, const int ball_sector) {
-  switch (s) {
-    case Situation::Play:
-      return sectors[ball_sector + index_offset_play];
-      break;
-
-    case Situation::KickOff:
-      return sectors[index_offset_kickoff];
-      break;
-
-    case Situation::GoalKick:
-      break;
-
-    case Situation::Corner:
-      break;
+Position *PositionFactory::getPosition(const std::string &_in_name) {
+  if (positions.empty()) {
+    scanPositions();
   }
-
-  return sectors[ball_sector];
+  return &positions[_in_name];
 }
+
 }  // namespace team
 }  // namespace senseless_soccer

@@ -17,52 +17,20 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
+#pragma once
+#include <map>
+#include <string>
 #include "position.hpp"
-#include <gamelib2/utils/file.hpp>
 
 namespace senseless_soccer {
 namespace team {
+class PositionFactory {
+ public:
+  static void scanPositions();
+  static Position *getPosition(const std::string &_in_name);
 
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-void Position::loadFromFile(const std::string &in_file) {
-  gamelib2::File file(in_file);
-
-  auto lines = file.getLines("//");
-
-  if (lines.size() > 1) {
-    name = lines[0];
-    for (int i = 1; i < lines.size(); i++) {
-      std::string str = lines[i];
-      std::size_t pos = str.find(':');
-      std::string first = str.substr(0, pos);
-      sectors.push_back(atoi(first.c_str()));
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-//
-// -----------------------------------------------------------------------------
-int Position::target(const Situation s, const int ball_sector) {
-  switch (s) {
-    case Situation::Play:
-      return sectors[ball_sector + index_offset_play];
-      break;
-
-    case Situation::KickOff:
-      return sectors[index_offset_kickoff];
-      break;
-
-    case Situation::GoalKick:
-      break;
-
-    case Situation::Corner:
-      break;
-  }
-
-  return sectors[ball_sector];
-}
+ private:
+  static std::map<std::string, Position> positions;
+};
 }  // namespace team
 }  // namespace senseless_soccer

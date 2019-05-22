@@ -36,9 +36,7 @@ Defend::Defend(Team &t) : State(t) {}
 // -----------------------------------------------------------------------------
 void Defend::start() {
   for (const auto &player : team.players) {
-    if (auto p = player.lock()) {
-      p->brain.changeState(ai::State::BrainCover);
-    }
+    player->brain.changeState(ai::State::BrainCover);
   }
 }
 

@@ -20,7 +20,7 @@ void Sliding::start() {
   player.speed = 300;
   if (player.widget) {
     player.widget->startAnimation(
-        Player::slide_animation_map[player.facing.direction]);
+        Player::slidemap[player.facing.direction]);
   }
 }
 

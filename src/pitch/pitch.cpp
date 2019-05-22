@@ -12,7 +12,8 @@ static const int grid_rows = 19;
 // -----------------------------------------------------------------------------
 // Pitch
 // -----------------------------------------------------------------------------
-Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
+Pitch::Pitch() {
+  gamelib2::Entity::create("pitch", "pitch");
   // det up a default pitch size
   dimensions.bounds.left = 250;
   dimensions.bounds.top = 250;
@@ -73,9 +74,9 @@ Pitch::Pitch() : gamelib2::Entity("pitch", "pitch") {
   goal_south_gfx = goal_north_gfx;
   goal_south_gfx.top += dimensions.bounds.height;
 
-  grid->init(dimensions.bounds.left, dimensions.bounds.top,
-             dimensions.bounds.width, dimensions.bounds.height, grid_columns,
-             grid_rows);
+  grid.init(dimensions.bounds.left, dimensions.bounds.top,
+            dimensions.bounds.width, dimensions.bounds.height, grid_columns,
+            grid_rows);
 }
 
 // -----------------------------------------------------------------------------

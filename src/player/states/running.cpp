@@ -18,7 +18,7 @@ Running::Running(Player &context) : State(context, "running") {}
 void Running::start() {
   if (player.widget) {
     player.widget->startAnimation(
-        Player::run_animation_map[player.facing.direction]);
+        Player::runmap[player.facing.direction]);
   }
 }
 
@@ -32,7 +32,7 @@ void Running::update(const float dt) {
     // change the running animation
     if (player.widget) {
       player.widget->startAnimation(
-          Player::run_animation_map[player.facing.direction]);
+          Player::runmap[player.facing.direction]);
     }
 
     // close control

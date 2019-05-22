@@ -18,14 +18,13 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
+#include <gamelib2/game/game.hpp>
 #include <memory>
-#include "../player/player.hpp"
+#include "../ball/ball.hpp"
 namespace senseless_soccer {
-class PlayerFactory {
+class BallFactory {
  public:
-  // constructs a complete player and delivers shared pointer
-  static std::shared_ptr<Player> makePlayer(const std::string &name);
-
- private:
+  // makes a ball
+  static void make_ball(Ball *ball, Sprite *sprite, Sprite *shadow);
 };
 }  // namespace senseless_soccer

@@ -31,7 +31,7 @@ public:
 
 private:
   // how quickly the player gets up after the slide
-  unsigned int recover_frames = 60;
+  int recover_frames = 60;
 
   // in the recovery (getting up) phase
   bool getting_up = false;

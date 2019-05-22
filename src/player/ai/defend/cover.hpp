@@ -18,8 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include "../brainstate.hpp"
 #include "../../../pitch/pitch.hpp"
+#include "../brainstate.hpp"
 
 #include <gamelib2/utils/grid.hpp>
 
@@ -29,18 +29,18 @@ namespace senseless_soccer {
 class Brain;
 namespace ai {
 class Cover : public BrainState {
-   public:
-    Cover(Brain &b);
-    virtual ~Cover() override = default;
-    virtual void start() override;
-    virtual void stop() override;
-    virtual bool finished() override;
-    virtual void update(float dt) override;
+ public:
+  Cover(Brain& b);
+  virtual ~Cover() override = default;
+  virtual void start() override;
+  virtual void stop() override;
+  virtual bool finished() override;
+  virtual void update(float dt) override;
 
-protected:
-    int last_sector = -1;
-    std::weak_ptr<gamelib2::Grid> grid;
-    std::weak_ptr<Pitch> pitch;
+ protected:
+  int last_sector = -1;
+  gamelib2::Grid* grid;
+  Pitch* pitch;
 };
 }  // namespace ai
 }  // namespace senseless_soccer

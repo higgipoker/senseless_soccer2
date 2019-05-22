@@ -122,11 +122,11 @@ static bool s_mouseMoved = false;
 static sf::Vector2i s_touchPos;
 static sf::Texture* s_fontTexture = NULL; // owning pointer to internal font atlas which is used if user doesn't set custom sf::Texture.
 
-static const unsigned int NULL_JOYSTICK_ID = sf::Joystick::Count;
-static unsigned int s_joystickId = NULL_JOYSTICK_ID;
+static const int NULL_JOYSTICK_ID = sf::Joystick::Count;
+static int s_joystickId = NULL_JOYSTICK_ID;
 
-static const unsigned int NULL_JOYSTICK_BUTTON = sf::Joystick::ButtonCount;
-static unsigned int s_joystickMapping[ImGuiNavInput_COUNT];
+static const int NULL_JOYSTICK_BUTTON = sf::Joystick::ButtonCount;
+static int s_joystickMapping[ImGuiNavInput_COUNT];
 
 struct StickInfo {
     sf::Joystick::Axis xAxis;
@@ -155,7 +155,7 @@ bool imageButtonImpl(const sf::Texture& texture, const sf::FloatRect& textureRec
 void initDefaultJoystickMapping();
 
 // Returns first id of connected joystick
-unsigned int getConnectedJoystickId();
+int getConnectedJoystickId();
 
 void updateJoystickActionState(ImGuiIO& io, ImGuiNavInput_ action);
 void updateJoystickDPadState(ImGuiIO& io);
@@ -209,7 +209,7 @@ void Init(sf::Window& window, sf::RenderTarget& target, bool loadDefaultFont)
     io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
     s_joystickId = getConnectedJoystickId();
 
-    for (unsigned int i = 0; i < ImGuiNavInput_COUNT; i++) {
+    for (int i = 0; i < ImGuiNavInput_COUNT; i++) {
         s_joystickMapping[i] = NULL_JOYSTICK_BUTTON;
     }
 
@@ -339,7 +339,7 @@ void Update(const sf::Vector2i& mousePos, const sf::Vector2f& displaySize, sf::T
         } else {
             io.MousePos = mousePos;
         }
-        for (unsigned int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             io.MouseDown[i] =  s_touchDown[i] || sf::Touch::isDown(i) || s_mousePressed[i] || sf::Mouse::isButtonPressed((sf::Mouse::Button)i);
             s_mousePressed[i] = false;
             s_touchDown[i] = false;
@@ -422,7 +422,7 @@ sf::Texture& GetFontTexture()
     return *s_fontTexture;
 }
 
-void SetActiveJoystickId(unsigned int joystickId)
+void SetActiveJoystickId(int joystickId)
 {
     assert(joystickId < sf::Joystick::Count);
     s_joystickId = joystickId;
@@ -440,7 +440,7 @@ void SetJoytickLStickThreshold(float threshold)
     s_lStickInfo.threshold = threshold;
 }
 
-void SetJoystickMapping(int action, unsigned int joystickButton)
+void SetJoystickMapping(int action, int joystickButton)
 {
     assert(action < ImGuiNavInput_COUNT);
     assert(joystickButton < sf::Joystick::ButtonCount);
@@ -666,7 +666,7 @@ void RenderDrawLists(ImDrawData* draw_data)
             if (pcmd->UserCallback) {
                 pcmd->UserCallback(cmd_list, pcmd);
             } else {
-                GLuint tex_id = (GLuint)*((unsigned int*)&pcmd->TextureId);
+                GLuint tex_id = (GLuint)*((int*)&pcmd->TextureId);
                 glBindTexture(GL_TEXTURE_2D, tex_id);
                 glScissor((int)pcmd->ClipRect.x, (int)(fb_height - pcmd->ClipRect.w),
                     (int)(pcmd->ClipRect.z - pcmd->ClipRect.x), (int)(pcmd->ClipRect.w - pcmd->ClipRect.y));
@@ -697,9 +697,9 @@ bool imageButtonImpl(const sf::Texture& texture, const sf::FloatRect& textureRec
     return ImGui::ImageButton((void*)texture.getNativeHandle(), size, uv0, uv1, framePadding, bgColor, tintColor);
 }
 
-unsigned int getConnectedJoystickId()
+int getConnectedJoystickId()
 {
-    for (unsigned int i = 0; i < (unsigned int)sf::Joystick::Count; ++i) {
+    for (int i = 0; i < (int)sf::Joystick::Count; ++i) {
         if (sf::Joystick::isConnected(i)) return i;
     }
 

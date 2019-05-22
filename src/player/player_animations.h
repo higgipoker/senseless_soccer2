@@ -22,49 +22,49 @@
 #include <vector>
 namespace senseless_soccer {
 namespace player_animations {
-static unsigned int anim_speed = 10;
+static int anim_speed = 10;
 
 // -----------------------------------------------------------------------------
 // standing animations
 // -----------------------------------------------------------------------------
-static std::vector<unsigned int> stand_east() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_east() {
+  std::vector<int> v;
   v.push_back(1);
   return v;
 }
-static std::vector<unsigned int> stand_southeast() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_southeast() {
+  std::vector<int> v;
   v.push_back(4);
   return v;
 }
-static std::vector<unsigned int> stand_south() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_south() {
+  std::vector<int> v;
   v.push_back(7);
   return v;
 }
-static std::vector<unsigned int> stand_southwest() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_southwest() {
+  std::vector<int> v;
   v.push_back(10);
   return v;
 }
-static std::vector<unsigned int> stand_west() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_west() {
+  std::vector<int> v;
   v.push_back(13);
   return v;
 }
-static std::vector<unsigned int> stand_northwest() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_northwest() {
+  std::vector<int> v;
   v.push_back(16);
   return v;
 }
-static std::vector<unsigned int> stand_north() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_north() {
+  std::vector<int> v;
   v.push_back(19);
   return v;
 }
 
-static std::vector<unsigned int> stand_northeast() {
-  std::vector<unsigned int> v;
+static std::vector<int> stand_northeast() {
+  std::vector<int> v;
   v.push_back(22);
   return v;
 }
@@ -72,51 +72,51 @@ static std::vector<unsigned int> stand_northeast() {
 // -----------------------------------------------------------------------------
 // running animations
 // -----------------------------------------------------------------------------
-static std::vector<unsigned int> run_east() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_east() {
+  std::vector<int> v;
   v.push_back(0);
   v.push_back(1);
   return v;
 }
-static std::vector<unsigned int> run_southeast() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_southeast() {
+  std::vector<int> v;
   v.push_back(3);
   v.push_back(5);
   return v;
 }
-static std::vector<unsigned int> run_south() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_south() {
+  std::vector<int> v;
   v.push_back(6);
   v.push_back(8);
   return v;
 }
-static std::vector<unsigned int> run_southwest() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_southwest() {
+  std::vector<int> v;
   v.push_back(9);
   v.push_back(11);
   return v;
 }
-static std::vector<unsigned int> run_west() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_west() {
+  std::vector<int> v;
   v.push_back(12);
   v.push_back(13);
   return v;
 }
-static std::vector<unsigned int> run_northwest() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_northwest() {
+  std::vector<int> v;
   v.push_back(15);
   v.push_back(17);
   return v;
 }
 
-static std::vector<unsigned int> run_north() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_north() {
+  std::vector<int> v;
   v.push_back(18);
   v.push_back(20);
   return v;
 }
-static std::vector<unsigned int> run_northeast() {
-  std::vector<unsigned int> v;
+static std::vector<int> run_northeast() {
+  std::vector<int> v;
   v.push_back(21);
   v.push_back(23);
   return v;
@@ -125,48 +125,48 @@ static std::vector<unsigned int> run_northeast() {
 // -----------------------------------------------------------------------------
 // sliding animations
 // -----------------------------------------------------------------------------
-static std::vector<unsigned int> slide_east() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_east() {
+  std::vector<int> v;
   v.push_back(24);
   v.push_back(25);
   for (int i = 0; i < 2; ++i)
     v.push_back(26);
   return v;
 }
-static std::vector<unsigned int> slide_southeast() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_southeast() {
+  std::vector<int> v;
   v.push_back(27);
   v.push_back(28);
   for (int i = 0; i < 2; ++i)
     v.push_back(29);
   return v;
 }
-static std::vector<unsigned int> slide_south() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_south() {
+  std::vector<int> v;
   v.push_back(30);
   v.push_back(31);
   for (int i = 0; i < 2; ++i)
     v.push_back(32);
   return v;
 }
-static std::vector<unsigned int> slide_southwest() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_southwest() {
+  std::vector<int> v;
   v.push_back(33);
   v.push_back(34);
   for (int i = 0; i < 2; ++i)
     v.push_back(35);
   return v;
 }
-static std::vector<unsigned int> slide_west() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_west() {
+  std::vector<int> v;
   v.push_back(36);
   v.push_back(37);
   for (int i = 0; i < 2; ++i)
     v.push_back(38);
   return v;
 }
-static std::vector<unsigned int> slide_northwest() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_northwest() {
+  std::vector<int> v;
   v.push_back(39);
   v.push_back(40);
   for (int i = 0; i < 2; ++i)
@@ -174,16 +174,16 @@ static std::vector<unsigned int> slide_northwest() {
   return v;
 }
 
-static std::vector<unsigned int> slide_north() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_north() {
+  std::vector<int> v;
   v.push_back(42);
   v.push_back(43);
   for (int i = 0; i < 2; ++i)
     v.push_back(44);
   return v;
 }
-static std::vector<unsigned int> slide_northeast() {
-  std::vector<unsigned int> v;
+static std::vector<int> slide_northeast() {
+  std::vector<int> v;
   v.push_back(45);
   v.push_back(46);
   for (int i = 0; i < 2; ++i)

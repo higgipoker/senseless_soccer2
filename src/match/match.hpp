@@ -64,18 +64,16 @@ class MatchObserver {
 class Match : public gamelib2::Entity {
  public:
   Match();
-  void init(const std::shared_ptr<team::Team> &t1,
-            const std::shared_ptr<team::Team> &t2,
-            const std::shared_ptr<Pitch> &p, const std::shared_ptr<Ball> &b);
+  void init(team::Team *t1, team::Team *t2, Pitch *p, Ball *b);
   void update(float dt);
   void changeState(const MatchState next_state);
   void observe(MatchObserver *o);
   void unObserve(MatchObserver *o);
 
-  std::shared_ptr<team::Team> team1;
-  std::shared_ptr<team::Team> team2;
-  std::shared_ptr<Pitch> pitch;
-  std::shared_ptr<Ball> ball;
+  team::Team *team1;
+  team::Team *team2;
+  Pitch *pitch;
+  Ball *ball;
 
  private:
   Play play;

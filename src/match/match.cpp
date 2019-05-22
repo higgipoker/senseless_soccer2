@@ -27,16 +27,12 @@ namespace match {
 // -----------------------------------------------------------------------------
 // Match
 // -----------------------------------------------------------------------------
-Match::Match()
-    : gamelib2::Entity("match", "match"), play(*this), enter_pitch(*this) {}
+Match::Match() : play(*this), enter_pitch(*this) { create("match", "match"); }
 
 // -----------------------------------------------------------------------------
 // init
 // -----------------------------------------------------------------------------
-void Match::init(const std::shared_ptr<team::Team> &t1,
-                 const std::shared_ptr<team::Team> &t2,
-                 const std::shared_ptr<Pitch> &p,
-                 const std::shared_ptr<Ball> &b) {
+void Match::init(team::Team *t1, team::Team *t2, Pitch *p, Ball *b) {
   team1 = t1;
   team2 = t2;
   pitch = p;

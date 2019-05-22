@@ -46,7 +46,7 @@ class EnterPitch : public State {
   gamelib2::Vector3 last_position;
 
   void march_player();
-  std::queue<std::shared_ptr<Player>> marchers;
+  std::queue<Player *> marchers;
   int ticks = 0;
   int speed = 10;
   int vertical_offset = 50;

@@ -36,7 +36,7 @@ void EnterPitch::start() {
   // set up some line up positions
 
   first_position = team.pitch->dimensions.center;
-  if (auto player = team.players[0].lock()) {
+  if (auto player = team.players[0]) {
     offset.x = player->widget->bounds().left * 2;
     first_position.x -= offset.x * team.players.size() / 2;
     if (team.side == Direction::NORTH) {
@@ -50,12 +50,10 @@ void EnterPitch::start() {
 
     // init marchers
     for (auto &player : team.players) {
-      if (auto p = player.lock()) {
-        p->setPosition(team.pitch->dimensions.bounds.left +
-                           team.pitch->dimensions.bounds.width,
-                       last_position.y);
-        marchers.push(player.lock());
-      }
+      player->setPosition(team.pitch->dimensions.bounds.left +
+                              team.pitch->dimensions.bounds.width,
+                          last_position.y);
+      marchers.push(player);
     }
     march_player();
   }
@@ -71,7 +69,7 @@ void EnterPitch::stop() {}
 // -----------------------------------------------------------------------------
 bool EnterPitch::finished() {
   for (const auto &player : team.players) {
-    if (player.lock()->velocity.magnitude()) {
+    if (player->velocity.magnitude()) {
       return false;
     }
   }

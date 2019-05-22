@@ -27,7 +27,7 @@ namespace senseless_soccer {
 namespace team {
 
 // possible match situations
-enum class Situation { Play, KickOff, GoalKick, Corner};
+enum class Situation { Play, KickOff, GoalKick, Corner };
 
 // offsets for match situation sectors
 const static int total_sectors = 285;
@@ -40,14 +40,10 @@ const static int index_offset_defending = index_offset_corner + 1;
 
 class Position {
  public:
-  Position(std::string fn);
-  static std::map<std::string, std::shared_ptr<Position>> positions;
+  void loadFromFile(const std::string &in_file);
   std::string name;
 
   int target(const Situation s, const int ball_sector);
-
-  static void scanPositions();
-
 
  protected:
   std::vector<int> sectors;

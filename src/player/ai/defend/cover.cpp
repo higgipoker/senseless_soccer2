@@ -35,8 +35,8 @@ Cover::Cover(Brain &b) : BrainState(b, "cover") {}
 // -----------------------------------------------------------------------------
 void Cover::start() {
   pitch = brain.player.my_team->pitch;
-  if (auto p = pitch.lock()) {
-    grid = p->grid;
+  if (pitch) {
+    grid = &pitch->grid;
   }
 }
 
@@ -56,7 +56,7 @@ bool Cover::finished() { return false; }
 void Cover::update(float dt) {
   if (auto pitch = brain.player.my_team->pitch) {
     auto grid = pitch->grid;
-    int ball_sector = grid->getSector(Player::ball->position);
+    int ball_sector = grid.getSector(Player::ball->position);
 
     // only recalculate if ball is in a different sector
     if (ball_sector != last_sector) {
@@ -67,13 +67,13 @@ void Cover::update(float dt) {
 
       // rotate sectors for attacking south goal
       if (brain.player.my_team->side == Direction::NORTH) {
-        ball_sector = grid->mirrorSector(ball_sector);
+        ball_sector = grid.mirrorSector(ball_sector);
         player_sector =
             brain.player.role->target(team::Situation::Play, ball_sector);
-        player_sector = grid->mirrorSector(player_sector);
+        player_sector = grid.mirrorSector(player_sector);
       }
 
-      brain.locomotion.startSeek(grid->getRandoPointInSector(player_sector));
+      brain.locomotion.startSeek(grid.getRandoPointInSector(player_sector));
     }
   }
 }
