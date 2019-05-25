@@ -113,7 +113,7 @@ int main() {
   Sprite sprite;
   Sprite shadow;
   BallFactory::make_ball(&ball, &sprite, &shadow);
-  ball.setPosition(gamelib2::Vector3(300, 300, 30));
+  ball.setPosition(gamelib2::Vector3(300, 300, 0));
   game.engine.addEntity(&ball);
   pitch_widget.addChild(&sprite);
   pitch_widget.addChild(&shadow);
@@ -129,7 +129,7 @@ int main() {
   Player::ball = &ball;
   Player::pitch = &pitch;
 
-  for (int i = 0; i < 100; ++i) {
+  for (int i = 0; i < 10; ++i) {
     std::stringstream player_name;
     player_name << "player" << i;
     team1.addPlayer(
@@ -137,9 +137,9 @@ int main() {
     team1.players.back()->setPosition(rand() % 800, rand() % 600);
     game.engine.addEntity(team1.players.back());
   }
-  for (int i = 0; i < 10; ++i) {
-    player_factory.release_player(team1.players[i]);
-  }
+  //  for (int i = 0; i < 10; ++i) {
+  //    player_factory.release_player(team1.players[i]);
+  //  }
 
   ///
   ///
@@ -171,7 +171,7 @@ int main() {
   Keyboard keyboard;
   SensiController controller(keyboard);
   // team1.controller = &controller;
-  // players.back()->controller = &controller;
+  team1.players.back()->controller = &controller;
   pitch.widget->addChild(&controller.label);
 
   ///

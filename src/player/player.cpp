@@ -63,7 +63,7 @@ Player::Player()
   // init state machine
   change_state(PlayerState::Stand);
   current_state->start();
-  speed = 300;
+  speed = 0.5f;
 }
 
 // -----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ void Player::update(float dt) {
   auto sprite = static_cast<Sprite *>(widget);
 
   sprite->setPosition(position.x, position.y);
-  sprite->animate();
+  // sprite->animate();
 
   // sync shadow with sprite
   auto shadow = sprite->getShadow();
@@ -189,7 +189,7 @@ void Player::do_dribble() {
   if (ball->position.z > 30) return;
 
   // calc force needed for kick
-  float force_needed = speed * 200.0f;
+  float force_needed = speed * 1000.0f;
   Vector3 kick = facing_old.toVector().normalise();
 
   if (Floats::greater_than(kick.magnitude(), 0)) {
