@@ -25,9 +25,9 @@ namespace senseless_soccer {
 
 // -----------------------------------------------------------------------------
 
-static const float GRAVITY = .098f;
-static const float AIR_FACTOR = 0.001f;
-static const float co_friction = 1.0f;
+static const float GRAVITY = 980;
+static const float AIR_FACTOR = 0;
+static const float co_friction = 0.92f;
 static const float co_friction_bounce = 0.98f;
 static const float co_bounciness = 0.85f;
 static const float co_spin_decay = 0.8f;
@@ -45,7 +45,7 @@ Ball::Ball(std::string in_name, float dt) {
   float gravity_pixels = Metrics::MetersToPixels(GRAVITY);
 
   // gravity pixels per second to gravity pixels per timeslice
-  gravity_pixels *= dt * 0.1f;
+  gravity_pixels *= 0.01f;
 
   // make the gravity vector
   forces.gravity = Vector3(0, 0, -gravity_pixels * ball_mass);
@@ -87,7 +87,7 @@ void Ball::do_physics(float dt) {
     // drag
     //
     // drag increases with height and ball size
-    forces.drag = Vector3(velocity.reverse() * AIR_FACTOR * dt * position.z *
+    forces.drag = Vector3(velocity.reverse() * AIR_FACTOR * position.z *
                           circle.getRadius() * 2);
     acceleration += forces.drag;
   }
@@ -95,7 +95,7 @@ void Ball::do_physics(float dt) {
   // friction
   else if (Floats::equal(velocity.z, 0) &&
            Floats::greater_than(velocity.magnitude2d(), 0)) {
-    velocity *= co_friction * dt;
+    velocity = velocity * co_friction;
   }
 
   // bounce if z < - and moving down
@@ -108,7 +108,7 @@ void Ball::do_physics(float dt) {
     velocity.z = -velocity.z * co_bounciness;
 
     // ball also loses some speed on bounce (todo this will be spin)
-    // velocity *= co_friction_bounce;
+    velocity *= co_friction_bounce;
   }
 
   //

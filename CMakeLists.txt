@@ -7,6 +7,7 @@ project(senseless_soccer)
 # --------------------------------------------------
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 # --------------------------------------------------
 # include dirs
@@ -43,20 +44,20 @@ add_executable(senseless_soccer
     src/joysticker/sensicontroller.cpp
     src/joysticker/aftertouch.cpp
     src/team/team.cpp
-    src/team/state.cpp
-    src/team/enterpitch.cpp
-    src/team/lineup.cpp
+    src/team/team_state.cpp
+    src/team/team_enterpitch.cpp
+    src/team/team_lineup.cpp
     src/team/defend.cpp
-    src/team/idle.cpp
+    src/team/team_idle.cpp
     src/team/kit.cpp
     src/team/tactics/formation.cpp
     src/team/tactics/position.cpp
     src/team/tactics/positionfactory.cpp
     src/match/match.cpp
-    src/match/state.cpp
+    src/match/match_state.cpp
     src/match/play.cpp
-    src/match/enterpitch.cpp
-    src/match/lineup.cpp
+    src/match/match_enterpitch.cpp
+    src/match/match_lineup.cpp
     src/match/kickoff.cpp
     src/match/goalkick.cpp
     src/match/throwin.cpp
@@ -64,7 +65,7 @@ add_executable(senseless_soccer
     src/match/freekick.cpp
     src/player/playerfactory.cpp
     src/player/player.cpp
-    src/player/states/state.cpp
+    src/player/states/player_state.cpp
     src/player/states/standing.cpp
     src/player/states/running.cpp
     src/player/states/sliding.cpp
@@ -79,10 +80,10 @@ add_executable(senseless_soccer
     src/player/locomotion/seek.cpp
     src/player/locomotion/head.cpp
     src/player/locomotion/pursue.cpp
-    src/player/locomotion/slide.cpp
+    src/player/locomotion/locomotion_slide.cpp
     src/player/ai/brain.cpp
     src/player/ai/brainstate.cpp
-    src/player/ai/idle.cpp
+    src/player/ai/brain_idle.cpp
     src/player/ai/retrieve.cpp
     src/player/ai/jump.cpp
     src/player/ai/goto.cpp
@@ -90,7 +91,7 @@ add_executable(senseless_soccer
     src/player/ai/attack/pass.cpp
     src/player/ai/attack/receivepass.cpp
     src/player/ai/attack/shoot.cpp
-    src/player/ai/defend/slide.cpp
+    src/player/ai/defend/brain_slide.cpp
     src/player/ai/defend/cover.cpp
     src/debug/diagnostics.cpp
     src/imgui/imgui.cpp
