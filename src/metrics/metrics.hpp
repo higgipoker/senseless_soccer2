@@ -26,7 +26,6 @@ class Metrics {
 /// dictated by the graphics style
 const float Y_OFFSET_DUE_TO_HEIGHT = 0.5f;
 const float CM_PER_PIXEL = 7.6f;
-static const float CAMERA_HEIGHT =
-    static_cast<float>(Metrics::MetersToPixels(4.0f));
+static const float CAMERA_HEIGHT = Metrics::MetersToPixels(4);
 
 }  // namespace senseless_soccer
