@@ -42,7 +42,7 @@ Ball::Ball(std::string in_name, float dt) {
   circle.setRadius(5.0f);
 
   // gravity per second to pixels per second
-  float gravity_pixels = Metrics::MetersToPixels(GRAVITY);
+  float gravity_pixels = static_cast<float>(Metrics::MetersToPixels(GRAVITY));
 
   // gravity pixels per second to gravity pixels per timeslice
   gravity_pixels *= 0.01f;
@@ -225,7 +225,7 @@ void Ball::rebound(Vector3 &wall, const Vector3 dampen) {
   wall = wall.normalise();
   velocity *= dampen;
   velocity = velocity.reflect(wall);
-  position += velocity * 0.01;  // tmp fixes sticky walls
+  position += velocity * 0.01f;  // tmp fixes sticky walls
 }
 
 // -----------------------------------------------------------------------------
