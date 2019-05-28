@@ -63,7 +63,7 @@ Player::Player()
   // init state machine
   change_state(PlayerState::Stand);
   current_state->start();
-  speed = 0.5f;
+  speed = 200;
 }
 
 // -----------------------------------------------------------------------------
@@ -189,7 +189,7 @@ void Player::do_dribble() {
   if (ball->position.z > 30) return;
 
   // calc force needed for kick
-  float force_needed = speed * 1000.0f;
+  float force_needed = speed * 200.0f;
   Vector3 kick = facing_old.toVector().normalise();
 
   if (Floats::greater_than(kick.magnitude(), 0)) {
@@ -372,7 +372,7 @@ void Player::calc_short_pass_recipients() {
   debug_short_pass[0].color = sf::Color(0, 255, 0, 100);
   debug_short_pass[1].color = sf::Color(0, 255, 0, 100);
   debug_short_pass[2].color = sf::Color(0, 255, 0, 100);
-  widget->primitives.emplace_back(debug_short_pass);
+  //  widget->primitives.emplace_back(debug_short_pass);
 }
 
 // -----------------------------------------------------------------------------
