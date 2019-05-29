@@ -14,6 +14,7 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # --------------------------------------------------
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui-sfml)
 
@@ -22,7 +23,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui-sfml)
 # --------------------------------------------------
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/lib)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML/Release/lib) # self built sfml
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib) # self built sfml
 
 # --------------------------------------------------
 # compiler flags

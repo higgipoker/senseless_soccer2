@@ -38,12 +38,29 @@ class Ball : public Entity {
   // temporary bounds
   sf::RectangleShape bounds;
 
+  // ball environment for physics
+  struct {
+    float gravity = 980;
+    float air_factor = 0;
+    float co_friction = 0.92f;
+    float co_friction_bounce = 0.98f;
+    float co_bounciness = 0.85f;
+    float co_spin_decay = 0.8f;
+    float ball_mass = 1.0f;
+  } environment;
+
  protected:
   // helper for ball physics
   void do_physics(float dt);
 
   // add perspective to the ball
   void perspectivize(float camera_height) override;
+
+  // for verlet
+  Vector3 old_velocity;
+
+  // tmp keep in bounds
+  void keep_in_bounds();
 
   // forces acting on the ball
   struct {
@@ -52,12 +69,6 @@ class Ball : public Entity {
     Vector3 sidespin;
     Vector3 gravity;
   } forces;
-
-  // for verlet
-  Vector3 old_velocity;
-
-  // tmp keep in bounds
-  void keep_in_bounds();
 
  public:
   friend class BallFactory;
