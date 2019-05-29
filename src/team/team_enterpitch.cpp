@@ -17,8 +17,8 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "enterpitch.hpp"
 #include "../player/player.hpp"
+#include "enterpitch.hpp"
 #include "team.hpp"
 namespace senseless_soccer {
 namespace team {
@@ -46,7 +46,7 @@ void EnterPitch::start() {
     }
 
     last_position = first_position;
-    last_position += offset * team.players.size();
+    last_position += offset * static_cast<float>(team.players.size());
 
     // init marchers
     for (auto &player : team.players) {

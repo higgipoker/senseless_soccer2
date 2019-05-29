@@ -91,7 +91,8 @@ void PitchWidget::render(sf::RenderTarget &target) {
       target.draw(line);
 
       // center circle
-      sf::CircleShape circle(pitch.dimensions.center_circle_radius);
+      sf::CircleShape circle(
+          static_cast<float>(pitch.dimensions.center_circle_radius));
       circle.setPointCount(50);
       circle.setFillColor(sf::Color(0, 0, 0, 0));
       circle.setOutlineThickness(2.5);
@@ -193,7 +194,7 @@ void PitchWidget::render(sf::RenderTarget &target) {
           target,
           pitch.dimensions.bounds.left + pitch.dimensions.bounds.width / 2,
           pitch.dimensions.north_18.top + pitch.dimensions.north_18.height - 99,
-          Metrics::MetersToPixels(9.15f), 33, 148, 100, 3);
+          static_cast<float>(Metrics::MetersToPixels(9.15f)), 33, 148, 100, 3);
 
       //
       // arc south
@@ -201,8 +202,8 @@ void PitchWidget::render(sf::RenderTarget &target) {
       Primitives::arc(
           target,
           pitch.dimensions.bounds.left + pitch.dimensions.bounds.width / 2,
-          pitch.dimensions.south_18.top + 99, Metrics::MetersToPixels(9.15f),
-          213, 329, 100, 3);
+          pitch.dimensions.south_18.top + 99,
+          static_cast<float>(Metrics::MetersToPixels(9.15f)), 213, 329, 100, 3);
 
       // goals
       goal_north.setPosition(

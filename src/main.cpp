@@ -103,7 +103,8 @@ int main() {
     player_name << "player" << i;
     team1.addPlayer(
         player_factory.make_player(player_name.str(), pitch_widget));
-    team1.players.back()->setPosition(rand() % 800, rand() % 600);
+    team1.players.back()->setPosition(static_cast<float>(rand() % 800),
+                                      static_cast<float>(rand() % 600));
     game.engine.addEntity(team1.players.back());
   }
   //  for (int i = 0; i < 10; ++i) {

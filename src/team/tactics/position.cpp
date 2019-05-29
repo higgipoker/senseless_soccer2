@@ -33,7 +33,7 @@ void Position::loadFromFile(const std::string &in_file) {
 
   if (lines.size() > 1) {
     name = lines[0];
-    for (int i = 1; i < lines.size(); i++) {
+    for (unsigned int i = 1; i < lines.size(); i++) {
       std::string str = lines[i];
       std::size_t pos = str.find(':');
       std::string first = str.substr(0, pos);

@@ -65,9 +65,11 @@ void Dribble::update(float dt) {
 //
 // -----------------------------------------------------------------------------
 void Dribble::change_direction(int angle) {
-  Vector3 new_direction = brain.player.brain.player.facing.toVector()
-                              .rotate(rand() % 2 == 1 ? angle : -angle)
-                              .roundAngle(45);
+  Vector3 new_direction =
+      brain.player.brain.player.facing.toVector()
+          .rotate(rand() % 2 == 1 ? static_cast<float>(angle)
+                                  : static_cast<float>(-angle))
+          .roundAngle(45);
   brain.locomotion.startHead(new_direction);
 }
 
@@ -122,5 +124,5 @@ void Dribble::stay_in_pitch(float dt) {
   }
 }
 
-} // namespace ai
-} // namespace senseless_soccer
+}  // namespace ai
+}  // namespace senseless_soccer

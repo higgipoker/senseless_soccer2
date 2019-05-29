@@ -249,7 +249,7 @@ void Player::kick(const Vector3 &direction, int power) {
   // normalise for diagonals
   if (Floats::greater_than(force.magnitude(), 0)) {
     force = force.normalise();
-    force *= power * 1000;
+    force *= power * 1000.0f;
   }
 
   //  apply to ball
@@ -271,8 +271,7 @@ void Player::short_pass() {
   Player *receiver = calc_short_pass_receiver();
 
   if (receiver) {
-    int distance =
-        static_cast<int>((receiver->position - position).magnitude());
+    float distance = (receiver->position - position).magnitude();
     Vector3 direction = receiver->position - position;
     Vector3 force = direction * distance * 1.4f;
     Player::ball->kick(force);
