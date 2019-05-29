@@ -34,6 +34,13 @@ class Diagnostic : public gamelib2::Diagnostic {
 
   void showEntityMenu();
   void showPlayerMenu();
+  void showBallMenu();
+
+  //test
+  float ball_x=0.0f;
+  float ball_y=0.0f;
+  float ball_z=0.0f;
+
 
  protected:
   Entity *selected_player = nullptr;

@@ -12,27 +12,7 @@
 using namespace gamelib2;
 namespace senseless_soccer {
 
-// -----------------------------------------------------------------------------
-// stuff for ball physics mark 2!!!
-// -----------------------------------------------------------------------------
-
-// Vector initial_force;
-// Vector topspin;
-// Vector sidespin;
-// Vector drag;
-// float air_density;
-// float ball_mass;
-
-// -----------------------------------------------------------------------------
-
-static const float GRAVITY = 980;
-static const float AIR_FACTOR = 0;
-static const float co_friction = 0.92f;
-static const float co_friction_bounce = 0.98f;
-static const float co_bounciness = 0.85f;
-static const float co_spin_decay = 0.8f;
-static const float ball_mass = 1.0f;
-static const int SHADOW_OFFSET = 1;
+const int SHADOW_OFFSET = 1;
 
 // -----------------------------------------------------------------------------
 // Ball
@@ -40,15 +20,6 @@ static const int SHADOW_OFFSET = 1;
 Ball::Ball(std::string in_name, float dt) {
   create("ball", std::move(in_name));
   circle.setRadius(5.0f);
-
-  // gravity per second to pixels per second
-  float gravity_pixels = static_cast<float>(Metrics::MetersToPixels(GRAVITY));
-
-  // gravity pixels per second to gravity pixels per timeslice
-  gravity_pixels *= 0.01f;
-
-  // make the gravity vector
-  forces.gravity = Vector3(0, 0, -gravity_pixels * ball_mass);
 }
 
 // -----------------------------------------------------------------------------
@@ -56,6 +27,11 @@ Ball::Ball(std::string in_name, float dt) {
 // -----------------------------------------------------------------------------
 void Ball::update(float dt) {
   // ball is a special case, do not call base update
+
+  // gravity
+  float gravity_pixels =
+      static_cast<float>(Metrics::MetersToPixels(environment.gravity));
+  forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
 
   // movement
   do_physics(dt);
@@ -87,15 +63,15 @@ void Ball::do_physics(float dt) {
     // drag
     //
     // drag increases with height and ball size
-    forces.drag = Vector3(velocity.reverse() * AIR_FACTOR * position.z *
-                          circle.getRadius() * 2);
+    forces.drag = Vector3(velocity.reverse() * environment.air_factor *
+                          position.z * circle.getRadius() * 2);
     acceleration += forces.drag;
   }
 
   // friction
   else if (Floats::equal(velocity.z, 0) &&
            Floats::greater_than(velocity.magnitude2d(), 0)) {
-    velocity = velocity * co_friction;
+    velocity = velocity * environment.co_friction;
   }
 
   // bounce if z < - and moving down
@@ -105,10 +81,10 @@ void Ball::do_physics(float dt) {
     bounced = true;
 
     // apply bounciness
-    velocity.z = -velocity.z * co_bounciness;
+    velocity.z = -velocity.z * environment.co_bounciness;
 
     // ball also loses some speed on bounce (todo this will be spin)
-    velocity *= co_friction_bounce;
+    velocity *= environment.co_friction_bounce;
   }
 
   //
@@ -123,7 +99,7 @@ void Ball::do_physics(float dt) {
 
   // 1. verlet motion integration
   old_velocity = velocity;
-  velocity = velocity + acceleration * dt;
+  velocity = velocity + acceleration;
   position = position + (old_velocity + velocity) * 0.5 * dt;
 
   // 2. semi-implicit euler motion integration
@@ -143,12 +119,12 @@ void Ball::do_physics(float dt) {
 
   // spin decays over time
   if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
-    forces.topspin = forces.topspin * co_spin_decay;
+    forces.topspin = forces.topspin * environment.co_spin_decay;
   } else {
     forces.topspin.reset();
   }
   if (Floats::greater_than(forces.sidespin.magnitude(), 0)) {
-    forces.sidespin = forces.sidespin * co_spin_decay;
+    forces.sidespin = forces.sidespin * environment.co_spin_decay;
   } else {
     forces.sidespin.reset();
   }

@@ -42,27 +42,30 @@ void Diagnostic::update() {
   if (on) {
     gamelib2::Diagnostic::update();
     // dimensions
-    panel_dimensions.width = last_panel_dimensions.width;
-    panel_dimensions.height =
-        game.viewer.getWindow().getSize().y - last_panel_dimensions.height;
-    panel_dimensions.left =
-        game.viewer.getWindow().getSize().x - panel_dimensions.width;
-    panel_dimensions.top =
-        last_panel_dimensions.top + last_panel_dimensions.height;
-
-    ImGui::SetNextWindowSize(
-        sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
-    ImGui::SetNextWindowPos(
-        sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
+    //     panel_dimensions.width = last_panel_dimensions.width;
+    //     panel_dimensions.height =
+    //         game.viewer.getWindow().getSize().y -
+    //         last_panel_dimensions.height;
+    //     panel_dimensions.left =
+    //         game.viewer.getWindow().getSize().x - panel_dimensions.width;
+    //     panel_dimensions.top =
+    //         last_panel_dimensions.top + last_panel_dimensions.height;
+    //
+    //     ImGui::SetNextWindowSize(
+    //         sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
+    //     ImGui::SetNextWindowPos(
+    //         sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
     // entity window
     if (selected_entity) {
       ImGui::Begin(selected_entity->name.c_str());
       showEntityMenu();
-      if (selected_player) {
+      if (selected_entity->type == "player") {
         showPlayerMenu();
+      } else if (selected_entity->type == "ball") {
+        showBallMenu();
       }
-      last_panel_dimensions = panel_dimensions;
+      // last_panel_dimensions = panel_dimensions;
       ImGui::End();
     }
   }
@@ -128,15 +131,17 @@ void Diagnostic::showPlayerMenu() {
 
   {  // animation
     if (player.controller != nullptr) {
-      int active_anim_index = 0;
-      std::string orig_anim = player.widget->currentAnimation()->name;
-      std::vector<const char *> anims;
-      process_animation_list(anims, active_anim_index);
-      ImGui::Combo("##animation", &active_anim_index, anims.data(),
-                   anims.size());
-      if (orig_anim != anims[active_anim_index]) {
-        std::string new_anim = anims[active_anim_index];
-        player.widget->startAnimation(new_anim);
+      if (player.widget->currentAnimation()) {
+        int active_anim_index = 0;
+        std::string orig_anim = player.widget->currentAnimation()->name;
+        std::vector<const char *> anims;
+        process_animation_list(anims, active_anim_index);
+        ImGui::Combo("##animation", &active_anim_index, anims.data(),
+                     anims.size());
+        if (orig_anim != anims[active_anim_index]) {
+          std::string new_anim = anims[active_anim_index];
+          player.widget->startAnimation(new_anim);
+        }
       }
     } else {
       if (player.widget->currentAnimation()) {
@@ -183,6 +188,31 @@ void Diagnostic::showPlayerMenu() {
     }
   }
   style.Alpha = 1.0f;
+  ImGui::Text("_____________________________________");
+}
+
+// -----------------------------------------------------------------------------
+// showBallMenu
+// -----------------------------------------------------------------------------
+void Diagnostic::showBallMenu() {
+  ImGuiStyle &style = ImGui::GetStyle();
+  auto &ball = static_cast<Ball &>(*selected_entity);
+  ImGui::Text("Physical Environment");
+
+  ImGui::SliderFloat("gravity", &ball.environment.gravity, 0.0f, 1.0f);
+  ImGui::SliderFloat("friction", &ball.environment.co_friction, 0.0f, 1.0f);
+  ImGui::SliderFloat("bounce", &ball.environment.co_bounciness, 0.0f, 1.0f);
+
+  ImGui::Text("_____________________________________");
+
+  ImGui::Text("Forces");
+  ImGui::SliderFloat("x", &ball_x, -1000.0f, 1000.0f);
+  ImGui::SliderFloat("y", &ball_y, -1000.0f, 1000.0f);
+  ImGui::SliderFloat("z", &ball_z, 0.0f, 1000.0f);
+  if (ImGui::Button("Apply Force")) {
+    ball.kick(gamelib2::Vector3(ball_x, ball_y, ball_z));
+  }
+
   ImGui::Text("_____________________________________");
 }
 
