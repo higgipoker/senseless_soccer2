@@ -1,4 +1,4 @@
- #include "ball.hpp"
+#include "ball.hpp"
 #include "../joysticker/aftertouch.hpp"
 #include "../metrics/metrics.hpp"
 #include "ball_animations.hpp"
@@ -29,8 +29,8 @@ void Ball::update(float dt) {
   // ball is a special case, do not call base update
 
   // gravity
-  float gravity_pixels = static_cast<float>(Metrics::MetersToPixels(environment.gravity));
-  gravity_pixels *= 0.01f;
+  float gravity_pixels =
+      static_cast<float>(Metrics::MetersToPixels(environment.gravity));
   forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
 
   // movement
@@ -63,8 +63,8 @@ void Ball::do_physics(float dt) {
     // drag
     //
     // drag increases with height and ball size
-    forces.drag = Vector3(velocity.reverse() * environment.air_factor * position.z *
-                          circle.getRadius() * 2);
+    forces.drag = Vector3(velocity.reverse() * environment.air_factor *
+                          position.z * circle.getRadius() * 2);
     acceleration += forces.drag;
   }
 
@@ -99,7 +99,7 @@ void Ball::do_physics(float dt) {
 
   // 1. verlet motion integration
   old_velocity = velocity;
-  velocity = velocity + acceleration * dt;
+  velocity = velocity + acceleration;
   position = position + (old_velocity + velocity) * 0.5 * dt;
 
   // 2. semi-implicit euler motion integration

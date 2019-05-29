@@ -40,10 +40,10 @@ class Ball : public Entity {
 
   // ball environment for physics
   struct {
-    float gravity = 980;
+    float gravity = 0.98f;
     float air_factor = 0;
     float co_friction = 0.92f;
-    float co_friction_bounce = 0.98f;
+    float co_friction_bounce = 0.9f;
     float co_bounciness = 0.85f;
     float co_spin_decay = 0.8f;
     float ball_mass = 1.0f;
