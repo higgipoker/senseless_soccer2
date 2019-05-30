@@ -18,11 +18,11 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include <gamelib2/widgets/sprite.hpp>
+#include <gamelib2/game/entity.hpp>
 #include <vector>
 namespace senseless_soccer {
 namespace player_animations {
-static int anim_speed = 10;
+const float anim_speed = 0.01f * 10.0f;
 
 // -----------------------------------------------------------------------------
 // standing animations
@@ -183,33 +183,33 @@ static std::vector<int> slide_northeast() {
   return v;
 }
 
-static void fill_animations(Sprite *spr) {
-  spr->addAnimation("stand_east", anim_speed, true, stand_east());
-  spr->addAnimation("stand_southeast", anim_speed, true, stand_southeast());
-  spr->addAnimation("stand_south", anim_speed, true, stand_south());
-  spr->addAnimation("stand_southwest", anim_speed, true, stand_southwest());
-  spr->addAnimation("stand_west", anim_speed, true, stand_west());
-  spr->addAnimation("stand_northwest", anim_speed, true, stand_northwest());
-  spr->addAnimation("stand_north", anim_speed, true, stand_north());
-  spr->addAnimation("stand_northeast", anim_speed, true, stand_northeast());
+static void fill_animations(gamelib2::Entity* e) {
+  e->addAnimation("stand_east", anim_speed, true, stand_east());
+  e->addAnimation("stand_southeast", anim_speed, true, stand_southeast());
+  e->addAnimation("stand_south", anim_speed, true, stand_south());
+  e->addAnimation("stand_southwest", anim_speed, true, stand_southwest());
+  e->addAnimation("stand_west", anim_speed, true, stand_west());
+  e->addAnimation("stand_northwest", anim_speed, true, stand_northwest());
+  e->addAnimation("stand_north", anim_speed, true, stand_north());
+  e->addAnimation("stand_northeast", anim_speed, true, stand_northeast());
 
-  spr->addAnimation("run_east", anim_speed, true, run_east());
-  spr->addAnimation("run_southeast", anim_speed, true, run_southeast());
-  spr->addAnimation("run_south", anim_speed, true, run_south());
-  spr->addAnimation("run_southwest", anim_speed, true, run_southwest());
-  spr->addAnimation("run_west", anim_speed, true, run_west());
-  spr->addAnimation("run_northwest", anim_speed, true, run_northwest());
-  spr->addAnimation("run_north", anim_speed, true, run_north());
-  spr->addAnimation("run_northeast", anim_speed, true, run_northeast());
+  e->addAnimation("run_east", anim_speed, true, run_east());
+  e->addAnimation("run_southeast", anim_speed, true, run_southeast());
+  e->addAnimation("run_south", anim_speed, true, run_south());
+  e->addAnimation("run_southwest", anim_speed, true, run_southwest());
+  e->addAnimation("run_west", anim_speed, true, run_west());
+  e->addAnimation("run_northwest", anim_speed, true, run_northwest());
+  e->addAnimation("run_north", anim_speed, true, run_north());
+  e->addAnimation("run_northeast", anim_speed, true, run_northeast());
 
-  spr->addAnimation("slide_east", anim_speed, false, slide_east());
-  spr->addAnimation("slide_southeast", anim_speed, false, slide_southeast());
-  spr->addAnimation("slide_south", anim_speed, false, slide_south());
-  spr->addAnimation("slide_southwest", anim_speed, false, slide_southwest());
-  spr->addAnimation("slide_west", anim_speed, false, slide_west());
-  spr->addAnimation("slide_northwest", anim_speed, false, slide_northwest());
-  spr->addAnimation("slide_north", anim_speed, false, slide_north());
-  spr->addAnimation("slide_northeast", anim_speed, false, slide_northeast());
+  e->addAnimation("slide_east", anim_speed, false, slide_east());
+  e->addAnimation("slide_southeast", anim_speed, false, slide_southeast());
+  e->addAnimation("slide_south", anim_speed, false, slide_south());
+  e->addAnimation("slide_southwest", anim_speed, false, slide_southwest());
+  e->addAnimation("slide_west", anim_speed, false, slide_west());
+  e->addAnimation("slide_northwest", anim_speed, false, slide_northwest());
+  e->addAnimation("slide_north", anim_speed, false, slide_north());
+  e->addAnimation("slide_northeast", anim_speed, false, slide_northeast());
 }
 }  // namespace player_animations
 }  // namespace senseless_soccer

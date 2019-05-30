@@ -18,26 +18,26 @@
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
 #pragma once
-#include <gamelib2/widgets/sprite.hpp>
+#include <gamelib2/game/entity.hpp>
 #include <vector>
 namespace senseless_soccer {
 namespace ball_animations {
-static int anim_speed = 5;
+const float anim_speed = 0.01f * 10.0f;
 static std::vector<int> roll() {
-    std::vector<int> v;
-    v.push_back(0);
-    v.push_back(1);
-    v.push_back(2);
-    v.push_back(3);
-    v.push_back(4);
-    v.push_back(5);
-    v.push_back(6);
-    return v;
+  std::vector<int> v;
+  v.push_back(0);
+  v.push_back(1);
+  v.push_back(2);
+  v.push_back(3);
+  v.push_back(4);
+  v.push_back(5);
+  v.push_back(6);
+  return v;
 }
 
-static void fill_animations(gamelib2::Sprite *spr) {
-    spr->addAnimation("roll", anim_speed, true, roll());
+static void fill_animations(gamelib2::Entity *e) {
+  e->addAnimation("roll", anim_speed, true, roll());
 }
 
-} // namespace ball_animations
-} // namespace senseless_soccer
+}  // namespace ball_animations
+}  // namespace senseless_soccer

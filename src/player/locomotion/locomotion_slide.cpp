@@ -17,9 +17,9 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  ****************************************************************************/
-#include "slide.hpp"
-#include "../player.hpp"
 #include <iostream>
+#include "../player.hpp"
+#include "slide.hpp"
 namespace senseless_soccer {
 namespace locomotion {
 
@@ -46,6 +46,6 @@ void Slide::stop() { player.velocity.reset(); }
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
-bool Slide::finished() { return player.widget->currentAnimation()->finished(); }
-} // namespace  locomotion
-} // namespace senseless_soccer
+bool Slide::finished() { return player.currentAnimation()->finished(); }
+}  // namespace  locomotion
+}  // namespace senseless_soccer

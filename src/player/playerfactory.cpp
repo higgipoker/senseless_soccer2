@@ -45,13 +45,13 @@ Player* PlayerFactory::make_player(const std::string& name,
   sprite->init(Files::getWorkingDirectory() + "/gfx/player/player.png", 6, 24);
   sprite->clickable = true;
   sprite->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
-  player_animations::fill_animations(sprite.get());
   shadow->init(Files::getWorkingDirectory() + "/gfx/player/player_shadow.png",
                6, 24);
   shadow->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
   shadow->z_order = -1;
   sprite->shadow = shadow.get();
   gamelib2::Game::connect(player.get(), sprite.get());
+  player_animations::fill_animations(player.get());
 
   in_parent.addChild(player->widget);
   in_parent.addChild(static_cast<Sprite*>(player->widget)->shadow);

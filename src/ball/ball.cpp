@@ -36,6 +36,8 @@ void Ball::update(float dt) {
   // movement
   do_physics(dt);
 
+  animate(dt);
+
   // update widget (sprite)
   if (widget) {
     auto sprite = static_cast<Sprite *>(widget);

@@ -40,13 +40,13 @@ void BallFactory::make_ball(Ball *ball, Sprite *sprite, Sprite *shadow) {
   ball->create("ball", "ball");
   sprite->init(gfx_path + "ball_new.png", 4, 2);
   sprite->z_order = 10;
-  ball_animations::fill_animations(sprite);
-  sprite->startAnimation("roll");
   shadow->init(gfx_path + "ball_shadow.png", 1, 1);
   sprite->clickable = true;
   shadow->z_order = -1;
   sprite->shadow = shadow;
   Game::connect(ball, sprite);
+  ball_animations::fill_animations(ball);
+  ball->startAnimation("roll");
 }
 
 }  // namespace senseless_soccer

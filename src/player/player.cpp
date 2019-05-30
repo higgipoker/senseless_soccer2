@@ -189,7 +189,7 @@ void Player::do_dribble() {
   if (ball->position.z > 30) return;
 
   // calc force needed for kick
-  float force_needed = speed * 200.0f;
+  float force_needed = speed * 2.0f;
   Vector3 kick = facing_old.toVector().normalise();
 
   if (Floats::greater_than(kick.magnitude(), 0)) {
@@ -430,10 +430,10 @@ void Player::face_ball() {
     if (Player::ball) {
       gamelib2::Vector3 to_ball = Player::ball->position - position;
       gamelib2::Compass c(to_ball.normalise());
-      widget->startAnimation(Player::standmap[c.direction]);
+      startAnimation(Player::standmap[c.direction]);
       facing.fromVector(to_ball.normalise());
     } else {
-      widget->startAnimation(Player::standmap[gamelib2::Direction::SOUTH]);
+      startAnimation(Player::standmap[gamelib2::Direction::SOUTH]);
       facing = gamelib2::Direction::SOUTH;
     }
   }

@@ -42,19 +42,18 @@ void Diagnostic::update() {
   if (on) {
     gamelib2::Diagnostic::update();
     // dimensions
-    //     panel_dimensions.width = last_panel_dimensions.width;
-    //     panel_dimensions.height =
-    //         game.viewer.getWindow().getSize().y -
-    //         last_panel_dimensions.height;
-    //     panel_dimensions.left =
-    //         game.viewer.getWindow().getSize().x - panel_dimensions.width;
-    //     panel_dimensions.top =
-    //         last_panel_dimensions.top + last_panel_dimensions.height;
-    //
-    //     ImGui::SetNextWindowSize(
-    //         sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
-    //     ImGui::SetNextWindowPos(
-    //         sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
+    panel_dimensions.width = last_panel_dimensions.width;
+    panel_dimensions.height =
+        game.viewer.getWindow().getSize().y - last_panel_dimensions.height;
+    panel_dimensions.left =
+        game.viewer.getWindow().getSize().x - panel_dimensions.width;
+    panel_dimensions.top =
+        last_panel_dimensions.top + last_panel_dimensions.height;
+
+    ImGui::SetNextWindowSize(
+        sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
+    ImGui::SetNextWindowPos(
+        sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
     // entity window
     if (selected_entity) {
@@ -131,22 +130,21 @@ void Diagnostic::showPlayerMenu() {
 
   {  // animation
     if (player.controller != nullptr) {
-      if (player.widget->currentAnimation()) {
+      if (player.currentAnimation()) {
         int active_anim_index = 0;
-        std::string orig_anim = player.widget->currentAnimation()->name;
+        std::string orig_anim = player.currentAnimation()->name;
         std::vector<const char *> anims;
         process_animation_list(anims, active_anim_index);
         ImGui::Combo("##animation", &active_anim_index, anims.data(),
                      anims.size());
         if (orig_anim != anims[active_anim_index]) {
           std::string new_anim = anims[active_anim_index];
-          player.widget->startAnimation(new_anim);
+          player.startAnimation(new_anim);
         }
       }
     } else {
-      if (player.widget->currentAnimation()) {
-        ImGui::Text("Animation: %s",
-                    player.widget->currentAnimation()->name.c_str());
+      if (player.currentAnimation()) {
+        ImGui::Text("Animation: %s", player.currentAnimation()->name.c_str());
       }
     }
   }
@@ -221,10 +219,10 @@ void Diagnostic::showBallMenu() {
 // -----------------------------------------------------------------------------
 void Diagnostic::process_animation_list(std::vector<const char *> &out_list,
                                         int &out_active_index) {
-  auto current_anim = selected_player->widget->currentAnimation();
+  auto current_anim = selected_player->currentAnimation();
 
   int idx = 0;
-  for (auto &anim : selected_player->widget->animations) {
+  for (auto &anim : selected_player->getAnimationList()) {
     out_list.emplace_back(anim.first.c_str());
     if (anim.first == current_anim->name) {
       out_active_index = idx;
@@ -249,8 +247,4 @@ void Diagnostic::process_brainstate_list(std::vector<const char *> &out_list,
   }
 }
 
-// -----------------------------------------------------------------------------
-// onClose
-// -----------------------------------------------------------------------------
-void Diagnostic::onClose() { ImGui::SFML::Render(game.viewer.getWindow()); }
 }  // namespace senseless_soccer

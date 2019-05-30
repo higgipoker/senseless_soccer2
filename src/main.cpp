@@ -138,7 +138,6 @@ int main() {
   }
 
   // cleanup
-  ImGui::SFML::Shutdown();
   game.viewer.close();
   return 0;
 }

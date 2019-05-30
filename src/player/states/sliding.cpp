@@ -19,8 +19,7 @@ void Sliding::start() {
   }
   player.speed = 300;
   if (player.widget) {
-    player.widget->startAnimation(
-        Player::slidemap[player.facing.direction]);
+    player.startAnimation(Player::slidemap[player.facing.direction]);
   }
 }
 
@@ -34,7 +33,7 @@ void Sliding::update(const float dt) {
     }
   }
 
-  if (player.widget->currentAnimation()->finished()) {
+  if (player.currentAnimation()->finished()) {
     getting_up = true;
     player.velocity.reset();
   }
@@ -74,4 +73,4 @@ void Sliding::changeToNextState() {
 //
 // -----------------------------------------------------------------------------
 void Sliding::handle_input(const ControllerEvent &event) {}
-} // namespace senseless_soccer
+}  // namespace senseless_soccer
