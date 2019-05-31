@@ -59,6 +59,21 @@ int main() {
   std::string working_dir = Files::getWorkingDirectory();
   std::string gfx_path = working_dir + "/gfx/";
 
+  std::vector<std::string> joystick_debug_files = {
+    gfx_path + "joysticker/bg.png",
+    gfx_path + "joysticker/dpad_left.png",
+    gfx_path + "joysticker/dpad_right.png",
+    gfx_path + "joysticker/dpad_up.png",
+    gfx_path + "joysticker/dpad_down.png",
+    gfx_path + "joysticker/dpad_centered.png",
+    gfx_path + "joysticker/button_green.png",
+    gfx_path + "joysticker/button_red.png",
+    gfx_path + "joysticker/button_yellow.png",
+    gfx_path + "joysticker/button_blue.png",
+    gfx_path + "joysticker/analog_left.png",
+    gfx_path + "joysticker/analog_right.png",
+  };
+
   // game
   Game game;
 
@@ -120,6 +135,7 @@ int main() {
   // debug hud
   senseless_soccer::Diagnostic debug(game);
   game.viewer.connectDiagnostics(debug);
+  debug.joystick1.init(joystick_debug_files);
 
   // controller
   print_controllers();
@@ -130,9 +146,20 @@ int main() {
   team1.players.back()->controller = &controller;
   pitch.widget->addChild(&controller.label);
 
+
+
   // main loop
   while (game.viewer.running) {
     controller.update();
+
+    if(debug.active()){
+      debug.joystick1.update(controller.input.states);
+      game.viewer.addWidget(&debug.joystick1, true);
+    }else{
+      game.viewer.remWidget(&debug.joystick1);
+    }
+
+
     debug.update();
     game.update();
   }

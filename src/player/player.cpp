@@ -186,10 +186,10 @@ void Player::onDragged(const gamelib2::Vector3 &new_position) {
 // -----------------------------------------------------------------------------
 void Player::do_dribble() {
   // TODO height
-  if (ball->position.z > 30) return;
+  if (ball->position.z > 6) return;
 
   // calc force needed for kick
-  float force_needed = speed * 2.0f * 100;
+  float force_needed = speed * 15;
   Vector3 kick = facing_old.toVector().normalise();
 
   if (Floats::greater_than(kick.magnitude(), 0)) {

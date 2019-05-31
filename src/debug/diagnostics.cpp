@@ -97,6 +97,12 @@ void Diagnostic::showEntityMenu() {
   ImGui::Text("x: %f", selected_entity->position.x);
   ImGui::Text("y: %f", selected_entity->position.y);
   ImGui::Text("z: %f", selected_entity->position.z);
+
+  if (ImGui::Button("Center")) {
+    selected_entity->setPosition( gamelib2::Vector3(game.camera.getViewInWorld().left + game.camera.getViewInWorld().width/2,
+                                        game.camera.getViewInWorld().top + game.camera.getViewInWorld().height/2,
+                                        selected_entity->position.z));
+  }
   ImGui::Text("_____________________________________");
 
   ImGui::Text("Velocity");
@@ -213,12 +219,6 @@ void Diagnostic::showBallMenu() {
   ImGui::SliderFloat("z", &ball_force.z, 0.0f, 1000.0f);
   if (ImGui::Button("Apply Force")) {
     ball.kick(gamelib2::Vector3(ball_force.x*50, ball_force.y*50, ball_force.z*50));
-  }
-
-  if (ImGui::Button("Center")) {
-    ball.setPosition( gamelib2::Vector3(game.camera.getViewInWorld().left + game.camera.getViewInWorld().width/2,
-                      game.camera.getViewInWorld().top + game.camera.getViewInWorld().height/2,
-                      ball.position.z));
   }
 
   ImGui::Text("_____________________________________");

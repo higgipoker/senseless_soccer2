@@ -186,11 +186,11 @@ void Ball::onDragged(const Vector3 &new_position) {
 // kick
 // -----------------------------------------------------------------------------
 void Ball::kick(const Vector3 &force) {
-  forces.sidespin.reset();
-  forces.topspin.reset();
-  acceleration.reset();
-  velocity.reset();
-  acceleration = force;
+//   forces.sidespin.reset();
+//   forces.topspin.reset();
+//   acceleration.reset();
+//   velocity.reset();
+  acceleration += force;
 }
 
 // -----------------------------------------------------------------------------
