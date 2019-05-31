@@ -19,7 +19,15 @@ const int SHADOW_OFFSET = 1;
 // -----------------------------------------------------------------------------
 Ball::Ball(std::string in_name, float dt) {
   create("ball", std::move(in_name));
-  circle.setRadius(5.0f);
+  circle.setRadius(4.0f);
+
+  environment.gravity = 9.8f;
+  environment.co_air_resistance = 0.01f;
+  environment.co_friction = 5;
+  environment.co_friction_bounce = 0.0f;
+  environment.co_bounciness = 0.9f;
+  environment.co_spin_decay = 0.8f;
+  environment.ball_mass = 1.0f;
 }
 
 // -----------------------------------------------------------------------------
@@ -28,11 +36,6 @@ Ball::Ball(std::string in_name, float dt) {
 void Ball::update(float dt) {
   // ball is a special case, do not call base update
 
-  // gravity
-  float gravity_pixels =
-      static_cast<float>(Metrics::MetersToPixels(environment.gravity));
-  forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
-
   // movement
   do_physics(dt);
 
@@ -40,7 +43,7 @@ void Ball::update(float dt) {
 
   // update widget (sprite)
   if (widget) {
-    auto sprite = static_cast<Sprite *>(widget);
+    auto sprite = static_cast< Sprite * >(widget);
     sprite->setPosition(position.x, position.y);
     perspectivize(CAMERA_HEIGHT);
   }
@@ -59,34 +62,38 @@ void Ball::do_physics(float dt) {
     //
     // gravity
     //
+    // gravity
+    float gravity_pixels = static_cast< float >(Metrics::MetersToPixels(environment.gravity));
+    forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
     acceleration += forces.gravity;
 
     //
     // drag
     //
     // drag increases with height and ball size
-    forces.drag = Vector3(velocity.reverse() * environment.air_factor *
-                          position.z * circle.getRadius() * 2);
+    forces.drag =
+      (velocity.reverse() * (environment.co_air_resistance * position.z * circle.getRadius() * 2));
     acceleration += forces.drag;
   }
 
   // friction
-  else if (Floats::equal(velocity.z, 0) &&
-           Floats::greater_than(velocity.magnitude2d(), 0)) {
-    velocity = velocity * environment.co_friction;
+  else if (Floats::equal(velocity.z, 0) && Floats::greater_than(velocity.magnitude2d(), 0)) {
+    acceleration += velocity.reverse() * environment.co_friction;
   }
 
   // bounce if z < - and moving down
-  else if (Floats::less_than(position.z, 0) &&
-           Floats::less_than(velocity.z, 0)) {
+  else if (Floats::less_than(position.z, 0) && Floats::less_than(velocity.z, 0)) {
     // do dampening for infinite bounce later
     bounced = true;
 
+    // can't be in the ground
+    position.z = 0;
+
     // apply bounciness
-    velocity.z = -velocity.z * environment.co_bounciness;
+    acceleration.z += -(velocity.z * environment.co_bounciness / dt) * 2;
 
     // ball also loses some speed on bounce (todo this will be spin)
-    velocity *= environment.co_friction_bounce;
+    acceleration += velocity.reverse() * environment.co_friction_bounce;
   }
 
   //
@@ -101,7 +108,7 @@ void Ball::do_physics(float dt) {
 
   // 1. verlet motion integration
   old_velocity = velocity;
-  velocity = velocity + acceleration;
+  velocity = velocity + acceleration * dt;
   position = position + (old_velocity + velocity) * 0.5 * dt;
 
   // 2. semi-implicit euler motion integration
@@ -112,12 +119,12 @@ void Ball::do_physics(float dt) {
   // -------------------------------------------------------------------------
 
   // round off float unlimited bounce
-  //  if (bounced) {
-  //    if (Floats::less_than(fabsf(velocity.z), 1.0f)) {
-  //      position.z = 0;
-  //      velocity.z = 0;
-  //    }
-  //  }
+      if (bounced) {
+        if (Floats::less_than(fabsf(velocity.z), environment.infinite_bounce_factor)) {
+          position.z = 0;
+          velocity.z = 0;
+        }
+      }
 
   // spin decays over time
   if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
@@ -149,7 +156,7 @@ void Ball::perspectivize(float camera_height) {
   float degs = DEGREES(angular_diameter);
   float sprite_scale_factor = degs / dimensions;
 
-  auto sprite = static_cast<Sprite *>(widget);
+  auto sprite = static_cast< Sprite * >(widget);
 
   float sprite_ratio = dimensions / sprite->image_width;
   sprite_scale_factor *= sprite_ratio;
@@ -189,12 +196,16 @@ void Ball::kick(const Vector3 &force) {
 // -----------------------------------------------------------------------------
 // addSideSpin
 // -----------------------------------------------------------------------------
-void Ball::addSideSpin(const Vector3 &s) { forces.sidespin += s; }
+void Ball::addSideSpin(const Vector3 &s) {
+  forces.sidespin += s;
+}
 
 // -----------------------------------------------------------------------------
 // addTopSpin
 // -----------------------------------------------------------------------------
-void Ball::addTopSpin(const Vector3 &s) { forces.topspin += s; }
+void Ball::addTopSpin(const Vector3 &s) {
+  forces.topspin += s;
+}
 
 // -----------------------------------------------------------------------------
 // rebound
@@ -203,7 +214,7 @@ void Ball::rebound(Vector3 &wall, const Vector3 dampen) {
   wall = wall.normalise();
   velocity *= dampen;
   velocity = velocity.reflect(wall);
-  position += velocity * 0.01f;  // tmp fixes sticky walls
+  position += velocity * 0.01f; // tmp fixes sticky walls
 }
 
 // -----------------------------------------------------------------------------
@@ -214,8 +225,7 @@ void Ball::keep_in_bounds() {
   if (position.x - circle.getRadius() < bounds.getPosition().x) {
     Vector3 wall(1, 0);
     rebound(wall, damp);
-  } else if (position.x + circle.getRadius() >
-             bounds.getPosition().x + bounds.getSize().x) {
+  } else if (position.x + circle.getRadius() > bounds.getPosition().x + bounds.getSize().x) {
     Vector3 wall(1, 0);
     rebound(wall, damp);
 
@@ -223,11 +233,10 @@ void Ball::keep_in_bounds() {
     Vector3 wall(0, 1);
     rebound(wall, damp);
 
-  } else if (position.y + circle.getRadius() >
-             bounds.getPosition().y + bounds.getSize().y) {
+  } else if (position.y + circle.getRadius() > bounds.getPosition().y + bounds.getSize().y) {
     Vector3 wall(0, 1);
     rebound(wall, damp);
   }
 }
 
-}  // namespace senseless_soccer
+} // namespace senseless_soccer

@@ -8,7 +8,7 @@ using namespace gamelib2;
 namespace senseless_soccer {
 
 class Ball : public Entity {
- public:
+public:
   // construct with an entity name
   Ball(std::string in_name, float dt = 0.01f);
 
@@ -40,16 +40,17 @@ class Ball : public Entity {
 
   // ball environment for physics
   struct {
-    float gravity = 0.98f;
-    float air_factor = 0;
-    float co_friction = 0.92f;
+    float gravity = 9.8f;
+    float co_air_resistance = -0.01f;
+    float co_friction = -0.99f;
     float co_friction_bounce = 0.9f;
     float co_bounciness = 0.85f;
     float co_spin_decay = 0.8f;
     float ball_mass = 1.0f;
+    float infinite_bounce_factor = 12.0f;
   } environment;
 
- protected:
+protected:
   // helper for ball physics
   void do_physics(float dt);
 
@@ -70,8 +71,8 @@ class Ball : public Entity {
     Vector3 gravity;
   } forces;
 
- public:
+public:
   friend class BallFactory;
 };
 
-}  // namespace senseless_soccer
+} // namespace senseless_soccer

@@ -19,12 +19,12 @@
  ****************************************************************************/
 #pragma once
 
-#include <gamelib2/debug/diagnostic.hpp>
 #include "../player/player.hpp"
+#include <gamelib2/debug/diagnostic.hpp>
 
 namespace senseless_soccer {
 class Diagnostic : public gamelib2::Diagnostic {
- public:
+public:
   Diagnostic(gamelib2::Game &_in_game);
   ~Diagnostic() override = default;
   void update() override;
@@ -34,18 +34,17 @@ class Diagnostic : public gamelib2::Diagnostic {
   void showPlayerMenu();
   void showBallMenu();
 
-  // test
-  float ball_x = 0.0f;
-  float ball_y = 0.0f;
-  float ball_z = 0.0f;
+  struct {
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+  } ball_force;
 
- protected:
+protected:
   Entity *selected_player = nullptr;
-  void process_animation_list(std::vector<const char *> &out_list,
-                              int &out_active_index);
+  void process_animation_list(std::vector< const char * > &out_list, int &out_active_index);
 
-  void process_brainstate_list(std::vector<const char *> &out_list,
-                               int &out_active_index);
+  void process_brainstate_list(std::vector< const char * > &out_list, int &out_active_index);
 };
 
-}  // namespace senseless_soccer
+} // namespace senseless_soccer

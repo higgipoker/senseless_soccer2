@@ -197,18 +197,28 @@ void Diagnostic::showBallMenu() {
   auto &ball = static_cast<Ball &>(*selected_entity);
   ImGui::Text("Physical Environment");
 
-  ImGui::SliderFloat("gravity", &ball.environment.gravity, 0.0f, 1.0f);
-  ImGui::SliderFloat("friction", &ball.environment.co_friction, 0.0f, 1.0f);
+  ImGui::SliderFloat("gravity", &ball.environment.gravity, 0.0f, 100.0f);
+  ImGui::SliderFloat("air resistence", &ball.environment.co_air_resistance, 0.0f, 0.05f);
+  ImGui::SliderFloat("friction", &ball.environment.co_friction, 0.0f, 10.0f);
+  ImGui::SliderFloat("friction on bounce", &ball.environment.co_friction_bounce, 0.0f, 1.0f);
   ImGui::SliderFloat("bounce", &ball.environment.co_bounciness, 0.0f, 1.0f);
+  ImGui::SliderFloat("spin decay", &ball.environment.co_spin_decay, 0.0f, 1.0f);
+  ImGui::SliderFloat("ball mass", &ball.environment.ball_mass, 0.0f, 1.0f);
 
   ImGui::Text("_____________________________________");
 
   ImGui::Text("Forces");
-  ImGui::SliderFloat("x", &ball_x, -1000.0f, 1000.0f);
-  ImGui::SliderFloat("y", &ball_y, -1000.0f, 1000.0f);
-  ImGui::SliderFloat("z", &ball_z, 0.0f, 1000.0f);
+  ImGui::SliderFloat("x", &ball_force.x, -1000.0f, 1000.0f);
+  ImGui::SliderFloat("y", &ball_force.y, -1000.0f, 1000.0f);
+  ImGui::SliderFloat("z", &ball_force.z, 0.0f, 1000.0f);
   if (ImGui::Button("Apply Force")) {
-    ball.kick(gamelib2::Vector3(ball_x, ball_y, ball_z));
+    ball.kick(gamelib2::Vector3(ball_force.x*50, ball_force.y*50, ball_force.z*50));
+  }
+
+  if (ImGui::Button("Center")) {
+    ball.setPosition( gamelib2::Vector3(game.camera.getViewInWorld().left + game.camera.getViewInWorld().width/2,
+                      game.camera.getViewInWorld().top + game.camera.getViewInWorld().height/2,
+                      ball.position.z));
   }
 
   ImGui::Text("_____________________________________");

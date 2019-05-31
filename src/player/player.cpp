@@ -189,7 +189,7 @@ void Player::do_dribble() {
   if (ball->position.z > 30) return;
 
   // calc force needed for kick
-  float force_needed = speed * 2.0f;
+  float force_needed = speed * 2.0f * 100;
   Vector3 kick = facing_old.toVector().normalise();
 
   if (Floats::greater_than(kick.magnitude(), 0)) {
