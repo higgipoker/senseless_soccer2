@@ -23,6 +23,9 @@ public:
   // kick it
   void kick(const Vector3 &force);
 
+  // clear forcees
+  void stop();
+
   // bounce off a barrier
   void rebound(Vector3 &wall, const Vector3 dampen = Vector3(1, 1, 1));
 

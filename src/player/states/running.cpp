@@ -1,8 +1,8 @@
 #include "running.hpp"
-#include <gamelib2/compass/compass.hpp>
-#include <gamelib2/physics/collisions.hpp>
 #include "../player.hpp"
 #include "standing.hpp"
+#include <gamelib2/compass/compass.hpp>
+#include <gamelib2/physics/collisions.hpp>
 
 using namespace gamelib2;
 namespace senseless_soccer {
@@ -10,12 +10,16 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 // Run
 // -----------------------------------------------------------------------------
-Running::Running(Player &context) : State(context, "running") {}
+Running::Running(Player &context)
+  : State(context, "running")
+  , ms_between_touches(0) {
+}
 
 // -----------------------------------------------------------------------------
 // start
 // -----------------------------------------------------------------------------
 void Running::start() {
+  touch_timer.Start();
   if (player.widget) {
     player.startAnimation(Player::runmap[player.facing.direction]);
   }
@@ -26,8 +30,14 @@ void Running::start() {
 // -----------------------------------------------------------------------------
 void Running::update(const float dt) {
   State::update(dt);
-  // close control or dribble
+
+  if (!player.ball_under_control()) {
+    touch_timer.Start();
+  }
+
+  // close control
   if (player.changed_direction) {
+
     // change the running animation
     if (player.widget) {
       player.startAnimation(Player::runmap[player.facing.direction]);
@@ -36,11 +46,16 @@ void Running::update(const float dt) {
     // close control
     if (player.ball_under_control()) {
       player.do_close_control();
+      touch_timer.Start();
     }
+  }
 
-  } else if (Collision::collides(player.feet, Player::ball->circle)) {
-    if (!player.shooting) {
-      player.do_dribble();
+  else if (Collision::collides(player.feet, Player::ball->circle)) {
+    if (touch_timer.GetLiveTime() >= ms_between_touches) {
+      if (player.velocity.magnitude2d()) {
+        player.do_dribble();
+        touch_timer.Start();
+      }
     }
   }
 }
@@ -48,14 +63,14 @@ void Running::update(const float dt) {
 // -----------------------------------------------------------------------------
 // end
 // -----------------------------------------------------------------------------
-void Running::end() {}
+void Running::end() {
+}
 
 // -----------------------------------------------------------------------------
 // finished
 // -----------------------------------------------------------------------------
 bool Running::finished() {
-  return (Floats::equal(player.velocity.magnitude2d(), 0) || player.jumping ||
-          player.sliding);
+  return (Floats::equal(player.velocity.magnitude2d(), 0) || player.jumping || player.sliding);
 }
 
 // -----------------------------------------------------------------------------
@@ -71,4 +86,4 @@ void Running::changeToNextState() {
   }
 }
 
-}  // namespace senseless_soccer
+} // namespace senseless_soccer

@@ -119,12 +119,12 @@ void Ball::do_physics(float dt) {
   // -------------------------------------------------------------------------
 
   // round off float unlimited bounce
-      if (bounced) {
-        if (Floats::less_than(fabsf(velocity.z), environment.infinite_bounce_factor)) {
-          position.z = 0;
-          velocity.z = 0;
-        }
-      }
+  if (bounced) {
+    if (Floats::less_than(fabsf(velocity.z), environment.infinite_bounce_factor)) {
+      position.z = 0;
+      velocity.z = 0;
+    }
+  }
 
   // spin decays over time
   if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
@@ -186,11 +186,18 @@ void Ball::onDragged(const Vector3 &new_position) {
 // kick
 // -----------------------------------------------------------------------------
 void Ball::kick(const Vector3 &force) {
-//   forces.sidespin.reset();
-//   forces.topspin.reset();
-//   acceleration.reset();
-//   velocity.reset();
   acceleration += force;
+}
+
+
+// -----------------------------------------------------------------------------
+// stop
+// -----------------------------------------------------------------------------
+void Ball::stop() {
+  forces.sidespin.reset();
+  forces.topspin.reset();
+  acceleration.reset();
+  velocity.reset();
 }
 
 // -----------------------------------------------------------------------------

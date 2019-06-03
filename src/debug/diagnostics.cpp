@@ -41,19 +41,6 @@ Diagnostic::Diagnostic(Game &_in_game) : gamelib2::Diagnostic(_in_game) {}
 void Diagnostic::update() {
   if (on) {
     gamelib2::Diagnostic::update();
-    // dimensions
-    panel_dimensions.width = last_panel_dimensions.width;
-    panel_dimensions.height =
-        game.viewer.getWindow().getSize().y - last_panel_dimensions.height;
-    panel_dimensions.left =
-        game.viewer.getWindow().getSize().x - panel_dimensions.width;
-    panel_dimensions.top =
-        last_panel_dimensions.top + last_panel_dimensions.height;
-
-    ImGui::SetNextWindowSize(
-        sf::Vector2f(panel_dimensions.width, panel_dimensions.height));
-    ImGui::SetNextWindowPos(
-        sf::Vector2f(panel_dimensions.left, panel_dimensions.top));
 
     // entity window
     if (selected_entity) {
@@ -94,9 +81,11 @@ void Diagnostic::deSelect() { selected_player = nullptr; }
 // -----------------------------------------------------------------------------
 void Diagnostic::showEntityMenu() {
   ImGui::Text("Position");
-  ImGui::Text("x: %f", selected_entity->position.x);
-  ImGui::Text("y: %f", selected_entity->position.y);
-  ImGui::Text("z: %f", selected_entity->position.z);
+  ImGui::Text("x: %.2f", selected_entity->position.x);
+  ImGui::SameLine();
+  ImGui::Text("y: %.2f", selected_entity->position.y);
+  ImGui::SameLine();
+  ImGui::Text("z: %.2f", selected_entity->position.z);
 
   if (ImGui::Button("Center")) {
     selected_entity->setPosition( gamelib2::Vector3(game.camera.getViewInWorld().left + game.camera.getViewInWorld().width/2,
@@ -106,9 +95,11 @@ void Diagnostic::showEntityMenu() {
   ImGui::Text("_____________________________________");
 
   ImGui::Text("Velocity");
-  ImGui::Text("x: %f", selected_entity->velocity.x);
-  ImGui::Text("y: %f", selected_entity->velocity.y);
-  ImGui::Text("z: %f", selected_entity->velocity.z);
+  ImGui::Text("x: %.2f", selected_entity->velocity.x);
+  ImGui::SameLine();
+  ImGui::Text("y: %.2f", selected_entity->velocity.y);
+  ImGui::SameLine();
+  ImGui::Text("z: %.2f", selected_entity->velocity.z);
   ImGui::Text("_____________________________________");
 }
 

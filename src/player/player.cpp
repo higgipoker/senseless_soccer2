@@ -35,27 +35,27 @@
 using namespace gamelib2;
 namespace senseless_soccer {
 
-std::map<gamelib2::Direction, std::string> Player::standmap;
-std::map<gamelib2::Direction, std::string> Player::runmap;
-std::map<gamelib2::Direction, std::string> Player::slidemap;
+std::map< gamelib2::Direction, std::string > Player::standmap;
+std::map< gamelib2::Direction, std::string > Player::runmap;
+std::map< gamelib2::Direction, std::string > Player::slidemap;
 
 Ball *Player::ball = nullptr;
 Pitch *Player::pitch = nullptr;
 
 // tmp - these will be player attribs
 static const float dribble_radius = 2.f;
-static const float control_radius = 8.f;
+static const float control_radius = 4.f;
 
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
 Player::Player()
-    : brain(*this),
-      debug_short_pass(sf::Triangles, 3),
-      stand_state(*this),
-      run_state(*this),
-      slide_state(*this),
-      jump_state(*this) {
+  : brain(*this)
+  , debug_short_pass(sf::Triangles, 3)
+  , stand_state(*this)
+  , run_state(*this)
+  , slide_state(*this)
+  , jump_state(*this) {
   feet.setRadius(dribble_radius);
   control_inner.setRadius(control_radius);
   control_outer.setRadius(control_radius * 1.2f);
@@ -69,7 +69,8 @@ Player::Player()
 // -----------------------------------------------------------------------------
 // Player
 // -----------------------------------------------------------------------------
-Player::~Player() {}
+Player::~Player() {
+}
 
 // -----------------------------------------------------------------------------
 // update
@@ -96,7 +97,7 @@ void Player::update(float dt) {
   }
 
   // update widget (sprite)
-  auto sprite = static_cast<Sprite *>(widget);
+  auto sprite = static_cast< Sprite * >(widget);
 
   sprite->setPosition(position.x, position.y);
   // sprite->animate();
@@ -112,8 +113,8 @@ void Player::update(float dt) {
   control_inner.setPosition(feet.getPosition());
   control_outer.setPosition(feet.getPosition());
 
-  //    widget->shapes.clear();
-  //    widget->shapes.emplace_back(&feet);
+  widget->shapes.clear();
+  widget->shapes.emplace_back(&feet);
 
   perspectivize(CAMERA_HEIGHT);
 
@@ -186,10 +187,11 @@ void Player::onDragged(const gamelib2::Vector3 &new_position) {
 // -----------------------------------------------------------------------------
 void Player::do_dribble() {
   // TODO height
-  if (ball->position.z > 6) return;
+  if (ball->position.z > 6)
+    return;
 
   // calc force needed for kick
-  float force_needed = speed * 15;
+  float force_needed = speed * 200;
   Vector3 kick = facing_old.toVector().normalise();
 
   if (Floats::greater_than(kick.magnitude(), 0)) {
@@ -198,6 +200,7 @@ void Player::do_dribble() {
   }
 
   // apply the kick force to ball
+  ball->stop();
   ball->kick(kick);
 }
 
@@ -207,10 +210,9 @@ void Player::do_dribble() {
 void Player::do_close_control() {
   // player position + control range
   Vector3 f(feet.getPosition().x, feet.getPosition().y);
-  Vector3 ball_pos = f + (facing.toVector() * 8);
+  Vector3 ball_pos = f + (facing.toVector() * 7);
 
-  // reset ball
-  ball->velocity.reset();
+  ball->stop();
 
   // set new position
   ball->position = ball_pos;
@@ -289,11 +291,9 @@ void Player::short_pass() {
 void Player::shoot() {
   if (my_team) {
     // for now just aim at center of goal
-    Vector3 to_goal =
-        Vector3(
-            my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
-            my_team->attacking_goal.top + my_team->attacking_goal.height / 2) -
-        position;
+    Vector3 to_goal = Vector3(my_team->attacking_goal.left + my_team->attacking_goal.width / 2,
+                              my_team->attacking_goal.top + my_team->attacking_goal.height / 2) -
+      position;
     kick(to_goal.normalise(), 300);
   } else {
     kick(facing.toVector().normalise(), 300);
@@ -303,12 +303,16 @@ void Player::shoot() {
 // -----------------------------------------------------------------------------
 // slide
 // -----------------------------------------------------------------------------
-void Player::slide() { sliding = true; }
+void Player::slide() {
+  sliding = true;
+}
 
 // -----------------------------------------------------------------------------
 // jump
 // -----------------------------------------------------------------------------
-void Player::jump() { jumping = true; }
+void Player::jump() {
+  jumping = true;
+}
 
 // -----------------------------------------------------------------------------
 // ball_under_control
@@ -401,7 +405,7 @@ Player *Player::calc_short_pass_receiver() {
   }
 
   // get a list of players in my short pass range
-  std::vector<Player *> candidates;
+  std::vector< Player * > candidates;
   for (auto &player : my_team->players) {
     // is in short pass range
     if (Collision::collides(player->position, short_pass_triangle)) {
@@ -420,7 +424,9 @@ Player *Player::calc_short_pass_receiver() {
 // -----------------------------------------------------------------------------
 // setTeam
 // -----------------------------------------------------------------------------
-void Player::setTeam(team::Team *t) { my_team = t; }
+void Player::setTeam(team::Team *t) {
+  my_team = t;
+}
 
 // -----------------------------------------------------------------------------
 // face_ball
@@ -444,13 +450,13 @@ void Player::face_ball() {
 // -----------------------------------------------------------------------------
 void Player::perspectivize(float camera_height) {
   // size depending on distance from camera
-  float dimensions = 48;  // need to standardize heights /	pngs
+  float dimensions = 48; // need to standardize heights /	pngs
   float dist_from_camera = camera_height - position.z;
   float angular_diameter = 2 * (atanf(dimensions / (2 * dist_from_camera)));
   float degs = DEGREES(angular_diameter);
   float sprite_scale_factor = degs / dimensions;
 
-  auto sprite = static_cast<Sprite *>(widget);
+  auto sprite = static_cast< Sprite * >(widget);
 
   float sprite_ratio = dimensions / sprite->image_width;
   sprite_scale_factor *= sprite_ratio;
@@ -515,10 +521,14 @@ void Player::init() {
 // -----------------------------------------------------------------------------
 // stateName
 // -----------------------------------------------------------------------------
-std::string Player::stateName() { return current_state->name; }
+std::string Player::stateName() {
+  return current_state->name;
+}
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Player::setRole(team::Position *in_role) { role = in_role; }
-}  // namespace senseless_soccer
+void Player::setRole(team::Position *in_role) {
+  role = in_role;
+}
+} // namespace senseless_soccer
