@@ -59,18 +59,13 @@ void Ball::do_physics(float dt) {
 
   // ball is in the air so do gravity, drag and spin
   if (Floats::greater_than(position.z, 0)) {
-    //
-    // gravity
-    //
+
     // gravity
     float gravity_pixels = static_cast< float >(Metrics::MetersToPixels(environment.gravity));
     forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
     acceleration += forces.gravity;
 
-    //
     // drag
-    //
-    // drag increases with height and ball size
     forces.drag =
       (velocity.reverse() * (environment.co_air_resistance * position.z * circle.getRadius() * 2));
     acceleration += forces.drag;
@@ -96,9 +91,7 @@ void Ball::do_physics(float dt) {
     acceleration += velocity.reverse() * environment.co_friction_bounce;
   }
 
-  //
   // spin
-  //
   acceleration += forces.topspin;
   acceleration += forces.sidespin;
 
