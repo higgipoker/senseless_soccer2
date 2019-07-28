@@ -209,7 +209,7 @@ void Diagnostic::showBallMenu() {
   ImGui::SliderFloat("y", &ball_force.y, -1000.0f, 1000.0f);
   ImGui::SliderFloat("z", &ball_force.z, 0.0f, 1000.0f);
   if (ImGui::Button("Apply Force")) {
-    ball.kick(gamelib2::Vector3(ball_force.x*50, ball_force.y*50, ball_force.z*50));
+    ball.kick(gamelib2::Vector3(ball_force.x, ball_force.y, ball_force.z));
   }
 
   ImGui::Text("_____________________________________");

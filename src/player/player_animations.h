@@ -22,7 +22,7 @@
 #include <vector>
 namespace senseless_soccer {
 namespace player_animations {
-const float anim_speed = 0.01f * 10.0f;
+const float anim_speed = 15;
 
 // -----------------------------------------------------------------------------
 // standing animations

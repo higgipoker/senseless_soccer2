@@ -61,7 +61,7 @@ void Ball::do_physics(float dt) {
   if (Floats::greater_than(position.z, 0)) {
 
     // gravity
-    float gravity_pixels = static_cast< float >(Metrics::MetersToPixels(environment.gravity));
+    float gravity_pixels = static_cast< float >(Metrics::MetersToPixels(environment.gravity))*dt;
     forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
     acceleration += forces.gravity;
 
@@ -85,7 +85,7 @@ void Ball::do_physics(float dt) {
     position.z = 0;
 
     // apply bounciness
-    acceleration.z += -(velocity.z * environment.co_bounciness / dt) * 2;
+    acceleration.z += -(velocity.z * environment.co_bounciness / dt);
 
     // ball also loses some speed on bounce (todo this will be spin)
     acceleration += velocity.reverse() * environment.co_friction_bounce;
