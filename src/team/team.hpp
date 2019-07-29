@@ -81,7 +81,7 @@ class Team : public Entity, public match::MatchObserver {
 
  protected:
   // team needs to know about the pitch
-  Pitch *pitch;
+  Pitch *pitch=nullptr;
 
   // states
   EnterPitch enter_pitch;

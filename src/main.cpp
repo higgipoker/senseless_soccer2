@@ -1,13 +1,11 @@
-#include "ball/ball_animations.hpp"
-#include "ball/ballfactory.hpp"
-#include "debug/diagnostics.hpp"
-#include "match/match.hpp"
-#include "pitch/pitch.hpp"
-#include "pitch/pitchwidget.hpp"
-#include "player/player_animations.h"
-#include "player/playerfactory.hpp"
-#include "team/kit.hpp"
-#include "team/team.hpp"
+#if defined(WIN32) || defined(_WIN32) || \
+    defined(__WIN32) && !defined(__CYGWIN__)
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
+#include <iostream>
+#include <memory>
+#include <sstream>
 
 #include <gamelib2/game/entity.hpp>
 #include <gamelib2/game/game.hpp>
@@ -18,9 +16,16 @@
 #include <imgui-SFML.h>
 #include <imgui.h>
 
-#include <iostream>
-#include <memory>
-#include <sstream>
+#include "ball/ball_animations.hpp"
+#include "ball/ballfactory.hpp"
+#include "debug/diagnostics.hpp"
+#include "match/match.hpp"
+#include "pitch/pitch.hpp"
+#include "pitch/pitchwidget.hpp"
+#include "player/player_animations.h"
+#include "player/playerfactory.hpp"
+#include "team/kit.hpp"
+#include "team/team.hpp"
 
 using namespace gamelib2;
 using namespace senseless_soccer;
@@ -60,18 +65,18 @@ int main() {
   std::string gfx_path = working_dir + "/gfx/";
 
   std::vector<std::string> joystick_debug_files = {
-    gfx_path + "joysticker/bg.png",
-    gfx_path + "joysticker/dpad_left.png",
-    gfx_path + "joysticker/dpad_right.png",
-    gfx_path + "joysticker/dpad_up.png",
-    gfx_path + "joysticker/dpad_down.png",
-    gfx_path + "joysticker/dpad_centered.png",
-    gfx_path + "joysticker/button_green.png",
-    gfx_path + "joysticker/button_red.png",
-    gfx_path + "joysticker/button_yellow.png",
-    gfx_path + "joysticker/button_blue.png",
-    gfx_path + "joysticker/analog_left.png",
-    gfx_path + "joysticker/analog_right.png",
+      gfx_path + "joysticker/bg.png",
+      gfx_path + "joysticker/dpad_left.png",
+      gfx_path + "joysticker/dpad_right.png",
+      gfx_path + "joysticker/dpad_up.png",
+      gfx_path + "joysticker/dpad_down.png",
+      gfx_path + "joysticker/dpad_centered.png",
+      gfx_path + "joysticker/button_green.png",
+      gfx_path + "joysticker/button_red.png",
+      gfx_path + "joysticker/button_yellow.png",
+      gfx_path + "joysticker/button_blue.png",
+      gfx_path + "joysticker/analog_left.png",
+      gfx_path + "joysticker/analog_right.png",
   };
 
   // game
@@ -113,7 +118,7 @@ int main() {
   Player::ball = &ball;
   Player::pitch = &pitch;
 
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 100; ++i) {
     std::stringstream player_name;
     player_name << "player" << i;
     team1.addPlayer(
@@ -129,8 +134,8 @@ int main() {
   // camera
   game.camera.init(800, 600);
   game.camera.setWorldRect(sf::Rect<int>(0, 0, 2000, 3000));
-  // game.camera.follow(&mouse);
-  game.camera.follow(&ball);
+  game.camera.follow(&mouse);
+  //game.camera.follow(&ball);
 
   // debug hud
   senseless_soccer::Diagnostic debug(game);
@@ -146,19 +151,16 @@ int main() {
   team1.players.back()->controller = &controller;
   pitch.widget->addChild(&controller.label);
 
-
-
   // main loop
   while (game.viewer.running) {
     controller.update();
 
-    if(debug.active()){
+    if (debug.active()) {
       debug.joystick1.update(controller.input.states);
       game.viewer.addWidget(&debug.joystick1, true);
-    }else{
+    } else {
       game.viewer.remWidget(&debug.joystick1);
     }
-
 
     debug.update();
     game.update();

@@ -12,8 +12,9 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # --------------------------------------------------
 # include dirs
 # --------------------------------------------------
+message( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui-sfml)
@@ -23,13 +24,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui-sfml)
 # --------------------------------------------------
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/lib)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML/Release/lib) # self built sfml
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.0/Release/lib) # self built sfml
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/lib) # self built sfml
 
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std=c++17)
+add_definitions(-std:c++latest)
 #add_definitions(-fsanitize=address)
 
 # --------------------------------------------------
@@ -108,9 +108,12 @@ add_executable(senseless_soccer
 # --------------------------------------------------
 
 target_link_libraries (senseless_soccer gamelib2)
-target_link_libraries (senseless_soccer sfml-graphics)
-target_link_libraries (senseless_soccer sfml-window)
-target_link_libraries (senseless_soccer sfml-system)
-target_link_libraries (senseless_soccer stdc++fs)
-target_link_libraries (senseless_soccer GL)
-#target_link_libraries (senseless_soccer stdc++fs)
+target_link_libraries (senseless_soccer sfml-graphics-d)
+target_link_libraries (senseless_soccer sfml-window-d)
+target_link_libraries (senseless_soccer sfml-system-d)
+
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+	target_link_libraries (senseless_soccer Opengl32)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+	target_link_libraries (senseless_soccer GL)
+endif()

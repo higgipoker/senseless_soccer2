@@ -17,7 +17,7 @@ typedef struct {
   sf::FloatRect north_18;
   sf::FloatRect south_6;
   sf::FloatRect south_18;
-  int center_circle_radius;
+  int center_circle_radius=0;
 
   // goals
   sf::FloatRect goal_north;
