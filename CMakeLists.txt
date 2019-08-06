@@ -29,7 +29,13 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/lib) # self built sfm
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-add_definitions(-std:c++latest)
+if (WIN32)
+	add_definitions(-std:c++latest)
+endif (WIN32)
+
+if (UNIX)
+	add_definitions(-std=c++17)
+endif (UNIX)
 #add_definitions(-fsanitize=address)
 
 # --------------------------------------------------
