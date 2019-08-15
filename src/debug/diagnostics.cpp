@@ -24,8 +24,8 @@
 #include <gamelib2/viewer/viewer.hpp>
 #include <gamelib2/widgets/widget.hpp>
 
-#include <imgui-SFML.h>
-#include <imgui.h>
+#include <gamelib2/imgui/imgui-SFML.h>
+#include <gamelib2/imgui/imgui.h>
 
 #include <sstream>
 namespace senseless_soccer {
@@ -88,9 +88,12 @@ void Diagnostic::showEntityMenu() {
   ImGui::Text("z: %.2f", selected_entity->position.z);
 
   if (ImGui::Button("Center")) {
-    selected_entity->setPosition( gamelib2::Vector3(game.camera.getViewInWorld().left + game.camera.getViewInWorld().width/2,
-                                        game.camera.getViewInWorld().top + game.camera.getViewInWorld().height/2,
-                                        selected_entity->position.z));
+    selected_entity->setPosition(
+        gamelib2::Vector3(game.camera.getViewInWorld().left +
+                              game.camera.getViewInWorld().width / 2,
+                          game.camera.getViewInWorld().top +
+                              game.camera.getViewInWorld().height / 2,
+                          selected_entity->position.z));
   }
   ImGui::Text("_____________________________________");
 
@@ -195,9 +198,11 @@ void Diagnostic::showBallMenu() {
   ImGui::Text("Physical Environment");
 
   ImGui::SliderFloat("gravity", &ball.environment.gravity, 0.0f, 100.0f);
-  ImGui::SliderFloat("air resistence", &ball.environment.co_air_resistance, 0.0f, 0.05f);
+  ImGui::SliderFloat("air resistence", &ball.environment.co_air_resistance,
+                     0.0f, 0.05f);
   ImGui::SliderFloat("friction", &ball.environment.co_friction, 0.0f, 10.0f);
-  ImGui::SliderFloat("friction on bounce", &ball.environment.co_friction_bounce, 0.0f, 1.0f);
+  ImGui::SliderFloat("friction on bounce", &ball.environment.co_friction_bounce,
+                     0.0f, 1.0f);
   ImGui::SliderFloat("bounce", &ball.environment.co_bounciness, 0.0f, 1.0f);
   ImGui::SliderFloat("spin decay", &ball.environment.co_spin_decay, 0.0f, 1.0f);
   ImGui::SliderFloat("ball mass", &ball.environment.ball_mass, 0.0f, 1.0f);

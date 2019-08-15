@@ -13,8 +13,8 @@
 #include <gamelib2/input/xbox_gamepad.hpp>
 #include <gamelib2/utils/files.hpp>
 
-#include <imgui-SFML.h>
-#include <imgui.h>
+#include <gamelib2/imgui/imgui-SFML.h>
+#include <gamelib2/imgui/imgui.h>
 
 #include "ball/ball_animations.hpp"
 #include "ball/ballfactory.hpp"
@@ -135,7 +135,7 @@ int main() {
   game.camera.init(800, 600);
   game.camera.setWorldRect(sf::Rect<int>(0, 0, 2000, 3000));
   game.camera.follow(&mouse);
-  //game.camera.follow(&ball);
+  // game.camera.follow(&ball);
 
   // debug hud
   senseless_soccer::Diagnostic debug(game);

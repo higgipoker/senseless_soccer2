@@ -16,8 +16,6 @@ message( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../imgui-sfml)
 
 # --------------------------------------------------
 # lib dirs
@@ -30,11 +28,11 @@ link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/lib) # self built sfm
 # compiler flags
 # --------------------------------------------------
 if (WIN32)
-	add_definitions(-std:c++latest)
+    add_definitions(-std:c++latest)
 endif (WIN32)
 
 if (UNIX)
-	add_definitions(-std=c++17)
+    add_definitions(-std=c++17)
 endif (UNIX)
 #add_definitions(-fsanitize=address)
 
@@ -102,11 +100,6 @@ add_executable(senseless_soccer
     src/player/ai/defend/brain_slide.cpp
     src/player/ai/defend/cover.cpp
     src/debug/diagnostics.cpp
-    src/imgui/imgui.cpp
-    src/imgui/imgui_draw.cpp
-    src/imgui/imgui_widgets.cpp
-    src/imgui/imgui_demo.cpp
-    src/imgui/imgui-SFML.cpp
 )
 
 # --------------------------------------------------
@@ -119,7 +112,7 @@ target_link_libraries (senseless_soccer sfml-window-d)
 target_link_libraries (senseless_soccer sfml-system-d)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	target_link_libraries (senseless_soccer Opengl32)
+    target_link_libraries (senseless_soccer Opengl32)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	target_link_libraries (senseless_soccer GL)
+    target_link_libraries (senseless_soccer GL)
 endif()
