@@ -63,7 +63,7 @@ Player::Player()
   // init state machine
   change_state(PlayerState::Stand);
   current_state->start();
-  speed = 10;
+  speed = 1;
 }
 
 // -----------------------------------------------------------------------------

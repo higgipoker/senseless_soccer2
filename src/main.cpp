@@ -118,7 +118,7 @@ int main() {
   Player::ball = &ball;
   Player::pitch = &pitch;
 
-  for (int i = 0; i < 100; ++i) {
+  for (int i = 0; i < 2; ++i) {
     std::stringstream player_name;
     player_name << "player" << i;
     team1.addPlayer(
