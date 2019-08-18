@@ -14,7 +14,7 @@ class Ball : public Entity {
    * @param in_name
    * @param dt
    */
-  Ball(const std::string &in_name, float dt = 0.01f);
+  Ball(const std::string &in_name);
 
   /**
    */
@@ -74,9 +74,8 @@ class Ball : public Entity {
     float co_air_resistance = 0.01f;
     float co_friction = 0.01f;
     float co_friction_bounce = 0.9f;
-    float co_bounciness = 0.85f;
+    float co_bounciness = 0.9f;
     float co_spin_decay = 0.8f;
-    float infinite_bounce_factor = 12.0f;
   } environment;
 
   // forces acting on the ball
@@ -103,7 +102,7 @@ class Ball : public Entity {
    * @brief do_physics
    * @param dt
    */
-  void do_physics(float dt);
+  void update_position(float dt);
 
   /**
    * @brief integrate_euler
@@ -164,6 +163,11 @@ class Ball : public Entity {
    * @return
    */
   inline bool in_air() { return Floats::greater_than(position.z, 0); }
+
+  /**
+   * @brief update_sprite
+   */
+  void update_sprite();
 
   /**
    * @brief perspectivize

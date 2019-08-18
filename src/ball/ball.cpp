@@ -19,9 +19,17 @@ const float CLAMP_INF_BOUNCE = 0.01f;
 // -----------------------------------------------------------------------------
 // Ball
 // -----------------------------------------------------------------------------
-Ball::Ball(const std::string &in_name, float dt) {
+Ball::Ball(const std::string &in_name) {
   create("ball", in_name);
-  circle.setRadius(4.0f);
+  circle.setRadius(5.0f);
+
+  // to not have to change the header file while tweaking
+  environment.gravity = 9.8f;
+  environment.co_air_resistance = 0.01f;
+  environment.co_friction = 0.01f;
+  environment.co_friction_bounce = 0.9f;
+  environment.co_bounciness = 0.9f;
+  environment.co_spin_decay = 0.8f;
 }
 
 // -----------------------------------------------------------------------------
@@ -30,23 +38,20 @@ Ball::Ball(const std::string &in_name, float dt) {
 void Ball::update(float dt) {
   // ball is a special case, do not call base update
 
-  // movement
-  do_physics(dt);
+  // physics simulation
+  update_position(dt);
 
+  // sprite animation
   animate(dt);
 
-  // update widget (sprite)
-  if (auto sprite = static_cast<Sprite *>(widget)) {
-    sprite->setPosition(position.x, position.y);
-    perspectivize(CAMERA_HEIGHT);
-  }
-  circle.setPosition(position.x, position.y);
+  // special ball sprite stuff
+  update_sprite();
 }
 
 // -----------------------------------------------------------------------------
 // do_physics
 // -----------------------------------------------------------------------------
-void Ball::do_physics(float dt) {
+void Ball::update_position(float dt) {
   // either bounce or integrate
   if (collide_ground()) {
     bounce();
@@ -63,6 +68,9 @@ void Ball::do_physics(float dt) {
     // euler_integration(dt);
     improved_euler_integration(dt);
   }
+
+  // the shape for collisions
+  circle.setPosition(position.x, position.y);
 
   force.reset();
   external_forces.reset();
@@ -109,8 +117,13 @@ void Ball::improved_euler_integration(float dt) {
   acceleration = force / mass;
   Vector3 k2 = acceleration * dt;
 
+  // step 3
+  force = (force - (velocity + k1 + k2).multiply(external_forces.friction));
+  acceleration = force / mass;
+  Vector3 k3 = acceleration * dt;
+
   // update
-  velocity = velocity + (k1 + k2) / 2;
+  velocity = velocity + (k1 + k2 + k3) / 2;
 
   // convert to pixels
   Vector3 dp = Metrics::MetersToPixels(velocity * dt);
@@ -218,19 +231,18 @@ void Ball::perspectivize(float camera_height) {
   float degs = DEGREES(angular_diameter);
   float sprite_scale_factor = degs / dimensions;
 
-  auto sprite = static_cast<Sprite *>(widget);
+  if (auto sprite = static_cast<Sprite *>(widget)) {
+    float sprite_ratio = dimensions / sprite->image_width;
+    sprite_scale_factor *= sprite_ratio;
+    sprite->scale(sprite_scale_factor, sprite_scale_factor);
 
-  float sprite_ratio = dimensions / sprite->image_width;
-  sprite_scale_factor *= sprite_ratio;
-  sprite->scale(sprite_scale_factor, sprite_scale_factor);
+    // y offset due to height
+    float z_cm = position.z * CM_PER_PIXEL;
 
-  // y offset due to height
-  float z_cm = position.z * CM_PER_PIXEL;
-
-  if (Floats::greater_than(z_cm, 0)) {
-    // tmp hard code offset = 0.133px per cm
-    float y_offset = Y_OFFSET_DUE_TO_HEIGHT * z_cm;
-    sprite->move(0, -y_offset);
+    if (Floats::greater_than(z_cm, 0)) {
+      float y_offset = Y_OFFSET_DUE_TO_HEIGHT * z_cm;
+      sprite->move(0, -y_offset);
+    }
   }
 }
 
@@ -297,6 +309,17 @@ void Ball::keep_in_bounds() {
              bounds.getPosition().y + bounds.getSize().y) {
     Vector3 wall(0, 1);
     rebound(wall, damp);
+  }
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Ball::update_sprite() {
+  // update widget (sprite)
+  if (auto sprite = static_cast<Sprite *>(widget)) {
+    sprite->setPosition(position.x, position.y);
+    perspectivize(CAMERA_HEIGHT);
   }
 }
 

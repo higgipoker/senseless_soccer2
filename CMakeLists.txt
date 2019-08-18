@@ -13,16 +13,12 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # include dirs
 # --------------------------------------------------
 message( ${CMAKE_CURRENT_SOURCE_DIR} )
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # --------------------------------------------------
 # lib dirs
 # --------------------------------------------------
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../gamelib2/lib)
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../SFML-2.5.1/lib) # self built sfml
 
 # --------------------------------------------------
 # compiler flags
