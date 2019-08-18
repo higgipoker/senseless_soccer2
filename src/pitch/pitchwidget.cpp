@@ -30,8 +30,10 @@ namespace senseless_soccer {
 // -----------------------------------------------------------------------------
 PitchWidget::PitchWidget(const std::string &in_file, Camera &c)
     : TiledScrollingBackground(in_file, c),
-      goal_north(Files::getWorkingDirectory() + "/gfx/goal_top_new.png", 1, 1),
-      goal_south(Files::getWorkingDirectory() +
+      goal_north("goal north",
+                 Files::getWorkingDirectory() + "/gfx/goal_top_new.png", 1, 1),
+      goal_south("goal south",
+                 Files::getWorkingDirectory() +
                      "/gfx/goal_bottom_new_persepective.png",
                  1, 1) {
   clickable = false;

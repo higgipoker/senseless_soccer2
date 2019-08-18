@@ -46,7 +46,6 @@ void BallFactory::make_ball(Ball *ball, Sprite *sprite, Sprite *shadow) {
   sprite->shadow = shadow;
   Game::connect(ball, sprite);
   ball_animations::fill_animations(ball);
-  ball->startAnimation("roll");
 }
 
 }  // namespace senseless_soccer

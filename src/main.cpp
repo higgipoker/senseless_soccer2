@@ -3,29 +3,28 @@
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif
 
-#include <iostream>
-#include <memory>
-#include <sstream>
-
-#include <gamelib2/game/entity.hpp>
-#include <gamelib2/game/game.hpp>
-#include <gamelib2/input/keyboard.hpp>
-#include <gamelib2/input/xbox_gamepad.hpp>
-#include <gamelib2/utils/files.hpp>
-
-#include <gamelib2/imgui/imgui-SFML.h>
-#include <gamelib2/imgui/imgui.h>
-
-#include "ball/ball_animations.hpp"
 #include "ball/ballfactory.hpp"
 #include "debug/diagnostics.hpp"
 #include "match/match.hpp"
+#include "metrics/metrics.hpp"
 #include "pitch/pitch.hpp"
 #include "pitch/pitchwidget.hpp"
 #include "player/player_animations.h"
 #include "player/playerfactory.hpp"
 #include "team/kit.hpp"
 #include "team/team.hpp"
+
+#include <gamelib2/imgui/imgui-SFML.h>
+#include <gamelib2/imgui/imgui.h>
+#include <gamelib2/game/entity.hpp>
+#include <gamelib2/game/game.hpp>
+#include <gamelib2/input/keyboard.hpp>
+#include <gamelib2/input/xbox_gamepad.hpp>
+#include <gamelib2/utils/files.hpp>
+
+#include <iostream>
+#include <memory>
+#include <sstream>
 
 using namespace gamelib2;
 using namespace senseless_soccer;
@@ -84,7 +83,7 @@ int main() {
 
   // mouse entity (can be attached to by camera)
   Mouse mouse(game.viewer.getWindow());
-  Widget dummy;
+  Widget dummy("mouse");
   Game::connect(&mouse, &dummy);
   game.engine.addEntity(&mouse);
 
@@ -104,10 +103,10 @@ int main() {
 
   // ball
   Ball ball("ball");
-  Sprite sprite;
-  Sprite shadow;
+  Sprite sprite("ball");
+  Sprite shadow("ball shadow");
   BallFactory::make_ball(&ball, &sprite, &shadow);
-  ball.setPosition(gamelib2::Vector3(300, 300, 0));
+  ball.setPosition(gamelib2::Vector3(300, 300, Metrics::MetersToPixels(0)));
   game.engine.addEntity(&ball);
   pitch_widget.addChild(&sprite);
   pitch_widget.addChild(&shadow);
@@ -134,8 +133,8 @@ int main() {
   // camera
   game.camera.init(800, 600);
   game.camera.setWorldRect(sf::Rect<int>(0, 0, 2000, 3000));
-  game.camera.follow(&mouse);
-  // game.camera.follow(&ball);
+  // game.camera.follow(&mouse);
+  game.camera.follow(&ball);
 
   // debug hud
   senseless_soccer::Diagnostic debug(game);

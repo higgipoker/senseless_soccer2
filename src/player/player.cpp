@@ -113,7 +113,7 @@ void Player::update(float dt) {
   control_outer.setPosition(feet.getPosition());
 
   widget->shapes.clear();
-  widget->shapes.emplace_back(&feet);
+  // widget->shapes.emplace_back(&feet);
 
   perspectivize(CAMERA_HEIGHT);
 
@@ -158,13 +158,11 @@ void Player::do_physics(float dt) {
   }
 
   // basic euler motion
-  velocity += acceleration * dt;
   position += velocity * dt;
 
   if (Floats::less_than(position.z, 0)) {
     position.z = 0;
   }
-  acceleration.reset();
 }
 
 // -----------------------------------------------------------------------------
@@ -199,7 +197,7 @@ void Player::do_dribble() {
 
   // apply the kick force to ball
   ball->stop();
-  ball->kick(kick);
+  ball->applyForce(kick);
 }
 
 // -----------------------------------------------------------------------------
@@ -253,7 +251,7 @@ void Player::kick(const Vector3 &direction, int power) {
   }
 
   //  apply to ball
-  ball->kick(force);
+  ball->applyForce(force);
 
   //  start aftertouch and apply initial extra force to ball depending on dpad
   if (controller) {
@@ -274,7 +272,7 @@ void Player::short_pass() {
     float distance = (receiver->position - position).magnitude();
     Vector3 direction = receiver->position - position;
     Vector3 force = direction * distance * 1.4f;
-    Player::ball->kick(force);
+    Player::ball->applyForce(force);
     receiver->brain.message("receive");
   } else {
     kick(facing.toVector(), 1);

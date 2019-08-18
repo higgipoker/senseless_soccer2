@@ -9,6 +9,7 @@ class Metrics {
  public:
   // converts meters to pixels
   static int MetersToPixels(float meters);
+  static gamelib2::Vector3 MetersToPixels(gamelib2::Vector3 v);
 
   // converts pixels to meters
   static float PixelsToMeters(float pixels);

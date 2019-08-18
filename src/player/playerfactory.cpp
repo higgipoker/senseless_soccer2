@@ -38,8 +38,8 @@ PlayerFactory::PlayerFactory(gamelib2::Engine& in_engine,
 Player* PlayerFactory::make_player(const std::string& name,
                                    gamelib2::Widget& in_parent) {
   std::unique_ptr<Player> player = std::make_unique<Player>();
-  std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>();
-  std::unique_ptr<Sprite> shadow = std::make_unique<Sprite>();
+  std::unique_ptr<Sprite> sprite = std::make_unique<Sprite>(name);
+  std::unique_ptr<Sprite> shadow = std::make_unique<Sprite>(name + "_shadow");
 
   player->create("player", name);
   sprite->init(Files::getWorkingDirectory() + "/gfx/player/player.png", 6, 24);

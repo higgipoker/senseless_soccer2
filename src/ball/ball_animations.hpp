@@ -23,20 +23,15 @@
 namespace senseless_soccer {
 namespace ball_animations {
 const float anim_speed = 0.01f * 10.0f;
-static std::vector<int> roll() {
-  std::vector<int> v;
-  v.push_back(0);
-  v.push_back(1);
-  v.push_back(2);
-  v.push_back(3);
-  v.push_back(4);
-  v.push_back(5);
-  v.push_back(6);
-  return v;
-}
 
+static const std::vector<int> frames{0, 1, 2, 3, 4, 5, 6};
+
+/**
+ * @brief fill_animations
+ * @param e
+ */
 static void fill_animations(gamelib2::Entity *e) {
-  e->addAnimation("roll", anim_speed, true, roll());
+  e->addAnimation("roll", anim_speed, true, frames);
 }
 
 }  // namespace ball_animations

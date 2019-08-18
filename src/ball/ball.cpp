@@ -1,4 +1,5 @@
 #include "ball.hpp"
+
 #include "../joysticker/aftertouch.hpp"
 #include "../metrics/metrics.hpp"
 #include "ball_animations.hpp"
@@ -13,21 +14,14 @@ using namespace gamelib2;
 namespace senseless_soccer {
 
 const int SHADOW_OFFSET = 1;
+const float CLAMP_INF_BOUNCE = 0.01f;
 
 // -----------------------------------------------------------------------------
 // Ball
 // -----------------------------------------------------------------------------
-Ball::Ball(std::string in_name, float dt) {
-  create("ball", std::move(in_name));
+Ball::Ball(const std::string &in_name, float dt) {
+  create("ball", in_name);
   circle.setRadius(4.0f);
-
-  environment.gravity = 9.8f;
-  environment.co_air_resistance = 0.01f;
-  environment.co_friction = 5;
-  environment.co_friction_bounce = 0.0f;
-  environment.co_bounciness = 0.9f;
-  environment.co_spin_decay = 0.8f;
-  environment.ball_mass = 1.0f;
 }
 
 // -----------------------------------------------------------------------------
@@ -42,8 +36,7 @@ void Ball::update(float dt) {
   animate(dt);
 
   // update widget (sprite)
-  if (widget) {
-    auto sprite = static_cast<Sprite *>(widget);
+  if (auto sprite = static_cast<Sprite *>(widget)) {
     sprite->setPosition(position.x, position.y);
     perspectivize(CAMERA_HEIGHT);
   }
@@ -54,91 +47,164 @@ void Ball::update(float dt) {
 // do_physics
 // -----------------------------------------------------------------------------
 void Ball::do_physics(float dt) {
-  // save bounce so we dont have to calc again for dampening
-  bool bounced = false;
-
-  // ball is in the air so do gravity, drag and spin
-  if (Floats::greater_than(position.z, 0)) {
-    // gravity
-    float gravity_pixels =
-        static_cast<float>(Metrics::MetersToPixels(environment.gravity)) * dt;
-    forces.gravity = Vector3(0, 0, -gravity_pixels * environment.ball_mass);
-    acceleration += forces.gravity;
-
-    // drag
-    forces.drag = (velocity.reverse() * (environment.co_air_resistance *
-                                         position.z * circle.getRadius() * 2));
-    acceleration += forces.drag;
+  // either bounce or integrate
+  if (collide_ground()) {
+    bounce();
+  } else {
+    // either gravity or friction
+    if (in_air()) {
+      apply_gravity(dt);
+      apply_drag();
+    } else {
+      apply_friction();
+    }
+    apply_spin();
+    decay_spin();
+    // euler_integration(dt);
+    improved_euler_integration(dt);
   }
 
-  // friction
-  else if (Floats::equal(velocity.z, 0) &&
-           Floats::greater_than(velocity.magnitude2d(), 0)) {
-    acceleration += velocity.reverse() * environment.co_friction;
+  force.reset();
+  external_forces.reset();
+  return;
+}
+
+// -----------------------------------------------------------------------------
+// euler_integration
+// -----------------------------------------------------------------------------
+void Ball::euler_integration(float dt) {
+  // drag
+  force = (force - (velocity.multiply(external_forces.friction)));
+
+  // acceleration = force / mass
+  acceleration = force / mass;
+
+  // difference in velocity = acceleration * difference time
+  Vector3 dv = acceleration * dt;
+
+  // velocity = velocity + difference in velocity
+  velocity += dv;
+
+  // difference in position = velocity * difference time
+  Vector3 dp = velocity * dt;
+
+  // convert to pixels
+  dp = Metrics::MetersToPixels(dp);
+
+  // update position
+  position += dp;
+}
+
+// -----------------------------------------------------------------------------
+// improved_euler_integration
+// -----------------------------------------------------------------------------
+void Ball::improved_euler_integration(float dt) {
+  // step 1
+  force = (force - (velocity.multiply(external_forces.friction)));
+  acceleration = force / mass;
+  Vector3 k1 = acceleration * dt;
+
+  // step 2
+  force = (force - (velocity + k1).multiply(external_forces.friction));
+  acceleration = force / mass;
+  Vector3 k2 = acceleration * dt;
+
+  // update
+  velocity = velocity + (k1 + k2) / 2;
+
+  // convert to pixels
+  Vector3 dp = Metrics::MetersToPixels(velocity * dt);
+
+  // apply new position
+  position = position + dp;
+}
+
+// -----------------------------------------------------------------------------
+// apply_gravity
+// -----------------------------------------------------------------------------
+void Ball::apply_gravity(float dt) {
+  external_forces.gravity.z = -environment.gravity;
+  force += external_forces.gravity * mass * dt;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Ball::apply_friction() {
+  external_forces.friction.x = environment.co_friction;
+  external_forces.friction.y = environment.co_friction;
+  external_forces.friction.z = 0;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Ball::apply_spin() {
+  force += external_forces.sidespin;
+  force += external_forces.topspin;
+}
+
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Ball::decay_spin() {
+  if (Floats::greater_than(external_forces.topspin.magnitude(), 0)) {
+    external_forces.topspin =
+        external_forces.topspin * environment.co_spin_decay;
+  } else {
+    external_forces.topspin.reset();
   }
+  if (Floats::greater_than(external_forces.sidespin.magnitude(), 0)) {
+    external_forces.sidespin =
+        external_forces.sidespin * environment.co_spin_decay;
+  } else {
+    external_forces.sidespin.reset();
+  }
+}
 
-  // bounce if z < - and moving down
-  else if (Floats::less_than(position.z, 0) &&
-           Floats::less_than(velocity.z, 0)) {
-    // do dampening for infinite bounce later
-    bounced = true;
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Ball::apply_drag() {
+  // TODO
+}
 
-    // can't be in the ground
+// -----------------------------------------------------------------------------
+// clamp_to_ground
+// -----------------------------------------------------------------------------
+void Ball::clamp_to_ground() {
+  if (Floats::less_than(position.z, 0)) {
     position.z = 0;
-
-    // apply bounciness
-    acceleration.z += -(velocity.z * environment.co_bounciness / dt);
-
-    // ball also loses some speed on bounce (todo this will be spin)
-    acceleration += velocity.reverse() * environment.co_friction_bounce;
+    velocity.z = 0;
+    acceleration.z = 0;
   }
+}
 
-  // spin
-  acceleration += forces.topspin;
-  acceleration += forces.sidespin;
-
-  // -------------------------------------------------------------------------
-  // MOTION INTEGRATION
-  // pick one, these 2 are very similar!
-
-  // 1. verlet motion integration
-  old_velocity = velocity;
-  velocity = velocity + acceleration * dt;
-  position = position + (old_velocity + velocity) * 0.5 * dt;
-
-  // 2. semi-implicit euler motion integration
-  //    velocity += acceleration * dt;
-  //    position += velocity * dt;
-
-  //
-  // -------------------------------------------------------------------------
-
-  // round off float unlimited bounce
-  if (bounced) {
-    if (Floats::less_than(fabsf(velocity.z),
-                          environment.infinite_bounce_factor)) {
-      position.z = 0;
-      velocity.z = 0;
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+bool Ball::collide_ground() {
+  // moving down
+  if (Floats::less_than(velocity.z, 0)) {
+    // touched ground
+    if (Floats::less_than(position.z, 0)) {
+      return true;
     }
   }
+  return false;
+}
 
-  // spin decays over time
-  if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
-    forces.topspin = forces.topspin * environment.co_spin_decay;
+// -----------------------------------------------------------------------------
+//
+// -----------------------------------------------------------------------------
+void Ball::bounce() {
+  position.z = 0;
+  if (Floats::abs_less_than(velocity.z, CLAMP_INF_BOUNCE)) {
+    velocity.z = 0;
   } else {
-    forces.topspin.reset();
+    velocity.z = -velocity.z;
+    velocity.z *= 0.8;
   }
-  if (Floats::greater_than(forces.sidespin.magnitude(), 0)) {
-    forces.sidespin = forces.sidespin * environment.co_spin_decay;
-  } else {
-    forces.sidespin.reset();
-  }
-
-  // reset acceleration ready for next frame
-  acceleration.reset();
-
-  // tmp
-  // keep_in_bounds();
 }
 
 // -----------------------------------------------------------------------------
@@ -166,8 +232,6 @@ void Ball::perspectivize(float camera_height) {
     float y_offset = Y_OFFSET_DUE_TO_HEIGHT * z_cm;
     sprite->move(0, -y_offset);
   }
-
-  // update the shadow
 }
 
 // -----------------------------------------------------------------------------
@@ -181,27 +245,26 @@ void Ball::onDragged(const Vector3 &new_position) {
 // -----------------------------------------------------------------------------
 // kick
 // -----------------------------------------------------------------------------
-void Ball::kick(const Vector3 &force) { acceleration += force; }
+void Ball::applyForce(const Vector3 &_force) { force += _force; }
 
 // -----------------------------------------------------------------------------
 // stop
 // -----------------------------------------------------------------------------
 void Ball::stop() {
-  forces.sidespin.reset();
-  forces.topspin.reset();
-  acceleration.reset();
+  external_forces.sidespin.reset();
+  external_forces.topspin.reset();
   velocity.reset();
 }
 
 // -----------------------------------------------------------------------------
 // addSideSpin
 // -----------------------------------------------------------------------------
-void Ball::addSideSpin(const Vector3 &s) { forces.sidespin += s; }
+void Ball::addSideSpin(const Vector3 &s) { external_forces.sidespin += s; }
 
 // -----------------------------------------------------------------------------
 // addTopSpin
 // -----------------------------------------------------------------------------
-void Ball::addTopSpin(const Vector3 &s) { forces.topspin += s; }
+void Ball::addTopSpin(const Vector3 &s) { external_forces.topspin += s; }
 
 // -----------------------------------------------------------------------------
 // rebound

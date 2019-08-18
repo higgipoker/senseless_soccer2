@@ -80,21 +80,14 @@ void Diagnostic::deSelect() { selected_player = nullptr; }
 // showEntityMenu
 // -----------------------------------------------------------------------------
 void Diagnostic::showEntityMenu() {
-  ImGui::Text("Position");
-  ImGui::Text("x: %.2f", selected_entity->position.x);
-  ImGui::SameLine();
-  ImGui::Text("y: %.2f", selected_entity->position.y);
-  ImGui::SameLine();
-  ImGui::Text("z: %.2f", selected_entity->position.z);
+  ImGui::Text("_____________________________________");
 
-  if (ImGui::Button("Center")) {
-    selected_entity->setPosition(
-        gamelib2::Vector3(game.camera.getViewInWorld().left +
-                              game.camera.getViewInWorld().width / 2,
-                          game.camera.getViewInWorld().top +
-                              game.camera.getViewInWorld().height / 2,
-                          selected_entity->position.z));
-  }
+  ImGui::Text("Acceleration");
+  ImGui::Text("x: %.2f", selected_entity->acceleration.x);
+  ImGui::SameLine();
+  ImGui::Text("y: %.2f", selected_entity->acceleration.y);
+  ImGui::SameLine();
+  ImGui::Text("z: %.2f", selected_entity->acceleration.z);
   ImGui::Text("_____________________________________");
 
   ImGui::Text("Velocity");
@@ -103,6 +96,27 @@ void Diagnostic::showEntityMenu() {
   ImGui::Text("y: %.2f", selected_entity->velocity.y);
   ImGui::SameLine();
   ImGui::Text("z: %.2f", selected_entity->velocity.z);
+  ImGui::SameLine();
+  if (ImGui::Button("Reset##1")) {
+    selected_entity->velocity.reset();
+  }
+  ImGui::Text("_____________________________________");
+
+  ImGui::Text("Position");
+  ImGui::Text("x: %.2f", selected_entity->position.x);
+  ImGui::SameLine();
+  ImGui::Text("y: %.2f", selected_entity->position.y);
+  ImGui::SameLine();
+  ImGui::Text("z: %.2f", selected_entity->position.z);
+  ImGui::SameLine();
+  if (ImGui::Button("Center")) {
+    selected_entity->setPosition(
+        gamelib2::Vector3(game.camera.getViewInWorld().left +
+                              game.camera.getViewInWorld().width / 2,
+                          game.camera.getViewInWorld().top +
+                              game.camera.getViewInWorld().height / 2,
+                          selected_entity->position.z));
+  }
   ImGui::Text("_____________________________________");
 }
 
@@ -205,16 +219,29 @@ void Diagnostic::showBallMenu() {
                      0.0f, 1.0f);
   ImGui::SliderFloat("bounce", &ball.environment.co_bounciness, 0.0f, 1.0f);
   ImGui::SliderFloat("spin decay", &ball.environment.co_spin_decay, 0.0f, 1.0f);
-  ImGui::SliderFloat("ball mass", &ball.environment.ball_mass, 0.0f, 1.0f);
+  ImGui::SliderFloat("ball mass", &ball.mass, 0.0f, 1.0f);
 
   ImGui::Text("_____________________________________");
 
   ImGui::Text("Forces");
   ImGui::SliderFloat("x", &ball_force.x, -1000.0f, 1000.0f);
+  ImGui::SameLine();
+  if (ImGui::Button("Reset##2")) {
+    ball_force.x = 0;
+  }
   ImGui::SliderFloat("y", &ball_force.y, -1000.0f, 1000.0f);
+  ImGui::SameLine();
+  if (ImGui::Button("Reset##3")) {
+    ball_force.y = 0;
+  }
   ImGui::SliderFloat("z", &ball_force.z, 0.0f, 1000.0f);
+  ImGui::SameLine();
+  if (ImGui::Button("Reset##4")) {
+    ball_force.z = 0;
+  }
   if (ImGui::Button("Apply Force")) {
-    ball.kick(gamelib2::Vector3(ball_force.x, ball_force.y, ball_force.z));
+    ball.applyForce(
+        gamelib2::Vector3(ball_force.x, ball_force.y, ball_force.z));
   }
 
   ImGui::Text("_____________________________________");

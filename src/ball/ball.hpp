@@ -8,31 +8,58 @@ using namespace gamelib2;
 namespace senseless_soccer {
 
 class Ball : public Entity {
-public:
-  // construct with an entity name
-  Ball(std::string in_name, float dt = 0.01f);
+ public:
+  /**
+   * @brief Ball
+   * @param in_name
+   * @param dt
+   */
+  Ball(const std::string &in_name, float dt = 0.01f);
 
+  /**
+   */
   virtual ~Ball() = default;
 
-  // main update
+  /**
+   * @brief update
+   * @param dt
+   */
   void update(float dt) override;
 
-  // the entity was manually moved
-  void onDragged(const Vector3 &new_position);
+  /**
+   * @brief onDragged
+   * @param new_position
+   */
+  void onDragged(const Vector3 &new_position) override;
 
-  // kick it
-  void kick(const Vector3 &force);
+  /**
+   * @brief apply_force
+   * @param force
+   */
+  void applyForce(const Vector3 &force);
 
-  // clear forcees
+  /**
+   * @brief stop
+   */
   void stop();
 
-  // bounce off a barrier
+  /**
+   * @brief rebound
+   * @param wall
+   * @param dampen
+   */
   void rebound(Vector3 &wall, const Vector3 dampen = Vector3(1, 1, 1));
 
-  // apply side spin
+  /**
+   * @brief addSideSpin
+   * @param s
+   */
   void addSideSpin(const Vector3 &s);
 
-  // apply top/back spin
+  /**
+   * @brief addTopSpin
+   * @param s
+   */
   void addTopSpin(const Vector3 &s);
 
   // ball collidable
@@ -44,38 +71,116 @@ public:
   // ball environment for physics
   struct {
     float gravity = 9.8f;
-    float co_air_resistance = -0.01f;
-    float co_friction = -0.99f;
+    float co_air_resistance = 0.01f;
+    float co_friction = 0.01f;
     float co_friction_bounce = 0.9f;
     float co_bounciness = 0.85f;
     float co_spin_decay = 0.8f;
-    float ball_mass = 1.0f;
     float infinite_bounce_factor = 12.0f;
   } environment;
-
-protected:
-  // helper for ball physics
-  void do_physics(float dt);
-
-  // add perspective to the ball
-  void perspectivize(float camera_height) override;
-
-  // for verlet
-  Vector3 old_velocity;
-
-  // tmp keep in bounds
-  void keep_in_bounds();
 
   // forces acting on the ball
   struct {
     Vector3 drag;
     Vector3 topspin;
     Vector3 sidespin;
-    Vector3 gravity;
-  } forces;
+    Vector3 friction;
+    Vector3 gravity{0, 0, 9.8f};
 
-public:
+    /**
+     * @brief reset
+     */
+    void reset() {
+      drag.reset();
+      topspin.reset();
+      sidespin.reset();
+      friction.reset();
+    }
+  } external_forces;
+
+ protected:
+  /**
+   * @brief do_physics
+   * @param dt
+   */
+  void do_physics(float dt);
+
+  /**
+   * @brief integrate_euler
+   * @param _dt
+   */
+  void euler_integration(float _dt);
+
+  /**
+   * @brief integrate_improved_euler
+   * @param _dt
+   */
+  void improved_euler_integration(float _dt);
+
+  /**
+   * @brief apply_gravity
+   * @param dt
+   */
+  void apply_gravity(float dt);
+
+  /**
+   * @brief apply_friction
+   */
+  void apply_friction();
+
+  /**
+   * @brief apply_spin
+   */
+  void apply_spin();
+
+  /**
+   * @brief decay_spin
+   */
+  void decay_spin();
+
+  /**
+   * @brief apply_drag
+   */
+  void apply_drag();
+
+  /**
+   * @brief clamp_to_ground
+   */
+  void clamp_to_ground(void);
+
+  /**
+   * @brief collide_ground
+   * @return
+   */
+  bool collide_ground(void);
+
+  /**
+   * @brief bounce
+   */
+  void bounce();
+
+  /**
+   * @brief in_air
+   * @return
+   */
+  inline bool in_air() { return Floats::greater_than(position.z, 0); }
+
+  /**
+   * @brief perspectivize
+   * @param camera_height
+   */
+  void perspectivize(float camera_height) override;
+
+  // for verlet
+  Vector3 old_velocity;
+
+  /**
+   * @brief keep_in_bounds
+   */
+  void keep_in_bounds();
+
+ public:
   friend class BallFactory;
 };
 
-} // namespace senseless_soccer
+}  // namespace senseless_soccer

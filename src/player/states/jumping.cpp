@@ -28,7 +28,6 @@ void Jumping::start() {
 // update
 // -----------------------------------------------------------------------------
 void Jumping::update(const float dt) {
-
   if (Collision::collides(player.feet, Player::ball->circle)) {
     if (!player.shooting) {
       player.kick(player.facing.toVector(), 1);
@@ -36,9 +35,9 @@ void Jumping::update(const float dt) {
   }
 
   if (going_up) {
-    player.acceleration.z = 8;
+    player.velocity.z = 8;
   } else {
-    player.acceleration.z = -10;
+    player.velocity.z = -10;
   }
 
   if (Floats::greater_than(player.position.z, max_height)) {
@@ -57,7 +56,6 @@ void Jumping::end() {
   going_up = true;
   player.velocity.reset();
   player.position.z = 0;
-  player.acceleration.z = 0;
   player.speed = 150;
 
   if (player.controller) {
@@ -82,4 +80,4 @@ void Jumping::changeToNextState() {
 //
 // -----------------------------------------------------------------------------
 void Jumping::handle_input(const ControllerEvent &event) {}
-} // namespace senseless_soccer
+}  // namespace senseless_soccer
