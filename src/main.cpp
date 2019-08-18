@@ -36,7 +36,7 @@ class Mouse : public Entity {
  public:
   Mouse(sf::RenderWindow &in_window) : window(in_window) {}
   virtual void onDragged(const Vector3 &diff) {}
-  virtual void update(float dt) {
+  virtual void step(float dt) {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
       sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
       // convert it to world coordinates

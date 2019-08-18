@@ -24,7 +24,7 @@ class Ball : public Entity {
    * @brief update
    * @param dt
    */
-  void update(float dt) override;
+  void step(float dt) override;
 
   /**
    * @brief onDragged
@@ -71,7 +71,8 @@ class Ball : public Entity {
   // ball environment for physics
   struct {
     float gravity = 9.8f;
-    float co_air_resistance = 0.01f;
+    float air_density = 1.0f;
+    float co_drag = 0.9f;
     float co_friction = 0.01f;
     float co_friction_bounce = 0.9f;
     float co_bounciness = 0.9f;
@@ -95,7 +96,7 @@ class Ball : public Entity {
       sidespin.reset();
       friction.reset();
     }
-  } external_forces;
+  } forces;
 
  protected:
   /**
@@ -140,7 +141,7 @@ class Ball : public Entity {
   /**
    * @brief apply_drag
    */
-  void apply_drag();
+  void apply_drag(float dt);
 
   /**
    * @brief clamp_to_ground

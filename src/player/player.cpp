@@ -74,8 +74,8 @@ Player::~Player() {}
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Player::update(float dt) {
-  Entity::update(dt);
+void Player::step(float dt) {
+  Entity::step(dt);
 
   // cpu controlled locomotion
   if (!controller) {

@@ -53,7 +53,7 @@ void Team::init(Pitch *p, const Direction s) {
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Team::update(float dt) {
+void Team::step(float dt) {
   set_key_players();
   current_state->update(dt);
   if (current_state->finished()) {

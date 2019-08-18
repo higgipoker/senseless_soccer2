@@ -61,7 +61,7 @@ class Player : public Entity, public ControllerListener {
   virtual ~Player();
 
   // main update
-  void update(float dt) override;
+  void step(float dt) override;
 
   // moved manually
   void onDragged(const Vector3 &diff) override;

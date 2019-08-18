@@ -212,7 +212,7 @@ void Diagnostic::showBallMenu() {
   ImGui::Text("Physical Environment");
 
   ImGui::SliderFloat("gravity", &ball.environment.gravity, 0.0f, 100.0f);
-  ImGui::SliderFloat("air resistence", &ball.environment.co_air_resistance,
+  ImGui::SliderFloat("air resistence", &ball.environment.co_drag,
                      0.0f, 0.05f);
   ImGui::SliderFloat("friction", &ball.environment.co_friction, 0.0f, 10.0f);
   ImGui::SliderFloat("friction on bounce", &ball.environment.co_friction_bounce,

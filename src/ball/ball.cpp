@@ -25,17 +25,18 @@ Ball::Ball(const std::string &in_name) {
 
   // to not have to change the header file while tweaking
   environment.gravity = 9.8f;
-  environment.co_air_resistance = 0.01f;
+  environment.air_density = 1.0f;
+  environment.co_drag = 0.01f;
   environment.co_friction = 0.01f;
-  environment.co_friction_bounce = 0.9f;
-  environment.co_bounciness = 0.9f;
+  environment.co_friction_bounce = 0.1f;
+  environment.co_bounciness = 0.8f;
   environment.co_spin_decay = 0.8f;
 }
 
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Ball::update(float dt) {
+void Ball::step(float dt) {
   // ball is a special case, do not call base update
 
   // physics simulation
@@ -59,7 +60,7 @@ void Ball::update_position(float dt) {
     // either gravity or friction
     if (in_air()) {
       apply_gravity(dt);
-      apply_drag();
+      apply_drag(dt);
     } else {
       apply_friction();
     }
@@ -73,7 +74,7 @@ void Ball::update_position(float dt) {
   circle.setPosition(position.x, position.y);
 
   force.reset();
-  external_forces.reset();
+  forces.reset();
   return;
 }
 
@@ -82,7 +83,7 @@ void Ball::update_position(float dt) {
 // -----------------------------------------------------------------------------
 void Ball::euler_integration(float dt) {
   // drag
-  force = (force - (velocity.multiply(external_forces.friction)));
+  force = (force - (velocity.multiply(forces.friction)));
 
   // acceleration = force / mass
   acceleration = force / mass;
@@ -108,22 +109,22 @@ void Ball::euler_integration(float dt) {
 // -----------------------------------------------------------------------------
 void Ball::improved_euler_integration(float dt) {
   // step 1
-  force = (force - (velocity.multiply(external_forces.friction)));
+  force = (force - (velocity.multiply(forces.friction)));
   acceleration = force / mass;
   Vector3 k1 = acceleration * dt;
 
   // step 2
-  force = (force - (velocity + k1).multiply(external_forces.friction));
+  force = (force - (velocity + k1).multiply(forces.friction));
   acceleration = force / mass;
   Vector3 k2 = acceleration * dt;
 
   // step 3
-  force = (force - (velocity + k1 + k2).multiply(external_forces.friction));
+  force = (force - (velocity + k1 + k2).multiply(forces.friction));
   acceleration = force / mass;
   Vector3 k3 = acceleration * dt;
 
   // update
-  velocity = velocity + (k1 + k2 + k3) / 2;
+  velocity = velocity + (k1 + k2 + k3) / 3;
 
   // convert to pixels
   Vector3 dp = Metrics::MetersToPixels(velocity * dt);
@@ -133,53 +134,61 @@ void Ball::improved_euler_integration(float dt) {
 }
 
 // -----------------------------------------------------------------------------
+// applyForce
+// -----------------------------------------------------------------------------
+void Ball::applyForce(const Vector3 &_force) { force += _force; }
+
+// -----------------------------------------------------------------------------
 // apply_gravity
 // -----------------------------------------------------------------------------
 void Ball::apply_gravity(float dt) {
-  external_forces.gravity.z = -environment.gravity;
-  force += external_forces.gravity * mass * dt;
+  forces.gravity.z = -environment.gravity;
+  force += forces.gravity * mass * dt;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Ball::apply_friction() {
-  external_forces.friction.x = environment.co_friction;
-  external_forces.friction.y = environment.co_friction;
-  external_forces.friction.z = 0;
+  forces.friction.x = environment.co_friction;
+  forces.friction.y = environment.co_friction;
+  forces.friction.z = 0;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Ball::apply_spin() {
-  force += external_forces.sidespin;
-  force += external_forces.topspin;
+  force += forces.sidespin;
+  force += forces.topspin;
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
 void Ball::decay_spin() {
-  if (Floats::greater_than(external_forces.topspin.magnitude(), 0)) {
-    external_forces.topspin =
-        external_forces.topspin * environment.co_spin_decay;
+  if (Floats::greater_than(forces.topspin.magnitude(), 0)) {
+    forces.topspin = forces.topspin * environment.co_spin_decay;
   } else {
-    external_forces.topspin.reset();
+    forces.topspin.reset();
   }
-  if (Floats::greater_than(external_forces.sidespin.magnitude(), 0)) {
-    external_forces.sidespin =
-        external_forces.sidespin * environment.co_spin_decay;
+  if (Floats::greater_than(forces.sidespin.magnitude(), 0)) {
+    forces.sidespin = forces.sidespin * environment.co_spin_decay;
   } else {
-    external_forces.sidespin.reset();
+    forces.sidespin.reset();
   }
 }
 
 // -----------------------------------------------------------------------------
 //
 // -----------------------------------------------------------------------------
-void Ball::apply_drag() {
-  // TODO
+void Ball::apply_drag(float dt) {
+  // drag = (air density * co_drag * cross section area) / 2
+  // in the opposite direction to velocity
+  Vector3 dir = velocity.reverse().normalise();
+  forces.drag = dir * (environment.co_drag *
+                       (PI * circle.getRadius() * circle.getRadius()) / 2);
+  force += forces.drag * dt;
 }
 
 // -----------------------------------------------------------------------------
@@ -216,7 +225,7 @@ void Ball::bounce() {
     velocity.z = 0;
   } else {
     velocity.z = -velocity.z;
-    velocity.z *= 0.8;
+    velocity.z *= environment.co_bounciness;
   }
 }
 
@@ -255,28 +264,23 @@ void Ball::onDragged(const Vector3 &new_position) {
 }
 
 // -----------------------------------------------------------------------------
-// kick
-// -----------------------------------------------------------------------------
-void Ball::applyForce(const Vector3 &_force) { force += _force; }
-
-// -----------------------------------------------------------------------------
 // stop
 // -----------------------------------------------------------------------------
 void Ball::stop() {
-  external_forces.sidespin.reset();
-  external_forces.topspin.reset();
+  forces.sidespin.reset();
+  forces.topspin.reset();
   velocity.reset();
 }
 
 // -----------------------------------------------------------------------------
 // addSideSpin
 // -----------------------------------------------------------------------------
-void Ball::addSideSpin(const Vector3 &s) { external_forces.sidespin += s; }
+void Ball::addSideSpin(const Vector3 &s) { forces.sidespin += s; }
 
 // -----------------------------------------------------------------------------
 // addTopSpin
 // -----------------------------------------------------------------------------
-void Ball::addTopSpin(const Vector3 &s) { external_forces.topspin += s; }
+void Ball::addTopSpin(const Vector3 &s) { forces.topspin += s; }
 
 // -----------------------------------------------------------------------------
 // rebound

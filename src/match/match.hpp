@@ -65,7 +65,7 @@ class Match : public gamelib2::Entity {
  public:
   Match();
   void init(team::Team *t1, team::Team *t2, Pitch *p, Ball *b);
-  void update(float dt);
+  void step(float dt);
   void changeState(const MatchState next_state);
   void observe(MatchObserver *o);
   void unObserve(MatchObserver *o);

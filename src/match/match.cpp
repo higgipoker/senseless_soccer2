@@ -42,7 +42,7 @@ void Match::init(team::Team *t1, team::Team *t2, Pitch *p, Ball *b) {
 // -----------------------------------------------------------------------------
 // update
 // -----------------------------------------------------------------------------
-void Match::update(float dt) {
+void Match::step(float dt) {
   current_state->update(dt);
   if (current_state->finished()) {
     current_state->changeToNextState();

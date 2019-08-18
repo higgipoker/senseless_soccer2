@@ -35,7 +35,7 @@ class Team : public Entity, public match::MatchObserver {
   void init(Pitch *p, const Direction s);
 
   // uodate each game frame
-  void update(float dt) override;
+  void step(float dt) override;
 
   // add a player to the team
   void addPlayer(Player *p);
