@@ -2,6 +2,7 @@
 *.vimrc
 *.txt.user
 Debug/
+Release/
 bin/
 *.ini
 run
