@@ -7,12 +7,11 @@ project(senseless_soccer)
 # --------------------------------------------------
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 # --------------------------------------------------
 # include dirs
 # --------------------------------------------------
-message( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # --------------------------------------------------
@@ -101,14 +100,9 @@ add_executable(senseless_soccer
 # --------------------------------------------------
 # link libs
 # --------------------------------------------------
-
+find_package(OpenGL)
+target_link_libraries (senseless_soccer ${OPENGL_gl_LIBRARY})
 target_link_libraries (senseless_soccer gamelib2)
 target_link_libraries (senseless_soccer sfml-graphics-d)
 target_link_libraries (senseless_soccer sfml-window-d)
 target_link_libraries (senseless_soccer sfml-system-d)
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    target_link_libraries (senseless_soccer Opengl32)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries (senseless_soccer GL)
-endif()
