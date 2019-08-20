@@ -117,7 +117,7 @@ int main() {
   Player::ball = &ball;
   Player::pitch = &pitch;
 
-  for (int i = 0; i < 2; ++i) {
+  for (int i = 0; i < 11; ++i) {
     std::stringstream player_name;
     player_name << "player" << i;
     team1.addPlayer(
@@ -126,6 +126,7 @@ int main() {
                                       static_cast<float>(rand() % 600));
     game.engine.addEntity(team1.players.back());
   }
+  team1.init(&pitch, gamelib2::Direction::NORTH);
   //  for (int i = 0; i < 10; ++i) {
   //    player_factory.release_player(team1.players[i]);
   //  }

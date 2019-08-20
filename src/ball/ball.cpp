@@ -123,10 +123,10 @@ void Ball::improved_euler_integration(float dt) {
   acceleration = force / mass;
   Vector3 k3 = acceleration * dt;
 
-  // update
+  // update velocity
   velocity = velocity + (k1 + k2 + k3) / 3;
 
-  // convert to pixels
+  // change in position (converted to pixels)
   Vector3 dp = Metrics::MetersToPixels(velocity * dt);
 
   // apply new position

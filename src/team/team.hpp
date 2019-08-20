@@ -71,7 +71,7 @@ class Team : public Entity, public match::MatchObserver {
   Kit kit;
 
   // a formation
-  std::set<std::string> formation = Formation::four_four_two;
+  std::set<std::string> formation{Formation::four_four_two};
 
   // side of the pitch team is defending
   Compass side = Direction::SOUTH;
@@ -81,7 +81,7 @@ class Team : public Entity, public match::MatchObserver {
 
  protected:
   // team needs to know about the pitch
-  Pitch *pitch=nullptr;
+  Pitch *pitch = nullptr;
 
   // states
   EnterPitch enter_pitch;
@@ -94,6 +94,9 @@ class Team : public Entity, public match::MatchObserver {
   // update helpers
   void set_key_players();
   void update_controller();
+
+  // tmp hack to not create so many textures
+  std::unique_ptr<Sprite> reference_sprite = std::make_unique<Sprite>(name);
 
  public:
   friend class senseless_soccer::Player;

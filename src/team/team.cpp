@@ -21,6 +21,12 @@ struct {
 Team::Team(std::string in_name)
     : idle(*this), enter_pitch(*this), lineup(*this), defend(*this) {
   create("team", std::move(in_name));
+
+  auto sprite = reference_sprite.get();
+  sprite->init(Files::getWorkingDirectory() + "/gfx/player/player.png", 6, 24);
+  sprite->clickable = true;
+  sprite->anchor_type = AnchorType::ANCHOR_BASE_CENTER;
+  sprite->swapColors(kit.palette);
 }
 
 // -----------------------------------------------------------------------------
@@ -38,7 +44,7 @@ void Team::init(Pitch *p, const Direction s) {
     defending_goal = p->dimensions.goal_south;
   }
 
-  if (formation.size() == 11 && players.size() == 11) {
+  if (formation.size() == players.size()) {
     int i = 0;
     for (const auto &position : formation) {
       if (auto player = players[i++]) {
@@ -70,10 +76,6 @@ void Team::addPlayer(Player *p) {
 
   // tell player of team
   p->setTeam(this);
-
-  // apply the kit to player
-  auto sprite = static_cast<gamelib2::Sprite *>(p->widget);
-  sprite->swapColors(kit.palette);
 }
 
 // -----------------------------------------------------------------------------
